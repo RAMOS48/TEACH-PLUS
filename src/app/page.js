@@ -2,7 +2,6 @@
 export default function Home() {
   return (
     <div className="">
-      Hello world
-    </div>
+login page here    </div>
   );
 }
