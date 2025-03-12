@@ -1,10 +1,24 @@
 "use client";
 
+import dynamic from 'next/dynamic';
+const Absences = dynamic(() => import('./Absences'), {
+  ssr: false, 
+  loading: () => <p>Loading...</p>, 
+});
+const ProfilTeacher = dynamic(() => import('./ProfilTeacher'), {
+  ssr: false, 
+  loading: () => <p>Loading...</p>, 
+});
+const Ranks = dynamic(() => import('./Ranks'), {
+  ssr: false, 
+  loading: () => <p>Loading...</p>, 
+});
+const DeleteTeacher = dynamic(() => import('./Delete'), {
+  ssr: false, 
+  loading: () => <p>Loading...</p>, 
+});
+
 import { useState, useEffect, useRef } from "react";
-import Absences from "./Absences"
-import Ranks from "./Ranks"
-import ProfilTeacher from "./ProfilTeacher"
-import DeleteTeacher from "./Delete";
 
 import Modal from "./Modal";
 import useStore from "@/store/useStore";

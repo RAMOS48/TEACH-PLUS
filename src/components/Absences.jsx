@@ -2,6 +2,10 @@
 import useStore from "@/store/useStore"
 import { useState , useRef } from "react";
 
+
+
+// component unuseable 
+
 export default function Absences (){
 
 const { absences , selectedTeacher , markAbsence } = useStore();
