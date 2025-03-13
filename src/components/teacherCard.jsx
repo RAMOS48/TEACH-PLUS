@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from 'next/dynamic';
-const Absences = dynamic(() => import('./Absences'), {
+const Absences = dynamic(() => import('./absencesList'), {
   ssr: false, 
   loading: () => <p>Loading...</p>, 
 });
@@ -29,11 +29,24 @@ const TeacherCard = ({ teacherData }) => {
 
   const menuRef = useRef(null);
   
-  const {   selectTeacher  } =useStore();
+  const {   selectTeacher , getTeacher , getAbsences  } =useStore();
 
   function handleModal(option , teacherId) {
     setIsModalOpen([true, option]);
-    selectTeacher(teacherId)
+    selectTeacher(teacherId);
+    switch (option) {
+      case "absences":
+        getAbsences();
+        break;
+      case "profil":
+        getTeacher();
+      break;
+      case "ranks":
+        getRanks();
+      break;
+      default:
+        break;
+    }
   }
 
   

@@ -1,22 +1,26 @@
-"use client ";
+"use client";
 
 import useStore from "@/store/useStore";
 
-export default function DeleteTeacher ()
-{
+export default function DeleteTeacher() {
+    const { deleteTeacher, selectTeacher } = useStore();
 
-    
-const {deleteTeacher , selectTeacher} = useStore();
+    const handleDelete = () => {
+        deleteTeacher();
+        selectTeacher(null);
+    };
 
-
-const handleDelete = () => { deleteTeacher() ; selectTeacher(null)}
-
-    return(
-
-<div>
-
-<div> are you sure to delete this teacher ? </div>
-<button onClick={handleDelete}>confirm</button>
-
-
-</div>)}
+    return (
+        <div className="flex flex-col items-center p-6 bg-white shadow-lg rounded-xl max-w-md mx-auto">
+            <div className="text-lg font-semibold text-gray-800 mb-4">
+                Are you sure you want to delete this teacher?
+            </div>
+            <button
+                onClick={handleDelete}
+                className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
+            >
+                Confirm
+            </button>
+        </div>
+    );
+}

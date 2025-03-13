@@ -2,14 +2,8 @@
 import useStore from "@/store/useStore";
 import { useRef, useState } from "react";
 
-
-
-
-// update variables for absences 
-
-
 export default function Ranks() {
-    const {absences , timeTable ,   markAbsence , updateAbsence , getAbsences , selectAbsence , catchUpAbsence , deleteAbsence } = useStore();
+    const { absences, timeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
 
     const date = useRef("");
@@ -18,7 +12,7 @@ export default function Ranks() {
     const newSelectedSession = useRef("");
 
     const openUpdateForm = (absenceId) => {
-        setUpdateForm(true);
+        setUpdateForm(!updateForm);
         selectAbsence(absenceId);
     };
 
@@ -32,45 +26,52 @@ export default function Ranks() {
     };
 
     return (
-        <div>
-            { absences.length > 0 ? (
+        <div className="p-4 bg-gray-100 min-h-screen">
+            {absences.length > 0 && !updateForm && (
                 absences.map((absence) => (
-                    <div key={absence.absenceId}>
-                        <div onClick={() => openUpdateForm(absence.absenceId)}>
-                            <div>{absence.date}</div>
-                            <div>{absence.caughtUp}</div>
+                    <div key={absence.absenceId} className="bg-amber-200 p-4 my-2 rounded-lg shadow-md">
+                        <div onClick={() => openUpdateForm(absence.absenceId)} className="cursor-pointer">
+                            <div className="font-semibold">{absence.date}</div>
+                            <div className="text-sm text-gray-600">{absence.caughtUp}</div>
                         </div>
-                        <button onClick={() => deleteAbsence(absence.absenceId)}>Delete rank</button>
+                        <button 
+                            onClick={() => deleteAbsence(absence.absenceId)}
+                            className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                        >
+                            Delete Absence
+                        </button>
                     </div>
                 ))
-            ) : (
-                <div>No Absences</div>
             )}
 
             {updateForm && (
-                <form onSubmit={handleUpdate}>
-                    <label>Updated starting date: </label>
-                    <input ref={newDate} type="date" />
-                    <label>Updated session:</label>
-                    <input  type="text" />
-                    <select ref={newSelectedSession} >
-       {" here we add opptions as time table of teacher "}
-
-      </select>
-                    <button type="submit">Confirm</button>
+                <form onSubmit={handleUpdate} className="bg-white p-4 rounded-lg shadow-md mt-4">
+                    <label className="block font-semibold">Updated starting date:</label>
+                    <input ref={newDate} type="date" className="border p-2 rounded w-full" />
+                    <label className="block font-semibold mt-2">Updated session:</label>
+                    <input type="text" className="border p-2 rounded w-full" />
+                    <select ref={newSelectedSession} className="border p-2 rounded w-full mt-2">
+                        {" here we add options as time table of teacher "}
+                    </select>
+                    <button type="submit" className="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Confirm</button>
                 </form>
             )}
 
-            <input ref={date} type="date" />
-            <input ref={selectedSession} placeholder="Type rank here ..." type="text" />
-            { " also here we add options as time table of teachers "}
-            <button
-                onClick={() => {
-                    addRank({ date: date.current.value, selectedSession: selectedSession.current.value });
-                }}
-            >
-                Add rank
-            </button>
+            {!updateForm && (
+                <div className="bg-white p-4 rounded-lg shadow-md mt-4">
+                    <input ref={date} type="date" className="border p-2 rounded w-full" />
+                    <input ref={selectedSession} placeholder="Type rank here ..." type="text" className="border p-2 rounded w-full mt-2" />
+                    {" also here we add options as time table of teachers "}
+                    <button 
+                        onClick={() => {
+                            markAbsence({ date: date.current.value, selectedSession: selectedSession.current.value });
+                        }}
+                        className="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                    >
+                        Add Absence
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

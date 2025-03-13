@@ -1,47 +1,46 @@
-import React from 'react';
+import React from "react";
 
-const Schedule = ({ sessions }) => {
-  // Define days of the week
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // Create a schedule grid
-  const schedule = {};
-  days.forEach((day) => (schedule[day] = []));
 
-  // Populate schedule with sessions
-  sessions.forEach((session) => {
-    const dayName = days[session.day];
-    schedule[dayName].push(session);
-  });
+const days = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
+const startHours = Array.from({ length: 20 }, (_, i) => {
+  const h = Math.floor(i / 2) + 8; // De 08:00 à 18:30
+  const m = i % 2 === 0 ? "00" : "30";
+  return `${h.toString().padStart(2, "0")}:${m}`;
+});
 
+const Timetable = ({sessions}) => {
   return (
     <div className="overflow-x-auto">
-      <table className="table-auto border-collapse border border-gray-400 w-full text-center">
+      <table className="min-w-full border-collapse border border-gray-300">
         <thead>
-          <tr>
-            <th className="border border-gray-400 px-4 py-2">Time Slot</th>
+          <tr className="bg-gray-200">
+            <th className="border p-2">Heure</th>
             {days.map((day) => (
-              <th key={day} className="border border-gray-400 px-4 py-2">
-                {day}
-              </th>
+              <th key={day} className="border p-2">{day}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {[...Array(12)].map((_, hour) => ( // 12 time slots (e.g., 8 AM - 8 PM)
+          {startHours.map((hour) => (
             <tr key={hour}>
-              <td className="border border-gray-400 px-4 py-2">{8 + hour}:00</td>
+              <td className="border p-2 text-center">{hour}</td>
               {days.map((day) => {
-                const session = schedule[day].find(
-                  (s) => s.start_hour === 8 + hour
+                const matchingSessions = sessions.filter(
+                  (s) => s.day === day && s.start_hour === hour
                 );
+
                 return (
-                  <td
-                    key={day}
-                    className="border border-gray-400 px-4 py-2 text-white"
-                    style={{ backgroundColor: session ? '#4CAF50' : 'white' }}
-                  >
-                    {session ? `${session.module} (${session.classroom})` : ''}
+                  <td key={day + hour} className="border p-2 text-center">
+                    {matchingSessions.length > 0 ? (
+                      <div className="space-y-1">
+                        {matchingSessions.map((session) => (
+                          <div key={session.session_id} className="bg-blue-500 text-white p-1 rounded text-sm">
+                            {session.module} ({session.type}) - {session.classroom}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </td>
                 );
               })}
@@ -53,12 +52,4 @@ const Schedule = ({ sessions }) => {
   );
 };
 
-// Example usage
-const sessions = [
-  { day: 0, start_hour: 9, duration: 3, type: 'Lecture', module: 'Math', classroom: 'A101', group: 'G1' },
-  { day: 3, start_hour: 14, duration: 1, type: 'Lab', module: 'Physics', classroom: 'B203', group: 'G2' },
-];
-
-export default function Shedule() {
-  return <Schedule sessions={sessions} />;
-}
+export default Timetable;

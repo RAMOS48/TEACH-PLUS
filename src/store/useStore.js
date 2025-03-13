@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import axios from "axios";
 const useStore = create((set , get) => ({
 
 // handle Admins 
@@ -24,15 +24,15 @@ reference :  PDF of Ayoub
 
 // handle Teachers .....................................................................
 
-  teachers: [{firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
+  teachers: [{id:"0001" ,  firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
   rank:"MCA"},
-  {firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
+  {id:"0002", firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
     rank:"MCB"}],
 
 
-    filteredTeachers: [{firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
+    filteredTeachers: [{id:"0001" ,  firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
       rank:"MCA"},
-      {firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
+      {id:"0002", firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
         rank:"MCB"}],
   getTeachers:  async () => {
     try {
@@ -85,11 +85,13 @@ reference :  PDF of Ayoub
   selectedTeacher: null,
   teacher:{},
   teacherTimeTable : [],
-  selectTeacher: (teacher) => set({ selectedTeacher: teacher }),
+  selectTeacher: (teacher) => { set({ selectedTeacher: teacher }) },
 
   getTeacher:  async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/teachers/${selectedTeacher}`);
+      const data = get();
+      const response = await axios.get(`http://localhost:3001/api/teachers/${data.selectedTeacher}`);
+      
       set({ teacher: response.data });
     } catch (error) {
       console.log("Error fetching teacher:", error);
@@ -98,6 +100,7 @@ reference :  PDF of Ayoub
 
   updateTeacher : async (updatedTeacher) => {
     try {
+
       const response = await axios.update(`http://localhost:3001/api/teachers/${selectedTeacher}`, updatedTeacher );
       
     } catch (error) {
@@ -107,6 +110,7 @@ reference :  PDF of Ayoub
 
   deleteTeacher : async () => {
     try {
+
       const response = await axios.delete(`http://localhost:3001/teachers/${selectedTeacher}` );
       
     } catch (error) {
@@ -116,6 +120,7 @@ reference :  PDF of Ayoub
 
   getTeacherTimeTable :  async () => {
     try {
+
       const response = await axios.get(`http://localhost:3001/api/timetable/${selectedTeacher}`);
       set({ teacherTimeTable: response.data });
     } catch (error) {
@@ -134,10 +139,11 @@ reference :  PDF of Ayoub
 // handle Absences  .................................................................
   
 
-  absences:null ,
+  absences:[{absenceId:"0001",date:"kjjj",caughtUp:"true"},{absenceId:"0009",date:"kjjj",caughtUp:"true"}] ,
 
   getAbsences :  async () => {
     try {
+
       const response = await axios.get(`http://localhost:3001/api/absences?teacherId=${selectedTeacher}`);
       set({ absences: response.data });
     } catch (error) {
@@ -146,6 +152,7 @@ reference :  PDF of Ayoub
   },
   markAbsence : async (absenceDate) => {
     try {
+      
       const response = await axios.post(`http://localhost:3001/api/absences`, {date:absenceDate } );
       
     } catch (error) {
@@ -235,7 +242,7 @@ reference :  PDF of Ayoub
 
 
 
-  sessions:null ,
+  sessions:[{ session_id: 1, day: "dim", start_hour: "08:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" }] ,
   getSessions :  async () => {
     try {
       const response = await axios.get(`http://localhost:3001/api/sessions`);
