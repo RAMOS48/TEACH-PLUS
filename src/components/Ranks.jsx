@@ -1,15 +1,17 @@
 "use client";
 import useStore from "@/store/useStore";
-import { useRef, useState } from "react";
+import { useRef, useState , useEffect } from "react";
 
 export default function Ranks() {
-    const { historyRank, addRank, updateRank, deleteRank, selectRank } = useStore();
+    const { historyRank, getRanks ,  addRank, updateRank, deleteRank, selectRank } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
 
     const startingDate = useRef("");
     const rank = useRef("");
     const newStartingDate = useRef("");
     const newRank = useRef("");
+
+    
 
     const openUpdateForm = (rankId) => {
         setUpdateForm(true);
@@ -30,13 +32,13 @@ export default function Ranks() {
             {historyRank.length == 0 && <div>no ranks</div>}
             {!updateForm && historyRank.length > 0 && 
                 historyRank.map((rank) => (
-                    <div key={rank.rankId} className="p-4 mb-2 bg-white rounded-lg shadow-sm flex justify-between items-center">
+                    <div key={rank.rankId}  className="p-4 mb-2 bg-white rounded-lg shadow-sm flex justify-between items-center">
                         <div onClick={() => openUpdateForm(rank.rankId)} className="cursor-pointer">
                             <div className="text-gray-700 font-semibold">{rank.startingDate}</div>
                             <div className="text-gray-900 font-bold">{rank.rank}</div>
                         </div>
                         <button 
-                            onClick={() => deleteRank(rank.rankId)} 
+                            onClick={() => deleteRank()} 
                             className="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600"
                         >
                             Delete

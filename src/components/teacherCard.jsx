@@ -29,7 +29,7 @@ const TeacherCard = ({ teacherData }) => {
 
   const menuRef = useRef(null);
   
-  const {   selectTeacher , getTeacher , getAbsences  } =useStore();
+  const { getRanks ,   selectTeacher , getTeacher , getAbsences  } =useStore();
 
   function handleModal(option , teacherId) {
     setIsModalOpen([true, option]);

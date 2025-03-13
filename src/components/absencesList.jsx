@@ -1,9 +1,19 @@
 "use client";
 import useStore from "@/store/useStore";
-import { useRef, useState } from "react";
+import { useRef, useState , useEffect } from "react";
+
+
+
+
+
+
+// add in form the select sessions options 
+
+
+
 
 export default function Ranks() {
-    const { absences, timeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
+    const { absences, getAbsences, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
 
     const date = useRef("");
@@ -15,6 +25,7 @@ export default function Ranks() {
         setUpdateForm(!updateForm);
         selectAbsence(absenceId);
     };
+    
 
     const handleUpdate = (e) => {
         e.preventDefault(); 
@@ -35,6 +46,12 @@ export default function Ranks() {
                             <div className="text-sm text-gray-600">{absence.caughtUp}</div>
                         </div>
                         <button 
+                            onClick={() => catchUpAbsence(absence.absenceId)}
+                            className="mt-2 bg-red-300 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                        >
+                            Catch up 
+                        </button>
+                        <button 
                             onClick={() => deleteAbsence(absence.absenceId)}
                             className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                         >
@@ -49,7 +66,6 @@ export default function Ranks() {
                     <label className="block font-semibold">Updated starting date:</label>
                     <input ref={newDate} type="date" className="border p-2 rounded w-full" />
                     <label className="block font-semibold mt-2">Updated session:</label>
-                    <input type="text" className="border p-2 rounded w-full" />
                     <select ref={newSelectedSession} className="border p-2 rounded w-full mt-2">
                         {" here we add options as time table of teacher "}
                     </select>
