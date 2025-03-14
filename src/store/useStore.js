@@ -273,16 +273,20 @@ reference :  PDF of Ayoub
 
 
 
-  sessions:[{ session_id: 1, day: "dim", start_hour: "08:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" }] ,
-  getSessions :  async () => {
+  sessions:[{ sessionId: 1, day: "dim", start_hour: "08:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" },
+    { sessionId: 2, day: "dim", start_hour: "12:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" }
+  ] ,
+  getSessions :  async (filter) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/sessions`);
+      // work
+      const response = await axios.get(`http://localhost:3001/api/sessions`, filter);
       set({ sessions: response.data });
     } catch (error) {
       console.log("Error fetching sessions:", error);
     }
   },
   addSession : async (addedSession) => {
+    // work 
     try {
       const response = await axios.post(`http://localhost:3001/api/sessions`, addedSession );
       
@@ -295,16 +299,18 @@ reference :  PDF of Ayoub
   selectSession: (session) => set({ selectedSession: session }),
 
   updateSession : async (updatedSession) => {
+    // work 
     try {
-      const response = await axios.update(`http://localhost:3001/api/sessions/${selectedSession}`, updatedSession );
+      const response = await axios.patch(`http://localhost:3001/api/sessions/${updatedSession.sessionId}`, updatedSession );
       
     } catch (error) {
       console.log("Error updating session:", error);
     }
   },
-  deleteSession : async () => {
+  deleteSession : async (sessionId) => {
+    // pending 
     try {
-      const response = await axios.delete(`http://localhost:3001/api/sessions/${selectedSession}` );
+      const response = await axios.delete(`http://localhost:3001/api/sessions/${sessionId}` );
       
     } catch (error) {
       console.log("Error deleting session:", error);
