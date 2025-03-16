@@ -53,7 +53,12 @@ export default function Ranks() {
                     <label className="text-gray-700">Updated starting date:</label>
                     <input ref={newStartingDate} type="date" className="p-2 border rounded-lg" />
                     <label className="text-gray-700">Updated rank:</label>
-                    <input ref={newRank} type="text" className="p-2 border rounded-lg" />
+                    <select ref={newRank}  name="rank"   className="p-2 border rounded-lg w-full mb-2">
+            <option value="" disabled>Select rank</option>
+            {["MCA","MCB","MAA","MAB","PROFESSOR"].map((rank) => (
+              <option key={rank} value={rank}>{rank}</option>
+            ))}
+          </select>
                     <button type="submit" className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
                         Confirm
                     </button>
@@ -63,7 +68,12 @@ export default function Ranks() {
             {!updateForm && (
                 <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
                     <input ref={startingDate} type="date" className="p-2 border rounded-lg w-full mb-2" />
-                    <input ref={rank} placeholder="Type rank here ..." type="text" className="p-2 border rounded-lg w-full mb-2" />
+                    <select ref={rank}  name="rank"   className="p-2 border rounded-lg w-full mb-2">
+            <option value="" disabled>Select rank</option>
+            {["MCA","MCB","MAA","MAB","PROFESSOR"].map((rank) => (
+              <option key={rank} value={rank}>{rank}</option>
+            ))}
+          </select>
                     <button
                         onClick={() => {
                             addRank({   startingDate: startingDate.current.value, rank: rank.current.value });

@@ -13,7 +13,7 @@ import { useRef, useState , useEffect } from "react";
 
 
 export default function Ranks() {
-    const { absences, getAbsences, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
+    const { absences , teacherTimeTable , markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
 
     const date = useRef("");
@@ -67,7 +67,10 @@ export default function Ranks() {
                     <input ref={newDate} type="date" className="border p-2 rounded w-full" />
                     <label className="block font-semibold mt-2">Updated session:</label>
                     <select ref={newSelectedSession} className="border p-2 rounded w-full mt-2">
-                        {" here we add options as time table of teacher "}
+                    <option value="" disabled>Select session</option>
+            {teacherTimeTable.map((session) => (
+              <option key={session} value={session.id}>{session.dayOfWeek}_{session.startTime}</option>
+            ))}
                     </select>
                     <button type="submit" className="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Confirm</button>
                 </form>
@@ -76,8 +79,12 @@ export default function Ranks() {
             {!updateForm && (
                 <div className="bg-white p-4 rounded-lg shadow-md mt-4">
                     <input ref={date} type="date" className="border p-2 rounded w-full" />
-                    <input ref={selectedSession} placeholder="Type rank here ..." type="text" className="border p-2 rounded w-full mt-2" />
-                    {" also here we add options as time table of teachers "}
+                    <select ref={selectedSession} className="border p-2 rounded w-full mt-2">
+                    <option value="" disabled>Select session</option>
+            {teacherTimeTable.map((session) => (
+              <option key={session} value={session.id}>{session.dayOfWeek}_{session.startTime}</option>
+            ))}
+                    </select>
                     <button 
                         onClick={() => {
                             markAbsence({ date: date.current.value, selectedSession: selectedSession.current.value });

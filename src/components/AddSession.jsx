@@ -19,7 +19,8 @@ export default function AddSession({ onClose }) {
   const handleChange = (e) => {
     setSessionData({ ...sessionData, [e.target.name]: e.target.value });
   };
-
+  const currentYear = new Date().getFullYear();
+  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
   const { addSession, teachers } = useStore();
 
   const handleSubmit = (e) => {
@@ -46,7 +47,6 @@ export default function AddSession({ onClose }) {
       <h2 className="text-xl font-semibold text-gray-700 mb-4">Add a Session</h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4">
-        {/* Column 1 */}
         <div>
           <label className="block text-sm font-medium text-gray-600">Day of the Week</label>
           <select name="dayOfWeek" value={sessionData.dayOfWeek} onChange={handleChange} className="w-full p-2 border rounded">
@@ -67,7 +67,6 @@ export default function AddSession({ onClose }) {
           <input type="time" name="endTime" value={sessionData.endTime} onChange={handleChange} className="w-full p-2 border rounded" />
         </div>
 
-        {/* Column 2 */}
         <div>
           <label className="block text-sm font-medium text-gray-600">Teacher</label>
           <select name="teacherId" value={sessionData.teacherId} onChange={handleChange} className="w-full p-2 border rounded">
@@ -84,9 +83,9 @@ export default function AddSession({ onClose }) {
           <label className="block text-sm font-medium text-gray-600">Type</label>
           <select name="type" value={sessionData.type} onChange={handleChange} className="w-full p-2 border rounded">
             <option value="">Select a type</option>
-            <option value="Lecture">Lecture</option>
-            <option value="Tutorial">Tutorial</option>
-            <option value="Lab">Lab</option>
+            <option value="COURS">COURS</option>
+            <option value="TD">TD</option>
+            <option value="TP">TP</option>
           </select>
         </div>
 
@@ -95,34 +94,58 @@ export default function AddSession({ onClose }) {
           <input type="text" name="module" value={sessionData.module} onChange={handleChange} className="w-full p-2 border rounded" />
         </div>
 
-        {/* Column 3 */}
         <div>
           <label className="block text-sm font-medium text-gray-600">Classroom</label>
-          <input type="text" name="classroom" value={sessionData.classroom} onChange={handleChange} className="w-full p-2 border rounded" />
+          <select  name="classroom" value={sessionData.classroom} onChange={handleChange} className="w-full p-2 border rounded">
+            <option value="">Select classroom</option>
+            {["salle A1","salle A2" , "Amphi C" , "salle TP1"].map((sl) => (
+              <option key={sl} value={sl}>{sl}</option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-600">Group Number</label>
-          <input type="text" name="groupNumber" value={sessionData.groupNumber} onChange={handleChange} className="w-full p-2 border rounded" />
+          <select  name="groupNumber" value={sessionData.groupNumber} onChange={handleChange} className="w-full p-2 border rounded" >
+            <option value="">Select group number</option>
+            {["G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12","G13","G14","G15"].map((g) => (
+              <option key={g} value={g}>{g}</option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-600">Academic Year</label>
-          <input type="text" name="academicYear" value={sessionData.academicYear} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., 2024-2025" />
+          <select name="academicYear" value={sessionData.academicYear} onChange={handleChange} className="w-full p-2 border rounded" >
+          <option value="" disabled>Select academic year</option>
+        {academicYears.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+            ))}
+          </select>
         </div>
 
-        {/* Additional Fields */}
         <div>
           <label className="block text-sm font-medium text-gray-600">Academic Level</label>
-          <input type="text" name="academicLevel" value={sessionData.academicLevel} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Undergraduate, Master" />
+          <select name="academicLevel" value={sessionData.academicLevel} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Undergraduate, Master">
+            <option value="">Select academic level</option>
+            {["1CP","2CP","1CS","2CS","3CS"].map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-600">Semester</label>
-          <input type="text" name="semester" value={sessionData.semester} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Semester 1, Semester 2" />
+          <select name="semester" value={sessionData.semester} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Semester 1, Semester 2">
+            <option value="">Select semester</option>
+            {["S1","S2"].map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
         </div>
 
-        {/* Submit Button - Full Width */}
         <div className="col-span-3 flex justify-center mt-4">
           <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition">
             Confirm

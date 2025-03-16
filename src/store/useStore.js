@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import teacherTimeTable from "@/components/teacherTimeTable";
 const useStore = create((set , get) => ({
 
 // handle Admins 
@@ -132,11 +133,24 @@ reference :  PDF of Ayoub
       console.log("Error deleting teacher:", error);
     }
   },
+  teacherTimeTable:[{
+    sessionId: 1,
+    dayOfWeek: "Sun",
+    startTime: "08:00",
+    endTime: "09:00",  
+    type: "TD",   
+    module: "Math",
+    classroom: "salle A1",
+    groupNumber: "G1",
+    academicYear: "2024-2025",
+    academicLevel: "1CS",
+    semester: "S1"
+  }],
 
   getTeacherTimeTable :  async () => {
     try {
-
-      const response = await axios.get(`http://localhost:3001/api/timetable/${selectedTeacher}`);
+      const data = get ();
+      const response = await axios.get(`http://localhost:3001/api/timetable/${data.selectedTeacher}`);
       set({ teacherTimeTable: response.data });
     } catch (error) {
       console.log("Error fetching timeTable:", error);
@@ -278,8 +292,8 @@ reference :  PDF of Ayoub
     sessionId: 1,
     dayOfWeek: "Sun",
     startTime: "08:00",
-    endTime: "09:00",  // Calculé en fonction de la durée
-    type: "Lecture",   // "CM" -> "Lecture", "TD" -> "Tutorial", "TP" -> "Practical"
+    endTime: "09:00",  
+    type: "Lecture",   
     module: "Math",
     classroom: "A1",
     groupNumber: "G1",
