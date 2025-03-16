@@ -66,7 +66,7 @@ export default function Ranks() {
                     <input ref={rank} placeholder="Type rank here ..." type="text" className="p-2 border rounded-lg w-full mb-2" />
                     <button
                         onClick={() => {
-                            addRank({ startingDate: startingDate.current.value, rank: rank.current.value });
+                            addRank({   startingDate: startingDate.current.value, rank: rank.current.value });
                         }}
                         className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 w-full"
                     >

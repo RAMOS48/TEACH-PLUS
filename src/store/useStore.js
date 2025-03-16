@@ -224,7 +224,7 @@ reference :  PDF of Ayoub
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3001/api/teachers/${data.selectedTeacher}/ranks`);
+      const response = await axios.get(`http://localhost:3001/api/ranks/${data.selectedTeacher}`);
       set({ historyRank: response.data });
     } catch (error) {
       console.log("Error fetching ranks:", error);
@@ -233,8 +233,9 @@ reference :  PDF of Ayoub
   addRank : async (addedRank) => {
     // work
     try {
-      const data = get();
-      const response = await axios.post(`http://localhost:3001/teachers/${data.selectedTeacher}/ranks/`, addedRank );
+     
+      const data = get(); 
+      const response = await axios.post(`http://localhost:3001/api/ranks`,{teacherId:data.selectedTeacher , ...addedRank}  );
       
     } catch (error) {
       console.log("Error inserting rank:", error);
@@ -249,7 +250,7 @@ reference :  PDF of Ayoub
     // work 
     try {
       const data = get();
-      const response = await axios.patch(`http://localhost:3001/ranks/${data.selectedRank}`, newRank);
+      const response = await axios.patch(`http://localhost:3001/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
       
     } catch (error) {
       console.log("Error updating rank", error);
@@ -260,7 +261,7 @@ reference :  PDF of Ayoub
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3001/ranks/${data.selectedRank}` );
+      const response = await axios.delete(`http://localhost:3001/api/ranks/${data.selectedRank}` );
       
     } catch (error) {
       console.log("Error deleting rank :", error);
@@ -273,13 +274,24 @@ reference :  PDF of Ayoub
 
 
 
-  sessions:[{ sessionId: 1, day: "dim", start_hour: "08:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" },
-    { sessionId: 2, day: "dim", start_hour: "12:00", duration: 60, type: "CM", module: "Math", classroom: "A1", group: "G1" }
+  sessions:[{
+    sessionId: 1,
+    dayOfWeek: "Sun",
+    startTime: "08:00",
+    endTime: "09:00",  // Calculé en fonction de la durée
+    type: "Lecture",   // "CM" -> "Lecture", "TD" -> "Tutorial", "TP" -> "Practical"
+    module: "Math",
+    classroom: "A1",
+    groupNumber: "G1",
+    academicYear: "2024-2025",
+    academicLevel: "Undergraduate",
+    semester: "Semester 1"
+  }
   ] ,
   getSessions :  async (filter) => {
     try {
       // work
-      const response = await axios.get(`http://localhost:3001/api/sessions`, filter);
+      const response = await axios.get(`http://localhost:3001/api/timetable`, filter);
       set({ sessions: response.data });
     } catch (error) {
       console.log("Error fetching sessions:", error);
@@ -308,7 +320,7 @@ reference :  PDF of Ayoub
     }
   },
   deleteSession : async (sessionId) => {
-    // pending 
+    // work 
     try {
       const response = await axios.delete(`http://localhost:3001/api/sessions/${sessionId}` );
       

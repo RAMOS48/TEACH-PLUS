@@ -1,7 +1,7 @@
 import useStore from "@/store/useStore";
 import { useState, useEffect } from "react";
 
-export default function UpdateSession({ session , onClose}) {
+export default function UpdateSession({ session, onClose }) {
   const [updatedSession, setUpdatedSession] = useState({ ...session });
   const [isModified, setIsModified] = useState(false);
 
@@ -9,17 +9,20 @@ export default function UpdateSession({ session , onClose}) {
     setUpdatedSession({ ...session });
     setIsModified(false);
   }, [session]);
-const { updateSession , deleteSession} =useStore();
+
+  const { updateSession, deleteSession } = useStore();
+
   const handleChange = (e) => {
     setUpdatedSession({ ...updatedSession, [e.target.name]: e.target.value });
     setIsModified(true);
   };
 
   const handleUpdate = (e) => {
-    e.preventDefault();  
+    e.preventDefault();
     updateSession(updatedSession);
     setIsModified(false);
   };
+
   const handleDelete = () => {
     deleteSession(updatedSession.sessionId);
     setIsModified(false);
@@ -28,49 +31,48 @@ const { updateSession , deleteSession} =useStore();
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-6 shadow-md rounded-lg">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">Modifier la session</h2>
+      <h2 className="text-xl font-semibold text-gray-700 mb-4">Edit Session</h2>
 
-      {/* Formulaire */}
       <form className="grid grid-cols-2 gap-4">
-        {/* Sélection du jour */}
+        {/* Day of the Week */}
         <div>
-          <label className="block text-sm font-medium text-gray-600">Jour</label>
+          <label className="block text-sm font-medium text-gray-600">Day of the Week</label>
           <select
-            name="day"
-            value={updatedSession.day}
+            name="dayOfWeek"
+            value={updatedSession.dayOfWeek}
             onChange={handleChange}
             className="w-full p-2 border rounded">
-            {["dim", "lun", "mar", "mer", "jeu", "ven", "sam"].map((d) => (
+            {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
         </div>
 
-        {/* Heure de début */}
+        {/* Start Time */}
         <div>
-          <label className="block text-sm font-medium text-gray-600">Heure de début</label>
+          <label className="block text-sm font-medium text-gray-600">Start Time</label>
           <input
             type="time"
-            name="start_hour"
-            value={updatedSession.start_hour}
+            name="startTime"
+            value={updatedSession.startTime}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
 
-        {/* Durée */}
+        {/* End Time */}
         <div>
-          <label className="block text-sm font-medium text-gray-600">Durée (minutes)</label>
+          <label className="block text-sm font-medium text-gray-600">End Time</label>
           <input
-            type="number"
-            name="duration"
-            value={updatedSession.duration}
+            type="time"
+            name="endTime"
+            value={updatedSession.endTime}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
 
-        {/* Type de session */}
+        {/* Session Type */}
         <div>
           <label className="block text-sm font-medium text-gray-600">Type</label>
           <select
@@ -78,10 +80,22 @@ const { updateSession , deleteSession} =useStore();
             value={updatedSession.type}
             onChange={handleChange}
             className="w-full p-2 border rounded">
-            <option value="CM">CM</option>
-            <option value="TD">TD</option>
-            <option value="TP">TP</option>
+            <option value="Lecture">Lecture</option>
+            <option value="Tutorial">Tutorial</option>
+            <option value="Lab">Lab</option>
           </select>
+        </div>
+
+        {/* Classroom */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">Classroom</label>
+          <input
+            type="text"
+            name="classroom"
+            value={updatedSession.classroom}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
         </div>
 
         {/* Module */}
@@ -96,48 +110,70 @@ const { updateSession , deleteSession} =useStore();
           />
         </div>
 
-        {/* Salle */}
+        {/* Group Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-600">Salle</label>
+          <label className="block text-sm font-medium text-gray-600">Group Number</label>
           <input
             type="text"
-            name="classroom"
-            value={updatedSession.classroom}
+            name="groupNumber"
+            value={updatedSession.groupNumber}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
 
-        {/* Groupe */}
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-600">Groupe</label>
+        {/* Academic Year */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">Academic Year</label>
           <input
             type="text"
-            name="group"
-            value={updatedSession.group}
+            name="academicYear"
+            value={updatedSession.academicYear}
             onChange={handleChange}
             className="w-full p-2 border rounded"
           />
         </div>
 
-        {/* Boutons Modifier & Supprimer */}
+        {/* Academic Level */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">Academic Level</label>
+          <input
+            type="text"
+            name="academicLevel"
+            value={updatedSession.academicLevel}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        {/* Semester */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600">Semester</label>
+          <input
+            type="text"
+            name="semester"
+            value={updatedSession.semester}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        {/* Update & Delete Buttons */}
         <div className="col-span-2 flex justify-between mt-4">
-          {/* Bouton Modifier (Désactivé si aucun changement) */}
           <button
             type="submit"
             onClick={handleUpdate}
             disabled={!isModified}
             className={`px-6 py-2 rounded text-white transition 
               ${isModified ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"}`}>
-            Modifier
+            Update
           </button>
 
-          {/* Bouton Supprimer */}
           <button
             type="button"
-            onClick={() => handleDelete()}
+            onClick={handleDelete}
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded transition">
-            Supprimer
+            Delete
           </button>
         </div>
       </form>
