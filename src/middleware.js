@@ -6,7 +6,7 @@ export default async function middleware(req) {
     const path = req.nextUrl.pathname;
 
     // ✅ Récupération du cookie correctement
-    const cookie = req.cookies.get("session");
+    const cookie = req.cookies.get("session")?.value;
 
     // ✅ Si le cookie est absent, rediriger les utilisateurs non authentifiés
     if (!cookie) {
@@ -22,7 +22,7 @@ export default async function middleware(req) {
 
     // ✅ Si l'utilisateur est connecté et accède à "/", rediriger vers /admin
     if (path === "/") {
-      return NextResponse.redirect(new URL("/admin", req.url));
+      return NextResponse.redirect(new URL("/admin/timetable", req.url));
     }
 
     // ✅ Ajouter l'adminId dans les headers de la requête
@@ -39,5 +39,5 @@ export default async function middleware(req) {
 
 // ✅ Appliquer le middleware uniquement aux routes sensibles
 export const config = {
-  matcher: ["/admin/:path*"], // Le middleware s'exécute uniquement sur /admin et ses sous-pages
+  matcher: ["/:path*"], // Le middleware s'exécute uniquement sur /admin et ses sous-pages
 };
