@@ -1,34 +1,31 @@
 import { jwtVerify } from "jose";
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export default async function middleware(req) {
   try {
     const path = req.nextUrl.pathname;
-    const cookie = (await cookies()).get("session")?.value
 
+    // ✅ Récupération du cookie correctement
+    const cookie = req.cookies.get("session")?.value;
+
+    // ✅ Si le cookie est absent, rediriger les utilisateurs non authentifiés
     if (!cookie) {
-      if (path == "/") {
-        return NextResponse.json(
-          { status: "FAILED", message: "Unauthorized activity! Admin is not logged in" },
-          { status: 401 }
-        );
+      if (path.startsWith("/admin")) {
+        return NextResponse.redirect(new URL("/", req.url));
       }
       return NextResponse.next();
     }
 
-    // Verify JWT
+    // ✅ Vérifier le JWT
     const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
     const { payload } = await jwtVerify(cookie, encodedKey, { algorithms: ["HS256"] });
 
-    if (path === "/" && payload?.adminId) {
-      return NextResponse.json(
-        { status: "FAILED", message: "Admin is already logged in" },
-        { status: 401 }
-      );
+    // ✅ Si l'utilisateur est connecté et accède à "/", rediriger vers /admin
+    if (path === "/") {
+      return NextResponse.redirect(new URL("/admin/timetable", req.url));
     }
 
-    // Store the admin ID in headers
+    // ✅ Ajouter l'adminId dans les headers de la requête
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-admin-id", payload.adminId);
 
@@ -36,14 +33,11 @@ export default async function middleware(req) {
 
   } catch (err) {
     console.error("JWT Middleware Error:", err.message);
-    return NextResponse.json(
-      { status: "FAILED", message: err.message },
-      { status: 401 }
-    );
+    return NextResponse.redirect(new URL("/", req.url)); // Rediriger vers la page de connexion en cas d'erreur
   }
 }
 
-// ✅ Fixed: Middleware only runs for "/admin" routes, not for all pages
+// ✅ Appliquer le middleware uniquement aux routes sensibles
 export const config = {
-  matcher: ["/:path*"], 
+  matcher: ["/:path*"], // Le middleware s'exécute uniquement sur /admin et ses sous-pages
 };

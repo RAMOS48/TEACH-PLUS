@@ -38,7 +38,7 @@ reference :  PDF of Ayoub
   getTeachers:  async () => {
     // work 
     try {
-      const response = await axios.get(`http://localhost:3001/api/teachers`);
+      const response = await axios.get(`http://localhost:3000/api/teachers`);
       set({ teachers: response.data });
       set({ filteredTeachers: response.data });
 
@@ -70,7 +70,7 @@ reference :  PDF of Ayoub
   searchTeacher: async (query) => {
     // work
     try {
-      const response = await axios.get(`http://localhost:3001/api/teachers?name=${query}`);
+      const response = await axios.get(`http://localhost:3000/api/teachers?name=${query}`);
       set({teachers: response.data});
       set({filteredTeachers: response.data});
 
@@ -82,7 +82,7 @@ reference :  PDF of Ayoub
   addTeacher : async (addedTeacher) => {
     // work
     try {
-      const response = await axios.post(`http://localhost:3001/teachers/admins/${admin.id}`, addedTeacher );
+      const response = await axios.post(`http://localhost:3000/teachers/admins/${admin.id}`, addedTeacher );
       
     } catch (error) {
       console.log("Error inserting teacher:", error);
@@ -104,7 +104,7 @@ reference :  PDF of Ayoub
   getTeacher:  async () => {
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3001/api/teachers/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/teachers/${data.selectedTeacher}`);
       
       set({ teacher: response.data });
     } catch (error) {
@@ -116,7 +116,7 @@ reference :  PDF of Ayoub
     // work
     try {
 
-      const response = await axios.patch(`http://localhost:3001/api/teachers/${updatedTeacher.id}`, updatedTeacher );
+      const response = await axios.patch(`http://localhost:3000/api/teachers/${updatedTeacher.id}`, updatedTeacher );
       
     } catch (error) {
       console.log("Error updating teacher :", error);
@@ -127,7 +127,7 @@ reference :  PDF of Ayoub
     // work
     try {
   const data = get()
-      const response = await axios.delete(`http://localhost:3001/teachers/${data.selectedTeacher}` );
+      const response = await axios.delete(`http://localhost:3000/teachers/${data.selectedTeacher}` );
       
     } catch (error) {
       console.log("Error deleting teacher:", error);
@@ -150,7 +150,7 @@ reference :  PDF of Ayoub
   getTeacherTimeTable :  async () => {
     try {
       const data = get ();
-      const response = await axios.get(`http://localhost:3001/api/timetable/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/timetable/${data.selectedTeacher}`);
       set({ teacherTimeTable: response.data });
     } catch (error) {
       console.log("Error fetching timeTable:", error);
@@ -174,7 +174,7 @@ reference :  PDF of Ayoub
     // work 
     try {
       const data = get()
-      const response = await axios.get(`http://localhost:3001/api/absences?teacherId=${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/absences?teacherId=${data.selectedTeacher}`);
       set({ absences: response.data });
     } catch (error) {
       console.log("Error fetching absences:", error);
@@ -184,7 +184,7 @@ reference :  PDF of Ayoub
   markAbsence : async (absenceData) => {
     try {
    // work      
-      const response = await axios.post(`http://localhost:3001/api/absences`, absenceData );
+      const response = await axios.post(`http://localhost:3000/api/absences`, absenceData );
       
     } catch (error) {
       console.log("Error inserting absence:", error);
@@ -201,7 +201,7 @@ reference :  PDF of Ayoub
     try {
       // work
       const data = get();
-      const response = await axios.patch(`http://localhost:3001/api/absences/${data.selectedAbsence}`, updatedAbsence);
+      const response = await axios.patch(`http://localhost:3000/api/absences/${data.selectedAbsence}`, updatedAbsence);
       
     } catch (error) {
       console.log("Error updating absence:", error);
@@ -211,7 +211,7 @@ reference :  PDF of Ayoub
   catchUpAbsence : async (absenceId) => {
     try {
       // work
-      const response = await axios.patch(`http://localhost:3001/api/catch_up_absence/${absenceId}`);
+      const response = await axios.patch(`http://localhost:3000/api/catch_up_absence/${absenceId}`);
       
     } catch (error) {
       console.log("Error catching up absence:", error);
@@ -221,7 +221,7 @@ reference :  PDF of Ayoub
   deleteAbsence : async (absenceId) => {
     // work
     try {
-      const response = await axios.delete(`http://localhost:3001/api/absences/${absenceId}` );
+      const response = await axios.delete(`http://localhost:3000/api/absences/${absenceId}` );
       
     } catch (error) {
       console.log("Error deleting absence:", error);
@@ -238,7 +238,7 @@ reference :  PDF of Ayoub
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3001/api/ranks/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/ranks/${data.selectedTeacher}`);
       set({ historyRank: response.data });
     } catch (error) {
       console.log("Error fetching ranks:", error);
@@ -249,7 +249,7 @@ reference :  PDF of Ayoub
     try {
      
       const data = get(); 
-      const response = await axios.post(`http://localhost:3001/api/ranks`,{teacherId:data.selectedTeacher , ...addedRank}  );
+      const response = await axios.post(`http://localhost:3000/api/ranks`,{teacherId:data.selectedTeacher , ...addedRank}  );
       
     } catch (error) {
       console.log("Error inserting rank:", error);
@@ -264,7 +264,7 @@ reference :  PDF of Ayoub
     // work 
     try {
       const data = get();
-      const response = await axios.patch(`http://localhost:3001/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
+      const response = await axios.patch(`http://localhost:3000/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
       
     } catch (error) {
       console.log("Error updating rank", error);
@@ -275,7 +275,7 @@ reference :  PDF of Ayoub
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3001/api/ranks/${data.selectedRank}` );
+      const response = await axios.delete(`http://localhost:3000/api/ranks/${data.selectedRank}` );
       
     } catch (error) {
       console.log("Error deleting rank :", error);
@@ -305,7 +305,7 @@ reference :  PDF of Ayoub
   getSessions :  async (filter) => {
     try {
       // work
-      const response = await axios.get(`http://localhost:3001/api/timetable`, filter);
+      const response = await axios.get(`http://localhost:3000/api/timetable`, filter);
       set({ sessions: response.data });
     } catch (error) {
       console.log("Error fetching sessions:", error);
@@ -314,7 +314,7 @@ reference :  PDF of Ayoub
   addSession : async (addedSession) => {
     // work 
     try {
-      const response = await axios.post(`http://localhost:3001/api/sessions`, addedSession );
+      const response = await axios.post(`http://localhost:3000/api/sessions`, addedSession );
       
     } catch (error) {
       console.log("Error inserting session:", error);
@@ -327,7 +327,7 @@ reference :  PDF of Ayoub
   updateSession : async (updatedSession) => {
     // work 
     try {
-      const response = await axios.patch(`http://localhost:3001/api/sessions/${updatedSession.sessionId}`, updatedSession );
+      const response = await axios.patch(`http://localhost:3000/api/sessions/${updatedSession.sessionId}`, updatedSession );
       
     } catch (error) {
       console.log("Error updating session:", error);
@@ -336,7 +336,7 @@ reference :  PDF of Ayoub
   deleteSession : async (sessionId) => {
     // work 
     try {
-      const response = await axios.delete(`http://localhost:3001/api/sessions/${sessionId}` );
+      const response = await axios.delete(`http://localhost:3000/api/sessions/${sessionId}` );
       
     } catch (error) {
       console.log("Error deleting session:", error);
