@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export default async function middleware(req) {
   try {
     const path = req.nextUrl.pathname;
-    const cookie = cookies().get("session")?.value; // ✅ Fixed: cookies() is not async
+    const cookie = (await cookies()).get("session")?.value
 
     if (!cookie) {
       if (path == "/") {

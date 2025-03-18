@@ -1,9 +1,12 @@
 import { database } from "@/lib/mysql"
 
-export async function GET(req, {params}) {
+export async function GET(req) {
     try {
-        const {promo} = await params
-        const [timetable] = await database.execute("SELECT * FROM Sessions WHERE academic_level = ?", [promo])
+        const { searchParams } = new URL(req.url)
+        const promo = searchParams.get("promo")
+        const academicYear = searchParams.get("academicYear")
+        const semester = searchParams.get("semester")
+        const [timetable] = await database.execute("SELECT * FROM Sessions WHERE academic_level = ? AND academic_year = ? AND semester = ?", [promo, academicYear, semester])
         if (!timetable.length) {
             return Response.json({status : "FAILED", message : "Timetable not found !"}, {status : 404})
         }
