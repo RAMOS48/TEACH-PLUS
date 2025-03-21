@@ -1,5 +1,6 @@
 import { database } from "@/lib/mysql"
 
+import { NextResponse } from "next/server";
 export async function PUT(req, {params}) {
     try {
         const authorizedAdminId = req.headers.get("x-admin-id")
@@ -42,5 +43,38 @@ export async function PUT(req, {params}) {
 
     } catch(err) {
         return Response.json({status : "FAILED", message : err.message}, {status : 500})
+    }
+}
+
+
+export async function DELETE(req, context) {
+    try {
+        const { rankId } = await context.params;  //  Attendre `params` avant d’accéder à `rankId`
+
+        if (!rankId) {
+            return NextResponse.json({ message: "rankId est requis" }, { status: 400 });
+        }
+        const authorizedAdminId = req.headers.get("x-admin-id")
+        const searchQuery = `SELECT D.admin_id FROM
+        Ranks R
+        JOIN Teachers T ON R.teacher_id = T.teacher_id
+        JOIN Admins D ON T.admin_id = D.admin_id
+        WHERE R.rank_id = ?
+        `
+        const [adminOfRank] = await database.execute(searchQuery, [rankId])
+        if (!adminOfRank.length) {
+            return Response.json({status : "FAILED", message : "Rank not found or its admin is unknown !"}, {status : 404})
+        }
+        if (adminOfRank[0].admin_id != authorizedAdminId) {
+            return Response.json({status : "FAILED", message : "Unauthorized ! This rank doesn't belong to this admin"}, {status : 401})
+        }
+        // Supprimer le grade
+        await database.execute("DELETE FROM Ranks WHERE rank_id = ?", [rankId]);
+
+        return NextResponse.json({ message: "Grade supprimé avec succès" }, { status: 200 });
+
+    } catch (error) {
+        console.error("Erreur deleteRank:", error);
+        return NextResponse.json({ message: "Erreur serveur", error: error.message }, { status: 500 });
     }
 }

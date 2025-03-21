@@ -1,5 +1,5 @@
 import { database } from "@/lib/mysql"
-
+import { NextResponse } from "next/server"
 export async function DELETE(req, {params}) {
     try {
         const authorizedAdminId = req.headers.get("x-admin-id")
@@ -23,3 +23,78 @@ export async function DELETE(req, {params}) {
         return Response.json({status : "FAILED", message : err.message}, {status : 500})
     }
 }
+
+// 📌 Mettre à jour une absence (PATCH)
+export async function PATCH(req, {params}) {
+    try {
+        // Vérifier si le `Content-Type` est JSON
+        const contentType = req.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+            return NextResponse.json({ message: "Content-Type doit être application/json" }, { status: 400 });
+        }
+        const authorizedAdminId = req.headers.get("x-admin-id")
+        let body;
+        try {
+            body = await req.json();
+        } catch (error) {
+            return NextResponse.json({ message: "JSON invalide" }, { status: 400 });
+        }
+
+        const { teacherId, sessionId, date, notes, reason } = body;
+        const {absenceId} = await params
+
+        if (!absenceId) {
+            return NextResponse.json({ message: "ID de l'absence requis" }, { status: 400 });
+        }
+
+        //special case 1 : if this absence doesn't belong to this admin : 
+        const searchQuery = `SELECT D.admin_id 
+        FROM Absences A 
+        JOIN Teachers T ON A.teacher_id = T.teacher_id
+        JOIN Admins D ON T.admin_id = D.admin_id
+        WHERE A.absence_id = ?
+        `
+        const [adminOfAbsence] = await database.execute(searchQuery,[absenceId])
+        if (!adminOfAbsence.length) {
+            return Response.json({status : "FAILED", message : "Absence not found or its admin is unknown !"}, {status : 404})
+        }
+        if (adminOfAbsence[0].admin_id != authorizedAdminId) {
+            return Response.json({status : "FAILED", message : "Unauthorized ! This absence doesn't belong to this admin"}, {status : 401})
+        }
+
+        //special case 2 : if the entered teacher doesn't belong to this admin : 
+        const [adminOfTeacher] = await database.execute("SELECT admin_id FROM Teachers WHERE teacher_id = ?", [teacherId])
+        if (!adminOfTeacher.length) {
+            return Response.json({status : "FAILED", message : "Teacher doesn't exist or his admin is unknown !"}, {status : 404})
+        }
+        if (adminOfTeacher[0].admin_id != authorizedAdminId) {
+            return Response.json({status : "FAILED", message : "Unauthorized ! this teacher doesn't belong to this admin !"}, {status : 401})
+        }
+        //special case 3 : if the entered session doesn't belong to this admin : 
+        const [adminOfSession] = await database.execute("SELECT admin_id FROM Sessions WHERE session_id = ?", [sessionId])
+        if (!adminOfSession.length) {
+            return Response.json({status : "FAILED", message : "Session doesn't exist or its admin is unknown !"}, {status : 404})
+        }
+        if (adminOfSession[0].admin_id != authorizedAdminId) {
+            return Response.json({status : "FAILED", message : "Unauthorized ! this session doesn't belong to this admin"}, {status : 401})
+        }
+
+        if (!teacherId || !sessionId || !date) {
+            return NextResponse.json({ message: "teacherId et sessionId et date sont requis" }, { status: 400 });
+        }
+        const query = `UPDATE Absences SET teacher_id = ?, session_id = ?, date = ?, notes = ?, reason = ?, updated_at = NOW() WHERE absence_id = ?`;
+        const values = [teacherId, sessionId, date,  notes || "", reason || "", absenceId];
+
+        const [result] = await database.execute(query, values);
+        if (result.affectedRows === 0) {
+            return NextResponse.json({ message: "Absence non trouvée" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Absence mise à jour avec succès" }, { status: 200 });
+
+    } catch (error) {
+        console.error("Erreur updateAbsence:", error);
+        return NextResponse.json({ message: "Erreur serveur", error: error.message }, { status: 500 });
+    }
+}
+
