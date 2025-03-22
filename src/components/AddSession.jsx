@@ -15,14 +15,16 @@ export default function AddSession({ onClose }) {
     semester: "",
     teacherId: ""
   });
+ 
 
   const handleChange = (e) => {
     setSessionData({ ...sessionData, [e.target.name]: e.target.value });
   };
   const currentYear = new Date().getFullYear();
   const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
-  const { addSession, teachers } = useStore();
-
+  const { addSession, teachers  } = useStore();
+ 
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     addSession(sessionData);
@@ -72,8 +74,8 @@ export default function AddSession({ onClose }) {
           <select name="teacherId" value={sessionData.teacherId} onChange={handleChange} className="w-full p-2 border rounded">
             <option value="">Select a teacher</option>
             {teachers.map((teacher) => (
-              <option key={teacher.id} value={teacher.id}>
-                {teacher.familyName} {teacher.firstName}
+              <option key={teacher.teacher_id} value={teacher.teacher_id}>
+                {teacher.family_name} {teacher.first_name}
               </option>
             ))}
           </select>
@@ -83,7 +85,7 @@ export default function AddSession({ onClose }) {
           <label className="block text-sm font-medium text-gray-600">Type</label>
           <select name="type" value={sessionData.type} onChange={handleChange} className="w-full p-2 border rounded">
             <option value="">Select a type</option>
-            <option value="COURS">COURS</option>
+            <option value="COURS">Cours</option>
             <option value="TD">TD</option>
             <option value="TP">TP</option>
           </select>

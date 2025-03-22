@@ -11,6 +11,9 @@ export async function DELETE(req, {params}) {
         if (adminOfSession[0].admin_id != authorizedAdminId) {
             return Response.json({status : "FAILED", message : "Unauthorized ! can't delete a session that doesn't belong to you"}, {status : 401})
         }
+        if (!sessionId) {
+            return Response.json({ status: "FAILED", message: "Session ID is required!" }, { status: 400 });
+        }
         await database.execute("DELETE FROM Sessions WHERE session_id = ?",[sessionId])
         return Response.json({status : "SUCESS", message : "Session deleted successfully !"}, {status : 200})
     } catch(err) {
@@ -22,6 +25,7 @@ export async function PUT(req, {params}) {
     try {
         const authorizedAdminId = req.headers.get("x-admin-id")
         const {sessionId} = await params
+        
 
         const [session] = await database.execute("SELECT * FROM Sessions WHERE session_id = ?", [sessionId])
         if (!session.length) {
@@ -49,6 +53,7 @@ export async function PUT(req, {params}) {
         return Response.json({status : "SUCCESS", message : "Session updated successfully !"}, {status : 200})
 
     } catch(err) {
+       
         return Response.json({status : "FAILED", message : err.message}, {status : 500})
     }
 }

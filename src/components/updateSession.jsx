@@ -2,37 +2,50 @@ import useStore from "@/store/useStore";
 import { useState, useEffect } from "react";
 
 export default function UpdateSession({ session, onClose }) {
-  const [updatedSession, setUpdatedSession] = useState({ ...session });
+  const withCamelcase = { academicLevel: session.academic_level,
+    academicYear:session.academic_year ,
+    adminId:session.admin_id ,
+     classroom:session.classroom ,
+     createdAt:session.created_at ,
+     dayOfWeek:session.day_of_week ,
+     endTime:session.end_time ,
+     groupNumber:session.group_number ,
+     module:session.module,
+     semester:session.semester,
+     sessionId:session.session_id,
+     startTime:session.start_time,
+     teacherId:session.teacher_id,
+     type:session.type}
+  const [updatedSession, setUpdatedSession] = useState(withCamelcase);
   const [isModified, setIsModified] = useState(false);
 
-  useEffect(() => {
-    setUpdatedSession({ ...session });
-    setIsModified(false);
-  }, [session]);
+  
 
   const { teachers,  updateSession, deleteSession } = useStore();
   const currentYear = new Date().getFullYear();
   const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
   const handleChange = (e) => {
-    setUpdatedSession({ ...updatedSession, [e.target.name]: e.target.value });
+    setUpdatedSession({...updatedSession , [e.target.name]: e.target.value });
     setIsModified(true);
+    
   };
 
   const handleUpdate = (e) => {
     e.preventDefault();
     updateSession(updatedSession);
+    
     setIsModified(false);
   };
 
   const handleDelete = () => {
-    deleteSession(updatedSession.sessionId);
+    deleteSession(updatedSession.session_id);
     setIsModified(false);
     onClose();
   };
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg">
-    <h2 className="text-xl font-semibold text-gray-700 mb-4">Add a Session</h2>
+    <h2 className="text-xl font-semibold text-gray-700 mb-4">Update Session</h2>
 
     <form  className="grid grid-cols-3 gap-4">
       <div>
@@ -60,8 +73,8 @@ export default function UpdateSession({ session, onClose }) {
         <select name="teacherId" value={updatedSession.teacherId} onChange={handleChange} className="w-full p-2 border rounded">
           <option value="">Select a teacher</option>
           {teachers.map((teacher) => (
-            <option key={teacher.id} value={teacher.id}>
-              {teacher.familyName} {teacher.firstName}
+            <option key={teacher.teacher_id} value={teacher.teacher_id}>
+              {teacher.family_name} {teacher.first_name}
             </option>
           ))}
         </select>
@@ -71,7 +84,7 @@ export default function UpdateSession({ session, onClose }) {
         <label className="block text-sm font-medium text-gray-600">Type</label>
         <select name="type" value={updatedSession.type} onChange={handleChange} className="w-full p-2 border rounded">
           <option value="">Select a type</option>
-          <option value="COURS">COURS</option>
+          <option value="COURS">Cours</option>
           <option value="TD">TD</option>
           <option value="TP">TP</option>
         </select>
@@ -134,7 +147,7 @@ export default function UpdateSession({ session, onClose }) {
         </select>
       </div>
 
-        {/* Update & Delete Buttons */}
+
         <div className="col-span-2 flex justify-between mt-4">
           <button
             type="submit"

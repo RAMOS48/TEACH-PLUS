@@ -3,28 +3,38 @@
 import { useState } from "react";
 import  useStore  from "@/store/useStore";
 
-export default function ProfilTeacher() {
+export default function ProfilTeacher({teacher}) {
   const [isChanged, setIsChanged] = useState(false);
-const { teacher , updateTeacher , updateStateTeacher}=useStore();
+const { updateTeacher }=useStore();
+const onCamelCase = {
+  teacherId:teacher.teacher_id ,
+  email:teacher.email,
+  phoneNumber:teacher.phone_number,
+  familyName:teacher.family_name,
+  firstName : teacher.first_name,
+  extraHoursOutside: teacher.extra_hours_outside,
+}
+
+const [ updatedTeacher , setUpdatedTeacher ]= useState(onCamelCase)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setIsChanged(true);
-    updateStateTeacher({
-      ...teacher,  
+    setUpdatedTeacher({
+      ...updatedTeacher,  
       [name]: value,  
     });
   };
   const handleUpdate = () => {
     
     setIsChanged(false);
-    updateTeacher(teacher)
+    updateTeacher(updatedTeacher)
   };
 
   return (
     <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
       <div className="flex justify-center mb-4">
         <img
-          src={teacher.photo}
+          src={updatedTeacher.picture}
           alt="Teacher"
           className="w-24 h-24 object-cover rounded-full border"
         />
@@ -33,7 +43,7 @@ const { teacher , updateTeacher , updateStateTeacher}=useStore();
         <input
           type="text"
           name="firstName"
-          value={teacher.firstName}
+          value={updatedTeacher.firstName}
           onChange={handleChange}
           placeholder="First Name"
           className="w-full p-2 border rounded-md"
@@ -41,23 +51,31 @@ const { teacher , updateTeacher , updateStateTeacher}=useStore();
         <input
           type="text"
           name="familyName"
-          value={teacher.familyName}
+          value={updatedTeacher.familyName}
           onChange={handleChange}
           placeholder="Family Name"
           className="w-full p-2 border rounded-md"
         />
+         <input
+          type="number"
+          name="phoneNumber"
+          value={updatedTeacher.phoneNumber}
+          onChange={handleChange}
+          placeholder="Phone number"
+          className="w-full p-2 border rounded-md"
+        />
         <input
           type="text"
-          name="rank"
-          value={teacher.rank}
+          name="extraHoursOutside"
+          value={updatedTeacher.extraHoursOutside}
           onChange={handleChange}
-          placeholder="Rank"
+          placeholder="Extra ours outside"
           className="w-full p-2 border rounded-md"
         />
         <input
           type="email"
           name="email"
-          value={teacher.email}
+          value={updatedTeacher.email}
           onChange={handleChange}
           placeholder="Email"
           className="w-full p-2 border rounded-md"

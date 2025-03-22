@@ -7,12 +7,14 @@ import Modal from "@/components/Modal";
 import AddSession from "@/components/AddSession";
 
 export default function Schedule() {
-  const { sessions, getSessions } = useStore();
+  const { sessions, getSessions , getTeachers } = useStore();
   const [filterTimeTable, setFilterTimeTable] = useState({
     promo: "",
     semester: "",
-    year: "",
+    academicYear: "",
   });
+  const currentYear = new Date().getFullYear();
+  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
   const [ isOpenAddSession , setIsOpenAddSession] = useState(false);
 
   useEffect(() => {
@@ -26,14 +28,17 @@ export default function Schedule() {
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Type year here..."
-          onChange={(e) =>
-            setFilterTimeTable({ ...filterTimeTable, year: e.target.value })
-          }
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
+       
+        <select name="academicYear"  onChange={(e) =>
+            setFilterTimeTable({ ...filterTimeTable, academicYear: e.target.value })
+          } className="w-full p-2 border rounded" >
+          <option value="" disabled>Select academic year</option>
+        {academicYears.map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+            ))}
+          </select>
 
         <select
           onChange={(e) =>
@@ -59,7 +64,7 @@ export default function Schedule() {
           <option value="2cs">2CS</option>
           <option value="3cs">3CS</option>
         </select>
-        <button onClick={()=>{setIsOpenAddSession(true)}} className="w-full hover:cursor-pointer p-2 text-amber-50 bg-blue-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Add session</button>
+        <button onClick={()=>{setIsOpenAddSession(true); getTeachers()}} className="w-full hover:cursor-pointer p-2 text-amber-50 bg-blue-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Add session</button>
       </div>
 
       <div className="bg-gray-100 p-4 rounded-md shadow-inner">

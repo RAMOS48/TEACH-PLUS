@@ -3,7 +3,7 @@ import useStore from "@/store/useStore";
 import { useRef, useState , useEffect } from "react";
 
 export default function Ranks() {
-    const { historyRank, getRanks ,  addRank, updateRank, deleteRank, selectRank } = useStore();
+    const { historyRank ,  addRank, updateRank, deleteRank, selectRank } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
 
     const startingDate = useRef("");
@@ -32,13 +32,13 @@ export default function Ranks() {
             {historyRank.length == 0 && <div>no ranks</div>}
             {!updateForm && historyRank.length > 0 && 
                 historyRank.map((rank) => (
-                    <div key={rank.rankId}  className="p-4 mb-2 bg-white rounded-lg shadow-sm flex justify-between items-center">
-                        <div onClick={() => openUpdateForm(rank.rankId)} className="cursor-pointer">
-                            <div className="text-gray-700 font-semibold">{rank.startingDate}</div>
+                    <div key={rank.rank_id}  className="p-4 mb-2 bg-white rounded-lg shadow-sm flex justify-between items-center">
+                        <div onClick={() => openUpdateForm(rank.rank_id)} className="cursor-pointer">
+                            <div className="text-gray-700 font-semibold">{rank.starting_date}</div>
                             <div className="text-gray-900 font-bold">{rank.rank}</div>
                         </div>
                         <button 
-                            onClick={() => deleteRank()} 
+                            onClick={() => deleteRank(rank.rank_id)} 
                             className="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600"
                         >
                             Delete

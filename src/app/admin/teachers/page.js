@@ -6,7 +6,7 @@ import useStore from "@/store/useStore.js";
 import Modal from "@/components/Modal";
 
 export default function Teachers() {
-  const { filteredTeachers, getTeachers, searchTeacher, filterTeachers } = useStore();
+  const { filteredTeachers, getTeachers,teachers,  searchTeacher, filterTeachers } = useStore();
 
   const [query, setQuery] = useState("");
   const [openAdd, setOpenAdd] = useState(false);

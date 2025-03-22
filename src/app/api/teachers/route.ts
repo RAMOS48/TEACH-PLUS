@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {database} from '@/src/lib/mysql'; // Assure-toi que le chemin est correct
+import {database} from '@/lib/mysql'; // Assure-toi que le chemin est correct
 
 // 🔹 GET : Récupérer tous les enseignants
 export async function GET(req : NextRequest) {

@@ -1,5 +1,5 @@
 
-import {database} from "@/src/lib/mysql"
+import {database} from "@/lib/mysql"
 
 export async function GET(req : Request, context: { params: { id: string } }) {
   try {

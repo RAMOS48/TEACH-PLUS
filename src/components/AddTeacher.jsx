@@ -5,22 +5,21 @@ import  useStore  from "@/store/useStore";
 
 export default function AddTeacher() {
 const {  addTeacher }=useStore();
- const [ addedTeacher , setAddedTeacher] = useState ();
 
 
 
  const firstName=useRef();
  const familyName=useRef();
-
+ const phoneNumber=useRef();
  const email=useRef();
 
  const photo=useRef();
 
- const rank=useRef();
+ const extraOursOutside=useRef();
 
 
   const handleAdd = () => {
-    addTeacher({firstName:firstName.current.value , familyName:familyName.current.value , photo:photo.current.value , email:email.current.value , rank:rank.current.value});
+    addTeacher({firstName:firstName.current.value , familyName:familyName.current.value , phoneNumber:phoneNumber.current.value , picture:photo.current.value , email:email.current.value , extraOursOutside:extraOursOutside.current.value});
   };
 
   return (
@@ -55,10 +54,17 @@ const {  addTeacher }=useStore();
           className="w-full p-2 border rounded-md"
         />
         <input
-          ref={rank}
+          ref={extraOursOutside}
           type="text"
-          name="rank"
-          placeholder="Rank"
+          name="extraOursOutside"
+          placeholder="ExtraOursOutside"
+          className="w-full p-2 border rounded-md"
+        />
+        <input
+          ref={phoneNumber}
+          type="number"
+          name="phoneNumber"
+          placeholder="phoneNumber"
           className="w-full p-2 border rounded-md"
         />
         <input

@@ -1,17 +1,30 @@
 import { database } from "@/lib/mysql"
 
-export async function GET(req) {
+export async function POST(req) {
     try {
-        const { searchParams } = new URL(req.url)
-        const promo = searchParams.get("promo")
-        const academicYear = searchParams.get("academicYear")
-        const semester = searchParams.get("semester")
-        const [timetable] = await database.execute("SELECT * FROM Sessions WHERE academic_level = ? AND academic_year = ? AND semester = ?", [promo, academicYear, semester])
-        if (!timetable.length) {
-            return Response.json({status : "FAILED", message : "Timetable not found !"}, {status : 404})
+        const body = await req.json(); // Parse the request body
+        const { promo, academicYear, semester } = body; // Extract values
+
+        if (!promo || !academicYear || !semester) {
+            return Response.json({ status: "FAILED", message: "Missing required fields" }, { status: 400 });
         }
-        return Response.json({status : "SUCESS", message : "Timetable found successfully !", timetable : timetable}, {status : 200})
-    } catch(err) {
-        return Response.json({status : "FAILED", message : err.message}, {status : 500})
+
+        const [timetable] = await database.execute(
+            "SELECT * FROM Sessions WHERE academic_level = ? AND academic_year = ? AND semester = ?", 
+            [promo, academicYear, semester]
+        );
+
+        if (!timetable.length) {
+            return Response.json({ status: "FAILED", message: "Timetable not found!" }, { status: 404 });
+        }
+
+        return Response.json({ 
+            status: "SUCCESS", 
+            message: "Timetable found successfully!", 
+            timetable 
+        }, { status: 200 });
+
+    } catch (err) {
+        return Response.json({ status: "FAILED", message: err.message }, { status: 500 });
     }
 }

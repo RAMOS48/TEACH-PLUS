@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axios from "axios";
-import teacherTimeTable from "@/components/teacherTimeTable";
 const useStore = create((set , get) => ({
 
 // handle Admins 
@@ -25,21 +24,17 @@ reference :  PDF of Ayoub
 
 // handle Teachers .....................................................................
 
-  teachers: [{id:"0001" ,  firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
-  rank:"MCA"},
-  {id:"0002", firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
-    rank:"MCB"}],
+  teachers: [],
 
 
-    filteredTeachers: [{id:"0001" ,  firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
-      rank:"MCA"},
-      {id:"0002", firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
-        rank:"MCB"}],
+    filteredTeachers: [],
   getTeachers:  async () => {
     // work 
     try {
       const response = await axios.get(`http://localhost:3000/api/teachers`);
       set({ teachers: response.data });
+      
+      
       set({ filteredTeachers: response.data });
 
     } catch (error) {
@@ -73,6 +68,7 @@ reference :  PDF of Ayoub
       const response = await axios.get(`http://localhost:3000/api/teachers?name=${query}`);
       set({teachers: response.data});
       set({filteredTeachers: response.data});
+      
 
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -82,7 +78,9 @@ reference :  PDF of Ayoub
   addTeacher : async (addedTeacher) => {
     // work
     try {
-      const response = await axios.post(`http://localhost:3000/teachers/admins/${admin.id}`, addedTeacher );
+      
+      const response = await axios.post(`http://localhost:3000/api/teachers`, addedTeacher );
+      console.log("error :" ,response.message)
       
     } catch (error) {
       console.log("Error inserting teacher:", error);
@@ -91,8 +89,7 @@ reference :  PDF of Ayoub
 
 
   selectedTeacher: null,
-  teacher:{id:"0001" , email : "adf@gmail.com" ,  firstName:"nasro",familyName:"simoh",photo:"https://media.licdn.com/dms/image/C4D03AQGzVmIkm78BtA/profile-displayphoto-shrink_200_200/0/1532969415740?e=2147483647&v=beta&t=DsOd94JRP0u86NFuKyiA_0_qwgNqDBkyhwCj5AmCF1Q",
-    rank:"MCA"},
+  teacher:{},
   teacherTimeTable : [],
   // work
   selectTeacher: (teacher) => { set({ selectedTeacher: teacher } ) },
@@ -115,8 +112,8 @@ reference :  PDF of Ayoub
   updateTeacher : async (updatedTeacher) => {
     // work
     try {
-
-      const response = await axios.patch(`http://localhost:3000/api/teachers/${updatedTeacher.id}`, updatedTeacher );
+     const data = get();
+      const response = await axios.patch(`http://localhost:3000/api/teachers/${data.selectedTeacher}`, updatedTeacher );
       
     } catch (error) {
       console.log("Error updating teacher :", error);
@@ -127,31 +124,20 @@ reference :  PDF of Ayoub
     // work
     try {
   const data = get()
-      const response = await axios.delete(`http://localhost:3000/teachers/${data.selectedTeacher}` );
+      const response = await axios.delete(`http://localhost:3000/api/teachers/${data.selectedTeacher}` );
       
     } catch (error) {
       console.log("Error deleting teacher:", error);
     }
   },
-  teacherTimeTable:[{
-    sessionId: 1,
-    dayOfWeek: "Sun",
-    startTime: "08:00",
-    endTime: "09:00",  
-    type: "TD",   
-    module: "Math",
-    classroom: "salle A1",
-    groupNumber: "G1",
-    academicYear: "2024-2025",
-    academicLevel: "1CS",
-    semester: "S1"
-  }],
+  
 
   getTeacherTimeTable :  async () => {
     try {
       const data = get ();
       const response = await axios.get(`http://localhost:3000/api/timetable/${data.selectedTeacher}`);
-      set({ teacherTimeTable: response.data });
+      set({ teacherTimeTable: response.data.timeTable });
+      
     } catch (error) {
       console.log("Error fetching timeTable:", error);
     }
@@ -168,14 +154,15 @@ reference :  PDF of Ayoub
 // handle Absences  .................................................................
   
 
-  absences:[{absenceId:"00021",date:"kjjj",caughtUp:"true"},{absenceId:"00029",date:"kjjj",caughtUp:"true"}] ,
+  absences:[] ,
 
   getAbsences :  async () => {
     // work 
     try {
       const data = get()
       const response = await axios.get(`http://localhost:3000/api/absences?teacherId=${data.selectedTeacher}`);
-      set({ absences: response.data });
+      set({ absences: response.data.absences });
+
     } catch (error) {
       console.log("Error fetching absences:", error);
     }
@@ -211,7 +198,7 @@ reference :  PDF of Ayoub
   catchUpAbsence : async (absenceId) => {
     try {
       // work
-      const response = await axios.patch(`http://localhost:3000/api/catch_up_absence/${absenceId}`);
+      const response = await axios.put(`http://localhost:3000/api/catch_up_absence/${absenceId}`);
       
     } catch (error) {
       console.log("Error catching up absence:", error);
@@ -233,13 +220,14 @@ reference :  PDF of Ayoub
 
 
 
-  historyRank:[{rankId :"0101" , startingDate:"12/23/4324" , rank:"mcb"}] ,
+  historyRank:[] ,
   getRanks :  async () => {
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3000/api/ranks/${data.selectedTeacher}`);
-      set({ historyRank: response.data });
+      const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
+      set({ historyRank: response.data.ranksHistory });
+      
     } catch (error) {
       console.log("Error fetching ranks:", error);
     }
@@ -264,18 +252,18 @@ reference :  PDF of Ayoub
     // work 
     try {
       const data = get();
-      const response = await axios.patch(`http://localhost:3000/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
+      const response = await axios.put(`http://localhost:3000/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
       
     } catch (error) {
       console.log("Error updating rank", error);
     }
   },
-  deleteRank : async () => {
+  deleteRank : async (rankId) => {
     // work
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3000/api/ranks/${data.selectedRank}` );
+      const response = await axios.delete(`http://localhost:3000/api/ranks/${rankId}` );
       
     } catch (error) {
       console.log("Error deleting rank :", error);
@@ -288,27 +276,17 @@ reference :  PDF of Ayoub
 
 
 
-  sessions:[{
-    sessionId: 1,
-    dayOfWeek: "Sun",
-    startTime: "08:00",
-    endTime: "09:00",  
-    type: "Lecture",   
-    module: "Math",
-    classroom: "A1",
-    groupNumber: "G1",
-    academicYear: "2024-2025",
-    academicLevel: "Undergraduate",
-    semester: "Semester 1"
-  }
+  sessions:[
   ] ,
   getSessions :  async (filter) => {
     try {
       // work
-      const response = await axios.get(`http://localhost:3000/api/timetable`, filter);
-      set({ sessions: response.data });
+      const response = await axios.post(`http://localhost:3000/api/timetable`, filter);
+      set({ sessions: response.data.timetable });
+      
     } catch (error) {
       console.log("Error fetching sessions:", error);
+      set({ sessions: [] });
     }
   },
   addSession : async (addedSession) => {
@@ -321,13 +299,14 @@ reference :  PDF of Ayoub
     }
   },
 
-  selectedSession: {},
+  selectedSession: null,
   selectSession: (session) => set({ selectedSession: session }),
 
   updateSession : async (updatedSession) => {
     // work 
     try {
-      const response = await axios.patch(`http://localhost:3000/api/sessions/${updatedSession.sessionId}`, updatedSession );
+      const data = get();
+      const response = await axios.put(`http://localhost:3000/api/sessions/${data.selectedSession}`, updatedSession );
       
     } catch (error) {
       console.log("Error updating session:", error);
