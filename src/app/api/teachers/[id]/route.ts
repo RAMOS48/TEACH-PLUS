@@ -9,12 +9,18 @@ export async function GET(req : Request, context: { params: { id: string } }) {
     if (!rows.length) {
       return Response.json({status : "FAILED", message : "Teacher not found or doesn't belong to this admin !"}, {status : 400 })
     }
-    return Response.json(rows[0], {status : 200});
+    const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks) LIMIT 1;", [id])
+    if (rank.length) {
+      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : Object.assign({}, rows[0], rank[0])}, {status : 200})
+    }
+    else {
+      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : rows[0]}, {status : 200});
+    }
   } catch (error) {
     return Response.json({ error: "Database query failed" }, {status : 500});
   }
 }
-export async function PATCH(req : Request, context : {params : {id : string}}) {
+export async function PUT(req : Request, context : {params : {id : string}}) {
   try {
     const authorizedAdminId = req.headers.get("x-admin-id")
     const {id} = await context.params;
@@ -59,8 +65,28 @@ export async function DELETE(req : Request, context : {params : {id : string}}) 
     if (adminOfTeacher[0].admin_id != authorizedAdminId) {
       return Response.json({status : "FAILED", message : "Unauthorized ! this teacher doesn't belong to this admin"})
     }
+    await database.execute("DELETE FROM Sessions WHERE teacher_id = ?", [id])
+    await database.execute("DELETE FROM Absences WHERE teacher_id = ?", [id])
+    await database.execute("DELETE FROM Ranks WHERE teacher_id = ?", [id])
     await database.execute("DELETE FROM Teachers WHERE teacher_id = ?", [id])
     return Response.json({status : "SUCCESS", message : "Teacher deleted successfully"})
+  } catch(err) {
+    return Response.json({status : "FAILED", message : err.message}, {status : 500})
+  }
+}
+export async function PATCH(req : Request, context : {params : {id : string}}) {
+  try {
+    const authorizedAdminId = req.headers.get("x-admin-id")
+    const {id} = await context.params
+    const [adminOfTeacher]: any = await database.execute("SELECT admin_id FROM Teachers WHERE teacher_id = ?", [id])
+    if (!adminOfTeacher.length) {
+      return Response.json({status : "FAILED", message : "Teacher not found or his admin is unknown !"}, {status : 404})
+    }
+    if (adminOfTeacher[0].admin_id != authorizedAdminId) {
+      return Response.json({status : "FAILED", message : "Unauthorized ! this teacher doesn't belong to this admin"})
+    }
+    await database.execute("UPDATE Teachers SET is_active = false WHERE teacher_id = ?", [id])
+    return Response.json({status : "SUCCESS", message : "Teacher deleted logically !"}, {status : 200})
   } catch(err) {
     return Response.json({status : "FAILED", message : err.message}, {status : 500})
   }
