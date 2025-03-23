@@ -65,9 +65,15 @@ export async function DELETE(req : Request, context : {params : {id : string}}) 
     if (adminOfTeacher[0].admin_id != authorizedAdminId) {
       return Response.json({status : "FAILED", message : "Unauthorized ! this teacher doesn't belong to this admin"})
     }
-    await database.execute("DELETE FROM Sessions WHERE teacher_id = ?", [id])
-    await database.execute("DELETE FROM Absences WHERE teacher_id = ?", [id])
     await database.execute("DELETE FROM Ranks WHERE teacher_id = ?", [id])
+    await database.execute("DELETE FROM Absences WHERE teacher_id = ?", [id])
+    const [sessions] = await database.execute("SELECT session_id FROM Sessions WHERE teacher_id = ?", [id])
+    if (sessions.length) {
+      sessions.forEach(async (session: {session_id: any}) => {
+        await database.execute("DELETE FROM Absences WHERE session_id = ?", [session.session_id])
+      })
+    }
+    await database.execute("DELETE FROM Sessions WHERE teacher_id = ?", [id])
     await database.execute("DELETE FROM Teachers WHERE teacher_id = ?", [id])
     return Response.json({status : "SUCCESS", message : "Teacher deleted successfully"})
   } catch(err) {

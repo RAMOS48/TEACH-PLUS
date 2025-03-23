@@ -71,7 +71,14 @@ export async function POST(req) {
         if (adminOfSession[0].admin_id != authorizedAdminId) {
             return Response.json({status : "FAILED", message : "Unauthorized ! this session doesn't belong to this admin"}, {status : 401})
         }
-
+        //special case 3 : if the entered session belongs to another teacher rather than the entered teacher
+        const [teacherOfSession] = await database.execute("SELECT teacher_id FROM Sessions WHERE session_id = ?", [sessionId])
+        if (!teacherOfSession.length) {
+            return Response.json({status : "FAILED", message : "Session doesn't exist or its teacher is unknown !"}, {status : 404})
+        }
+        if (teacherOfSession[0].teacher_id != teacherId) {
+            return Response.json({status : "FAILED", message : "This session dosn't belong to this teacher !"}, {status : 400})
+        }
         const query = `INSERT INTO Absences (teacher_id, session_id, date, notes, reason, created_at) VALUES (?, ?, ?, ?, ?, CURRENT_DATE)`;
         const values = [teacherId, sessionId, date,  notes || "", reason || ""];
 
