@@ -1,12 +1,151 @@
 import { create } from "zustand";
 import axios from "axios";
 import teacherTimeTable from "@/components/teacherTimeTable";
-const useStore = create((set , get) => ({
+import Cookies from "js-cookie";
+
+  const useStore = create((set , get) => ({
 
 // handle Admins 
 
 // here [esma] define admin APIs for
+user: null,
+  token: Cookies.get("session") || null,
+  isLoading: false,
+  error: null,
 
+  //  Login
+  login: async (email, password) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axios.post("/api/auth/login", { email, password });
+      const { token, userData } = res.data;
+
+      // Store token in cookies (expires in 7 days)
+      Cookies.set("session", token, { expires: 7 });
+
+      set({ user: userData, token });
+    } catch (err) {
+      set({ error: err.response?.data?.message || "Login failed" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Logout
+  
+  logout: async () => {
+    try {
+      await axios.delete("/api/auth/logout"); // Change to DELETE
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      //  Remove token from cookies and reset state
+      Cookies.remove("session");
+      set({ user: null, token: null });
+    
+    }
+  },
+
+  //  Get Admin Info
+  getAdmin: async (adminId) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = get().token;
+      if (!token) throw new Error("No token found");
+
+      const res = await axios.get(`/api/auth/${adminId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      set({ user: res.data.admin });
+    } catch (error) {
+      set({ error: error.response?.data?.message || "Failed to fetch admin data" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  //  Refresh Token (After 7 Days)
+  refreshToken: async () => {
+    try {
+      const res = await axios.post("/api/auth/login");
+      const { token, userData } = res.data;
+
+      // Update token and state
+      Cookies.set("session", token, { expires: 7 });
+      set({ user: userData, token });
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      get().logout(); // Logout on token refresh failure
+    }
+  },
+  //delete account 
+  deleteAccount: async () => {
+    try {
+      const token = get().token;
+      if (!token) throw new Error("No token found");
+
+      await axios.delete("/api/auth/delete", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // After deletion, clear state and remove token
+      Cookies.remove("session");
+      set({ user: null, token: null });
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      set({ error: error.response?.data?.message || "Failed to delete account" });
+    }
+  },
+   //  Update Profile
+   updateProfile: async (updatedData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const token = get().token;
+      if (!token) throw new Error("No token found");
+
+      const res = await axios.put("/api/auth/update-profile", updatedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Update state with new user data
+      set({ user: res.data.admin });
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      set({ error: error.response?.data?.message || "Failed to update profile" });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+   // Forgot Password
+   forgotPassword: async (email) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axios.post('/api/auth/forgot-password', { email });
+      console.log(res.data.message);
+      alert(res.data.message); // Display success message
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to send reset link' });
+      alert(err.response?.data?.message || 'Failed to send reset link');
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Reset Password
+  resetPassword: async (token, newPassword) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axios.post('/api/auth/reset-password', { token, newPassword });
+      console.log(res.data.message);
+      alert(res.data.message); // Display success message
+    } catch (err) {
+      set({ error: err.response?.data?.message || 'Failed to reset password' });
+      alert(err.response?.data?.message || 'Failed to reset password');
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 /*
 
 .login 
@@ -21,6 +160,7 @@ const useStore = create((set , get) => ({
 reference :  PDF of Ayoub
 
 */ 
+
 
 
 // handle Teachers .....................................................................
@@ -343,10 +483,15 @@ reference :  PDF of Ayoub
     }
   },
 
-  
 
 
-  
+
+ 
 }));
+
+
+
+  
+
 
 export default useStore;

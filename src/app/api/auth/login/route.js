@@ -11,6 +11,7 @@ export async function POST(req) {
     }
     const [admin] = await database.execute("SELECT * FROM Admins WHERE email = ?", [email])
 
+
     if (!admin.length) {
       return Response.json({status : "FAILED", message : "Admin not found !"}, {status : 404})
     }
