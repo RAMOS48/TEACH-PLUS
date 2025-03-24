@@ -1,6 +1,5 @@
 import { jwtVerify, SignJWT } from "jose";
 import { NextResponse } from "next/server";
-import useStore from "./store/useStore";
 export default async function middleware(req) {
   try {
     const path = req.nextUrl.pathname;
@@ -16,8 +15,6 @@ export default async function middleware(req) {
     const { payload } = await jwtVerify(cookie, encodedKey, { algorithms: ["HS256"] });
 
     if (path === "/") {
-      const {getAdmin} =useStore();
-    getAdmin(payload.adminId)
       return NextResponse.redirect(new URL("/admin/dashboard", req.url));
     }
 
@@ -44,7 +41,7 @@ export default async function middleware(req) {
     });
 
     return response;
-    
+
   } catch (err) {
     console.error("JWT Middleware Error:", err.message);
     return NextResponse.redirect(new URL("/", req.url));
