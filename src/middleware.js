@@ -1,14 +1,10 @@
-import { jwtVerify } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 import { NextResponse } from "next/server";
 
 export default async function middleware(req) {
   try {
     const path = req.nextUrl.pathname;
-
-    // ✅ Récupération du cookie correctement
     const cookie = req.cookies.get("session")?.value;
-
-    // ✅ Si le cookie est absent, rediriger les utilisateurs non authentifiés
     if (!cookie) {
       if (path.startsWith("/admin")) {
         return NextResponse.redirect(new URL("/", req.url));
@@ -16,28 +12,43 @@ export default async function middleware(req) {
       return NextResponse.next();
     }
 
-    // ✅ Vérifier le JWT
     const encodedKey = new TextEncoder().encode(process.env.SESSION_SECRET);
     const { payload } = await jwtVerify(cookie, encodedKey, { algorithms: ["HS256"] });
 
-    // ✅ Si l'utilisateur est connecté et accède à "/", rediriger vers /admin
     if (path === "/") {
       return NextResponse.redirect(new URL("/admin/timetable", req.url));
     }
 
-    // ✅ Ajouter l'adminId dans les headers de la requête
+    const currentTime = Math.floor(Date.now() / 1000);
+    const newExpiry = currentTime + 7 * 24 * 60 * 60;
+    const expiresIn = newExpiry - currentTime;
+
+    const newToken = await new SignJWT({ adminId: payload.adminId })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime(newExpiry)
+      .sign(encodedKey);
+
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-admin-id", payload.adminId);
+    requestHeaders.set("x-session-expires-in", expiresIn.toString());
 
-    return NextResponse.next({ request: { headers: requestHeaders } });
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
 
+    response.cookies.set("session", newToken, {
+      httpOnly: true,
+      secure: true,
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return response;
+    
   } catch (err) {
     console.error("JWT Middleware Error:", err.message);
-    return NextResponse.redirect(new URL("/", req.url)); // Rediriger vers la page de connexion en cas d'erreur
+    return NextResponse.redirect(new URL("/", req.url));
   }
 }
 
-// ✅ Appliquer le middleware uniquement aux routes sensibles
 export const config = {
-  matcher: ["/:path*"], // Le middleware s'exécute uniquement sur /admin et ses sous-pages
+  matcher: ["/:path*"],
 };

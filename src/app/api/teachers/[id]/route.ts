@@ -9,13 +9,8 @@ export async function GET(req : Request, context: { params: { id: string } }) {
     if (!rows.length) {
       return Response.json({status : "FAILED", message : "Teacher not found or doesn't belong to this admin !"}, {status : 400 })
     }
-    const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks) LIMIT 1;", [id])
-    if (rank.length) {
-      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : Object.assign({}, rows[0], rank[0])}, {status : 200})
-    }
-    else {
-      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : rows[0]}, {status : 200});
-    }
+
+    return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : rows[0]}, {status : 200});
   } catch (error) {
     return Response.json({ error: "Database query failed" }, {status : 500});
   }
@@ -65,9 +60,15 @@ export async function DELETE(req : Request, context : {params : {id : string}}) 
     if (adminOfTeacher[0].admin_id != authorizedAdminId) {
       return Response.json({status : "FAILED", message : "Unauthorized ! this teacher doesn't belong to this admin"})
     }
-    await database.execute("DELETE FROM Sessions WHERE teacher_id = ?", [id])
-    await database.execute("DELETE FROM Absences WHERE teacher_id = ?", [id])
     await database.execute("DELETE FROM Ranks WHERE teacher_id = ?", [id])
+    await database.execute("DELETE FROM Absences WHERE teacher_id = ?", [id])
+    const [sessions] = await database.execute("SELECT session_id FROM Sessions WHERE teacher_id = ?", [id])
+    if (sessions.length) {
+      sessions.forEach(async (session: {session_id: any}) => {
+        await database.execute("DELETE FROM Absences WHERE session_id = ?", [session.session_id])
+      })
+    }
+    await database.execute("DELETE FROM Sessions WHERE teacher_id = ?", [id])
     await database.execute("DELETE FROM Teachers WHERE teacher_id = ?", [id])
     return Response.json({status : "SUCCESS", message : "Teacher deleted successfully"})
   } catch(err) {

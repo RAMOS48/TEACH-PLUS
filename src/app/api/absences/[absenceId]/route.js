@@ -40,11 +40,19 @@ export async function PATCH(req, {params}) {
             return NextResponse.json({ message: "JSON invalide" }, { status: 400 });
         }
 
-        const { teacherId, sessionId, date, notes, reason } = body;
+        let { teacherId, sessionId, date, notes, reason } = body;
         const {absenceId} = await params
+        const [absence] = await database.execute("SELECT * FROM Absences WHERE absence_id = ?", [absenceId])
 
         if (!absenceId) {
             return NextResponse.json({ message: "ID de l'absence requis" }, { status: 400 });
+        }
+        if (!absence.length) {
+            return NextResponse.json({status : "FAILED", message : "Absence not found !"}, {status : 404})
+        }
+        teacherId = teacherId || absence[0].teacher_id
+        if (!sessionId || !date) {
+            return NextResponse.json({ message: "teacherId et sessionId et date sont requis" }, { status: 400 });
         }
 
         //special case 1 : if this absence doesn't belong to this admin : 
@@ -78,10 +86,15 @@ export async function PATCH(req, {params}) {
         if (adminOfSession[0].admin_id != authorizedAdminId) {
             return Response.json({status : "FAILED", message : "Unauthorized ! this session doesn't belong to this admin"}, {status : 401})
         }
-
-        if (!teacherId || !sessionId || !date) {
-            return NextResponse.json({ message: "teacherId et sessionId et date sont requis" }, { status: 400 });
+        //special case 4 : if the entered session belongs to another teacher rather than the entered teacher
+        const [teacherOfSession] = await database.execute("SELECT teacher_id FROM Sessions WHERE session_id = ?", [sessionId])
+        if (!teacherOfSession.length) {
+            return Response.json({status : "FAILED", message : "Session doesn't exist or its teacher is unknown !"}, {status : 404})
         }
+        if (teacherOfSession[0].teacher_id != teacherId) {
+            return Response.json({status : "FAILED", message : "This session dosn't belong to this teacher !"}, {status : 400})
+        }
+
         const query = `UPDATE Absences SET teacher_id = ?, session_id = ?, date = ?, notes = ?, reason = ?, updated_at = NOW() WHERE absence_id = ?`;
         const values = [teacherId, sessionId, date,  notes || "", reason || "", absenceId];
 

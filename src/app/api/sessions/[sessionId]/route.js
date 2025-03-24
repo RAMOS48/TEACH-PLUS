@@ -14,6 +14,7 @@ export async function DELETE(req, {params}) {
         if (!sessionId) {
             return Response.json({ status: "FAILED", message: "Session ID is required!" }, { status: 400 });
         }
+        await database.execute("DELETE FROM Absences WHERE session_id = ?", [sessionId])
         await database.execute("DELETE FROM Sessions WHERE session_id = ?",[sessionId])
         return Response.json({status : "SUCESS", message : "Session deleted successfully !"}, {status : 200})
     } catch(err) {

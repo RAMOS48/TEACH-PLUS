@@ -24,8 +24,9 @@ export async function PATCH(req, { params }) {
         if (adminOfAbsence[0].admin_id != authorizedAdminId) {
             return Response.json({status : "FAILED", message : "Unauthorized ! This absence doesn't belong to this admin"}, {status : 401})
         }
-        const query = `UPDATE Absences SET caught_up = TRUE, updated_at = NOW() WHERE absence_id = ?`;
-        const [result] = await database.execute(query, [id]);
+        const [previousCaughtUp] = await database.execute("SELECT caught_up FROM Absences WHERE absence_id = ?", [id])
+        const query = `UPDATE Absences SET caught_up = ?, updated_at = NOW() WHERE absence_id = ?`;
+        const [result] = await database.execute(query, [!previousCaughtUp[0].caught_up, id]);
 
         if (result.affectedRows === 0) {
             return NextResponse.json({ message: "Absence non trouvée" }, { status: 404 });

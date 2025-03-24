@@ -14,7 +14,7 @@ export async function POST(req) {
         if (adminOfTeacher[0].admin_id != authorizedAdminId) {
             return Response.json({status : "FAILED", message : "Unauthorized ! This teacher doesn't belong to this admin"}, {status : 401})
         }
-        await database.execute("INSERT INTO Ranks(teacher_id, starting_date, rank, created_at) VALUES (?, ?, ?, CURRENT_DATE)", [teacherId, startingDate, rank])
+        await database.execute("INSERT INTO Ranks(teacher_id, starting_date, rank, created_at) VALUES (?, ?, ?, NOW())", [teacherId, startingDate, rank])
         return Response.json({status : "SUCCESS", message : "Rank added successfully !"}, {status : 200})
     } catch(err) {
         return Response.json({status : "FAILED", message : err.message}, {status : 500})

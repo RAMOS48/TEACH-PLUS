@@ -37,7 +37,7 @@ export async function POST(req) {
         // Insert session
         const insertionQuery = `
             INSERT INTO Sessions(admin_id, teacher_id, day_of_week, start_time, end_time, type, module, classroom, group_number, academic_year, academic_level, semester, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         `;
         await database.execute(insertionQuery, [
             authorizedAdminId, teacherId, dayOfWeek, startTime, endTime, type, module, classroom, groupNumber, academicYear, academicLevel, semester
