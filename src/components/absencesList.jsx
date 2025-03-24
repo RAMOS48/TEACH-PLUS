@@ -12,14 +12,21 @@ import { useRef, useState , useEffect } from "react";
 
 
 
-export default function Ranks() {
-    const { absences ,selectedTeacher  , teacherTimeTable , markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
+export default function AbsenceList() {
+    const { absences ,selectedTeacher  , getAbsences , teacherTimeTable , markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
     const [updateForm, setUpdateForm] = useState(false);
+
 
     const date = useRef("");
     const selectedSession = useRef("");
+    const notes = useRef("");
+    const reason = useRef("");
     const newDate = useRef("");
     const newSelectedSession = useRef("");
+    const newNotes = useRef("");
+    const newReason = useRef("");
+
+    
 
     const openUpdateForm = (absenceId) => {
         setUpdateForm(!updateForm);
@@ -33,9 +40,13 @@ export default function Ranks() {
         updateAbsence({
             date: newDate.current.value,
             sessionId: newSelectedSession.current.value,
+            reason:newReason.current.value,
+            notes:newNotes.current.value
             
         });
         setUpdateForm(false);
+
+        
     };
 
     return (
@@ -44,17 +55,21 @@ export default function Ranks() {
                 absences.map((absence) => (
                     <div key={absence.absence_id} className="bg-amber-200 p-4 my-2 rounded-lg shadow-md">
                         <div onClick={() => openUpdateForm(absence.absence_id)} className="cursor-pointer">
-                            <div className="font-semibold">{absence.date}</div>
-                            <div className="text-sm text-gray-600">{absence.caught_up}</div>
+                            <div className="font-semibold p-2">{absence.date}</div>
+                            <div className="text-sm p-2 text-gray-600">{absence.caught_up}</div>
+                            <div className="text-sm p-2 text-gray-600">{absence.reason}</div>
+                            <div className="text-sm p-2 text-gray-600">{absence.notes}</div>
                         </div>
                         <button 
-                            onClick={() => catchUpAbsence(absence.absence_id)}
+                            onClick={() => {catchUpAbsence(absence.absence_id);
+                                }}
                             className="mt-2 bg-red-300 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                         >
                             Catch up 
                         </button>
                         <button 
-                            onClick={() => deleteAbsence(absence.absence_id)}
+                            onClick={() => { deleteAbsence(absence.absence_id);
+                            }}
                             className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                         >
                             Delete Absence
@@ -74,27 +89,40 @@ export default function Ranks() {
               <option key={session.session_id} value={session.session_id}>{session.day_of_week}_{session.start_time}</option>
             ))}
                     </select>
+                    <label className="block font-semibold"> Reason : </label>
+                    <input type="text" ref={newReason} className="border p-2 rounded w-full"/>
+                    <label className="block font-semibold"> Notes : </label>
+                    <input type="text" ref={newNotes} className="border p-2 rounded w-full"/>
                     <button type="submit" className="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Confirm</button>
                 </form>
             )}
 
             {!updateForm && (
                 <div className="bg-white p-4 rounded-lg shadow-md mt-4">
+                    <form>
+                    <label className="block font-semibold"> Select date : </label>
                     <input ref={date} type="date" className="border p-2 rounded w-full" />
+                    <label className="block font-semibold"> Select Session : </label>
                     <select ref={selectedSession} className="border p-2 rounded w-full mt-2">
                     <option value="" disabled>Select session</option>
             {teacherTimeTable.map((session) => (
               <option key={session} value={session.session_id}>{session.day_of_week}_{session.start_time}</option>
             ))}
                     </select>
+                    <label className="block font-semibold"> Reason : </label>
+                    <input type="text" ref={reason} className="border p-2 rounded w-full"/>
+                    <label className="block font-semibold"> Notes : </label>
+                    <input type="text" ref={notes} className="border p-2 rounded w-full"/>
                     <button 
                         onClick={() => {
-                            markAbsence({teacherId :selectedTeacher , date: date.current.value, sessionId: selectedSession.current.value });
+                            markAbsence({teacherId :selectedTeacher , date: date.current.value, sessionId: selectedSession.current.value , reason:reason.current.value , notes:notes.current.value });
+                            
                         }}
                         className="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
                     >
                         Add Absence
                     </button>
+                    </form>
                 </div>
             )}
         </div>

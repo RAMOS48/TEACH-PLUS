@@ -69,10 +69,10 @@ const TeacherCard = ({ teacherData }) => {
     <div className="relative bg-gray-100 p-6 rounded-xl shadow-md w-64 text-center">
       <div className="flex flex-col items-center">
         <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center">
-          <img className="rounded-4xl" src={teacherData.picture} alt={teacherData.family_name} />
+          <img className="rounded-4xl" src={teacherData.picture?teacherData.picture:" "} alt={teacherData.family_name} />
         </div>
         <h2 className="text-xl font-semibold mt-2">{teacherData.family_name}{" "}{teacherData.first_name}</h2>
-        <p className="text-gray-600">rank here {teacherData.rank}</p>
+        <p className="text-gray-600"> {teacherData.is_active?"active":"not active"}</p>
       </div>
 
       <button className="absolute top-4 right-4 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -99,10 +99,10 @@ const TeacherCard = ({ teacherData }) => {
       )}
 
       <Modal isOpen={isModalOpen[0]} onClose={() => setIsModalOpen([false, ""])}>
-        {isModalOpen[1]=="absences" && <Absences/>}
-        {isModalOpen[1]=="profil" && <ProfilTeacher teacher={teacherData}/>}
-        {isModalOpen[1]=="ranks" && <Ranks/>}
-        {isModalOpen[1]=="delete" && <DeleteTeacher />}
+        {isModalOpen[1]=="absences" && <Absences onClose={() => setIsModalOpen([false, ""])}/>}
+        {isModalOpen[1]=="profil" && <ProfilTeacher teacher={teacherData} onClose={() => setIsModalOpen([false, ""])}/>}
+        {isModalOpen[1]=="ranks" && <Ranks onClose={() => setIsModalOpen([false, ""])}/>}
+        {isModalOpen[1]=="delete" && <DeleteTeacher onClose={() => setIsModalOpen([false, ""])}/>}
 
       </Modal>
     </div>

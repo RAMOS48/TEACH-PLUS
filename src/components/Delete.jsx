@@ -2,12 +2,13 @@
 
 import useStore from "@/store/useStore";
 
-export default function DeleteTeacher() {
+export default function DeleteTeacher({onClose}) {
     const { deleteTeacher, selectTeacher } = useStore();
 
     const handleDelete = () => {
         deleteTeacher();
         selectTeacher(null);
+        onClose();
     };
 
     return (

@@ -18,13 +18,13 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return (
     <div
-        id="modal-overlay"
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      id="modal-overlay"
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
     >
-        <div className="bg-white p-4 rounded-md  shadow-lg relative z-50">
-            <button onClick={onClose} className="absolute top-2 right-2 text-lg">✖</button>
-            <div>{children}</div>
-        </div>
+      <div className="bg-white p-4 rounded-md shadow-lg relative z-50 w-8/12 h-8/12 overflow-y-auto">
+        <button onClick={onClose} className="absolute top-2 right-2 text-lg">✖</button>
+        <div>{children}</div>
+      </div>
     </div>
   );
 };

@@ -1,12 +1,7 @@
 
-export default function Login() {
+import { redirect } from "next/navigation";
 
-// login page here 
+export default function AdminPage() {
+  redirect("/admin/dashboard");
 
-
-  return (
-    <div className="">
-     Login page
-    </div>
-  );
 }

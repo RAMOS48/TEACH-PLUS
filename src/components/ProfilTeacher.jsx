@@ -1,92 +1,118 @@
 "use client";
 
 import { useState } from "react";
-import  useStore  from "@/store/useStore";
+import useStore from "@/store/useStore";
 
-export default function ProfilTeacher({teacher}) {
+export default function ProfileTeacher({ teacher, onClose }) {
   const [isChanged, setIsChanged] = useState(false);
-const { updateTeacher }=useStore();
-const onCamelCase = {
-  teacherId:teacher.teacher_id ,
-  email:teacher.email,
-  phoneNumber:teacher.phone_number,
-  familyName:teacher.family_name,
-  firstName : teacher.first_name,
-  extraHoursOutside: teacher.extra_hours_outside,
-}
+  const { updateTeacher, uploidImage } = useStore();
 
-const [ updatedTeacher , setUpdatedTeacher ]= useState(onCamelCase)
+  const initialTeacher = {
+    teacherId: teacher.teacher_id,
+    email: teacher.email,
+    phoneNumber: teacher.phone_number,
+    dateOfBirth: teacher.date_of_birth,
+    familyName: teacher.family_name,
+    firstName: teacher.first_name,
+    extraHoursOutside: teacher.extra_hours_outside,
+    isActive: teacher.is_active,
+    bio: teacher.bio,
+    picture: teacher.picture,
+  };
+
+  const [updatedTeacher, setUpdatedTeacher] = useState(initialTeacher);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setIsChanged(true);
-    setUpdatedTeacher({
-      ...updatedTeacher,  
-      [name]: value,  
-    });
+    setUpdatedTeacher((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const imageUrl = await uploidImage(file);
+        setUpdatedTeacher((prev) => ({ ...prev, picture: imageUrl }));
+        setIsChanged(true);
+      } catch (error) {
+        console.error("Image upload failed:", error);
+      }
+    }
+  };
+
   const handleUpdate = () => {
-    
+    if (!isChanged) return;
     setIsChanged(false);
-    updateTeacher(updatedTeacher)
+    updateTeacher(updatedTeacher);
+    onClose();
   };
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg">
-      <div className="flex justify-center mb-4">
-        <img
-          src={updatedTeacher.picture}
-          alt="Teacher"
-          className="w-24 h-24 object-cover rounded-full border"
-        />
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-lg flex flex-col min-h-screen">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-3 flex justify-center mb-4">
+          <img
+            src={updatedTeacher.picture || "/default-avatar.png"}
+            alt="Teacher"
+            className="w-24 h-24 object-cover rounded-full border"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">First Name</label>
+          <input type="text" name="firstName" value={updatedTeacher.firstName} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Family Name</label>
+          <input type="text" name="familyName" value={updatedTeacher.familyName} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Date of Birth</label>
+          <input type="date" name="dateOfBirth" value={updatedTeacher.dateOfBirth} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Phone Number</label>
+          <input type="number" name="phoneNumber" value={updatedTeacher.phoneNumber} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Photo</label>
+          <input type="file" name="picture" onChange={handleFileChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Extra Hours Outside</label>
+          <input type="text" name="extraHoursOutside" value={updatedTeacher.extraHoursOutside} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Status</label>
+          <select name="isActive" value={updatedTeacher.isActive} onChange={handleChange} className="w-full p-2 border rounded-md">
+            <option value={0}>Not Active</option>
+            <option value={1}>Active</option>
+          </select>
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Email</label>
+          <input type="email" name="email" value={updatedTeacher.email} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
+        
+        <div className="space-y-2">
+          <label className="block text-gray-700">Bio</label>
+          <textarea name="bio" value={updatedTeacher.bio} onChange={handleChange} className="w-full p-2 border rounded-md" />
+        </div>
       </div>
-      <div className="space-y-2">
-        <input
-          type="text"
-          name="firstName"
-          value={updatedTeacher.firstName}
-          onChange={handleChange}
-          placeholder="First Name"
-          className="w-full p-2 border rounded-md"
-        />
-        <input
-          type="text"
-          name="familyName"
-          value={updatedTeacher.familyName}
-          onChange={handleChange}
-          placeholder="Family Name"
-          className="w-full p-2 border rounded-md"
-        />
-         <input
-          type="number"
-          name="phoneNumber"
-          value={updatedTeacher.phoneNumber}
-          onChange={handleChange}
-          placeholder="Phone number"
-          className="w-full p-2 border rounded-md"
-        />
-        <input
-          type="text"
-          name="extraHoursOutside"
-          value={updatedTeacher.extraHoursOutside}
-          onChange={handleChange}
-          placeholder="Extra ours outside"
-          className="w-full p-2 border rounded-md"
-        />
-        <input
-          type="email"
-          name="email"
-          value={updatedTeacher.email}
-          onChange={handleChange}
-          placeholder="Email"
-          className="w-full p-2 border rounded-md"
-        />
-        <button
-          onClick={handleUpdate}
-          disabled={!isChanged}
-          className={`w-full p-2 text-white rounded-md ${
-            isChanged ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-300 cursor-not-allowed"
-          }`}
-        >
+      
+      <div className="mt-auto">
+        <button onClick={handleUpdate} disabled={!isChanged} className={`w-full p-2 text-white rounded-md ${isChanged ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-300 cursor-not-allowed"}`}>
           Confirm Update
         </button>
       </div>

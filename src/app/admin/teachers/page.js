@@ -62,12 +62,12 @@ export default function Teachers() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTeachers.map((teacher) => (
-          <div key={teacher.id} className="p-4 bg-white shadow rounded-lg">
+          <div key={teacher.teacher_id} className="p-4 bg-white shadow rounded-lg">
             <TeacherCard teacherData={teacher} />
           </div>
         ))}
       </div>
-      { openAdd && <Modal isOpen={openAdd} onClose={() => setOpenAdd(false)}> <AddTeacher /></Modal>} 
+      { openAdd && <Modal isOpen={openAdd} onClose={() => setOpenAdd(false)}> <AddTeacher onClose={() => setOpenAdd(false)} /></Modal>} 
     </div>
   );
 }

@@ -38,7 +38,7 @@ export default function UpdateSession({ session, onClose }) {
   };
 
   const handleDelete = () => {
-    deleteSession(updatedSession.session_id);
+    deleteSession(updatedSession.sessionId);
     setIsModified(false);
     onClose();
   };

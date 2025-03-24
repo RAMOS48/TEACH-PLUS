@@ -68,9 +68,9 @@ export default function Schedule() {
       </div>
 
       <div className="bg-gray-100 p-4 rounded-md shadow-inner">
-        <Shedule sessions={sessions} />
+        <Shedule sessions={sessions}   />
       </div>
-      {isOpenAddSession && <Modal isOpen={isOpenAddSession} onClose={() => setIsOpenAddSession(false)}> <AddSession onClose={() => setIsOpenAddSession(false)}/> </Modal>}
+      {isOpenAddSession && <Modal isOpen={isOpenAddSession} onClose={() => setIsOpenAddSession(false)}> <AddSession  onClose={() => setIsOpenAddSession(false)}/> </Modal>}
     </div>
   );
 }
