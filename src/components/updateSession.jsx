@@ -1,5 +1,5 @@
 import useStore from "@/store/useStore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function UpdateSession({ session, onClose }) {
   const withCamelcase = { academicLevel: session.academic_level,
@@ -35,6 +35,7 @@ export default function UpdateSession({ session, onClose }) {
     updateSession(updatedSession);
     
     setIsModified(false);
+    onClose();
   };
 
   const handleDelete = () => {
@@ -45,12 +46,12 @@ export default function UpdateSession({ session, onClose }) {
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg">
-    <h2 className="text-xl font-semibold text-gray-700 mb-4">Update Session</h2>
+    <h2 className="text-xl font-semibold text-blue-900 mb-4">Update Session</h2>
 
     <form  className="grid grid-cols-3 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-600">Day of the Week</label>
-        <select name="dayOfWeek" value={updatedSession.dayOfWeek} onChange={handleChange} className="w-full p-2 border rounded">
+        <label className="block text-sm font-medium text-blue-900">Day of the Week</label>
+        <select name="dayOfWeek" value={updatedSession.dayOfWeek} onChange={handleChange} className="w-full p-2 border rounded border-gray-300">
           <option value="">Select a day</option>
           {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].map((d) => (
             <option key={d} value={d}>{d}</option>
@@ -59,18 +60,18 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Start Time</label>
-        <input type="time" name="startTime" value={updatedSession.startTime} onChange={handleChange} className="w-full p-2 border rounded" />
+        <label className="block text-sm font-medium text-blue-900">Start Time</label>
+        <input type="time" name="startTime" value={updatedSession.startTime} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">End Time</label>
-        <input type="time" name="endTime" value={updatedSession.endTime} onChange={handleChange} className="w-full p-2 border rounded" />
+        <label className="block text-sm font-medium text-blue-900">End Time</label>
+        <input type="time" name="endTime" value={updatedSession.endTime} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Teacher</label>
-        <select name="teacherId" value={updatedSession.teacherId} onChange={handleChange} className="w-full p-2 border rounded">
+        <label className="block text-sm font-medium text-blue-900">Teacher</label>
+        <select name="teacherId" value={updatedSession.teacherId} onChange={handleChange} className="w-full p-2 border rounded border-gray-300">
           <option value="">Select a teacher</option>
           {teachers.map((teacher) => (
             <option key={teacher.teacher_id} value={teacher.teacher_id}>
@@ -81,8 +82,8 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Type</label>
-        <select name="type" value={updatedSession.type} onChange={handleChange} className="w-full p-2 border rounded">
+        <label className="block text-sm font-medium text-blue-900">Type</label>
+        <select name="type" value={updatedSession.type} onChange={handleChange} className="w-full p-2 border rounded border-gray-300">
           <option value="">Select a type</option>
           <option value="COURS">Cours</option>
           <option value="TD">TD</option>
@@ -91,13 +92,13 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Module</label>
-        <input type="text" name="module" value={updatedSession.module} onChange={handleChange} className="w-full p-2 border rounded" />
+        <label className="block text-sm font-medium text-blue-900">Module</label>
+        <input type="text" name="module" value={updatedSession.module} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Classroom</label>
-        <select  name="classroom" value={updatedSession.classroom} onChange={handleChange} className="w-full p-2 border rounded">
+        <label className="block text-sm font-medium text-blue-900">Classroom</label>
+        <select  name="classroom" value={updatedSession.classroom} onChange={handleChange} className="w-full p-2 border rounded border-gray-300">
           <option value="">Select classroom</option>
           {["salle A1","salle A2" , "Amphi C" , "salle TP1"].map((sl) => (
             <option key={sl} value={sl}>{sl}</option>
@@ -106,8 +107,8 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Group Number</label>
-        <select  name="groupNumber" value={updatedSession.groupNumber} onChange={handleChange} className="w-full p-2 border rounded" >
+        <label className="block text-sm font-medium text-blue-900">Group Number</label>
+        <select  name="groupNumber" value={updatedSession.groupNumber} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" >
           <option value="">Select group number</option>
           {["G1","G2","G3","G4","G5","G6","G7","G8","G9","G10","G11","G12","G13","G14","G15"].map((g) => (
             <option key={g} value={g}>{g}</option>
@@ -116,8 +117,8 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Academic Year</label>
-        <select name="academicYear" value={updatedSession.academicYear} onChange={handleChange} className="w-full p-2 border rounded" >
+        <label className="block text-sm font-medium text-blue-900">Academic Year</label>
+        <select name="academicYear" value={updatedSession.academicYear} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" >
         <option value="" disabled>Select academic year</option>
       {academicYears.map((year) => (
         <option key={year} value={year}>
@@ -128,8 +129,8 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Academic Level</label>
-        <select name="academicLevel" value={updatedSession.academicLevel} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Undergraduate, Master">
+        <label className="block text-sm font-medium text-blue-900">Academic Level</label>
+        <select name="academicLevel" value={updatedSession.academicLevel} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" placeholder="e.g., Undergraduate, Master">
           <option value="">Select academic level</option>
           {["1CP","2CP","1CS","2CS","3CS"].map((d) => (
             <option key={d} value={d}>{d}</option>
@@ -138,8 +139,8 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600">Semester</label>
-        <select name="semester" value={updatedSession.semester} onChange={handleChange} className="w-full p-2 border rounded" placeholder="e.g., Semester 1, Semester 2">
+        <label className="block text-sm font-medium text-blue-900">Semester</label>
+        <select name="semester" value={updatedSession.semester} onChange={handleChange} className="w-full p-2 border rounded border-gray-300" placeholder="e.g., Semester 1, Semester 2">
           <option value="">Select semester</option>
           {["S1","S2"].map((s) => (
             <option key={s} value={s}>{s}</option>
@@ -148,7 +149,7 @@ export default function UpdateSession({ session, onClose }) {
       </div>
 
 
-        <div className="col-span-2 flex justify-between mt-4">
+        <div className="col-span-3 flex justify-between mt-4">
           <button
             type="submit"
             onClick={handleUpdate}

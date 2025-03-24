@@ -6,7 +6,7 @@ import useStore from "@/store/useStore";
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const startTimes = Array.from({ length: 20 }, (_, i) => {
   const h = Math.floor(i / 2) + 8;
-  const m = i % 2 === 0 ? "00:00" : "30:00";
+  const m = i % 2 === 0 ? "00" : "30";
   return `${h.toString().padStart(2, "0")}:${m}`;
 });
 
@@ -20,7 +20,7 @@ const Timetable = ({ sessions }) => {
     <div className="overflow-x-auto p-4">
       <table className="min-w-full border-collapse border border-gray-300 shadow-lg">
         <thead>
-          <tr className="bg-gray-200 text-gray-700 text-sm">
+          <tr className="bg-gray-200 text-blue-900 text-sm">
             <th className="border p-2">Time</th>
             {daysOfWeek.map((day) => (
               <th key={day} className="border p-2">{day}</th>
@@ -33,7 +33,7 @@ const Timetable = ({ sessions }) => {
               <td className="border p-2 font-medium">{time}</td>
               {daysOfWeek.map((day) => {
                 const matchingSessions = sessions.filter(
-                  (s) => s.day_of_week === day && s.start_time === time
+                  (s) => s.day_of_week === day && s.start_time.slice(0, 5) === time
                 );
                 
 
@@ -63,7 +63,7 @@ const Timetable = ({ sessions }) => {
                                 <div className="font-semibold">{session.module} ({session.type})</div>
                                 <div>Classroom: {session.classroom}</div>
                                 <div>Group: {session.group_number}</div>
-                                <div>end time: {session.end_time} </div>
+                                <div>End time: {session.end_time.slice(0, 5)} </div>
                               </div>
                             ) : (
                               <div>{session.module} ({session.type})</div>

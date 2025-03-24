@@ -22,11 +22,11 @@ export default function Schedule() {
   }, [filterTimeTable]);
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-        Schedule Page
-      </h2>
-
+    <div className="max-w-7xl  p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold text-[#141F75]">Sessions management</h1>
+      <p className="text-[#141F75] text-sm mb-4">View, organize, and manage all scheduled sessions efficiently</p>
+      <hr className=" text-gray-400"></hr>
+<br></br>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
        
         <select name="academicYear"  onChange={(e) =>

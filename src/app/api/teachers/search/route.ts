@@ -1,29 +1,31 @@
+import { NextResponse } from 'next/server';
 import { database } from '@/lib/mysql';
-export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
+
+export async function GET(req) {
   try {
-    let { keyword } = req.query;
+    const { searchParams } = new URL(req.url);
+    let keyword = searchParams.get('keyword');
+
     if (!keyword) {
-      return res.status(400).json({ message: 'Keyword is required' });
+      return NextResponse.json({ message: 'Keyword is required' }, { status: 400 });
     }
-    keyword = keyword.replace(/[^a-zA-Z]/g, '');
+
+    keyword = keyword.trim(); 
+
     let query = `
-      SELECT * FROM teachers
-      WHERE firstname LIKE ? AND familyname LIKE ?
+      SELECT * FROM Teachers
+      WHERE first_name LIKE ? OR family_name LIKE ?
+         OR CONCAT(first_name, ' ', family_name) LIKE ?
     `;
-    let values = [%${keyword}%, %${keyword}%];
+
+    let values = [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`];
+
     let [results] = await database.execute(query, values);
-    if (results.length === 0) {
-      query = `
-        SELECT * FROM teachers
-        WHERE firstname LIKE ? OR familyname LIKE ?
-      `;
-      [results] = await database.execute(query, values);}
-    return res.status(200).json(results);
+
+    return NextResponse.json(results, { status: 200 });
+
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }

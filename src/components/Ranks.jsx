@@ -29,13 +29,14 @@ export default function Ranks() {
 
     return (
         <div className="max-w-lg mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+             <h1 className="  ml-3 p-3 text-[#141F75] font-bold text-3xl">Ranks</h1>
             {historyRank.length == 0 && <div>no ranks</div>}
             {!updateForm && historyRank.length > 0 && 
                 historyRank.map((rank) => (
                     <div key={rank.rank_id}  className="p-4 mb-2 bg-white rounded-lg shadow-sm flex justify-between items-center">
-                        <div onClick={() => openUpdateForm(rank.rank_id)} className="cursor-pointer">
-                            <div className="text-gray-700 font-semibold">{rank.starting_date}</div>
-                            <div className="text-gray-900 font-bold">{rank.rank}</div>
+                        <div onClick={() => openUpdateForm(rank.rank_id)} className="cursor-pointer flex w-2/3">
+                            <div className=" w-1/2 text-gray-700 font-semibold">{new Date(rank.starting_date).toLocaleDateString("en-GB")}</div>
+                            <div className=" w-1/2 self-center text-gray-900 font-bold">{rank.rank}</div>
                         </div>
                         <button 
                             onClick={() => deleteRank(rank.rank_id)} 
@@ -48,7 +49,9 @@ export default function Ranks() {
              }
 
 
-            {updateForm && (
+            {updateForm && (<div>
+                <h1 className=" text-left  ml-3 p-3 text-[#141F75] bold text-2xl">Update rank</h1>
+                <button className=" text-left bg-[#141F75] text-white p-2 m-1 rounded-2xl hover:cursor-pointer " onClick={()=>{setUpdateForm(false)}}> {"<Back"}</button>
                 <form onSubmit={handleUpdate} className="bg-white p-4 rounded-lg shadow-md flex flex-col space-y-3">
                     <label className="text-gray-700">Updated starting date:</label>
                     <input ref={newStartingDate} type="date" className="p-2 border rounded-lg" />
@@ -63,10 +66,12 @@ export default function Ranks() {
                         Confirm
                     </button>
                 </form>
+                </div>
             )}
             
             {!updateForm && (
                 <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
+                     <h1 className=" text-left  ml-3 p-3 text-[#141F75] bold text-2xl">Add new rank</h1>
                     <input ref={startingDate} type="date" className="p-2 border rounded-lg w-full mb-2" />
                     <select ref={rank}  name="rank"   className="p-2 border rounded-lg w-full mb-2">
             <option value="" disabled>Select rank</option>

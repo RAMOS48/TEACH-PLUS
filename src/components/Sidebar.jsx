@@ -9,7 +9,7 @@ import useStore from "@/store/useStore";
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { name: "Teachers", icon: User, path: "/admin/teachers" },
-  { name: "Schedules", icon: Calendar, path: "/admin/schedules" },
+  { name: "Schedules", icon: Calendar, path: "/admin/sessions" },
   { name: "TimeTables", icon: Table, path: "/admin/timetable" },
   { name: "Absences", icon: User, path: "/admin/absences" },
   { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
@@ -57,7 +57,7 @@ const Sidebar = () => {
       {/* Logout */}
       <div
         onClick={handleLogout}
-        className="absolute bottom-4 w-full flex items-center p-3 cursor-pointer hover:bg-gray-200"
+        className=" bottom-4 w-full flex items-center p-3 cursor-pointer hover:bg-gray-200"
       >
         <FiLogOut className="text-red-500" />
         {isOpen && <span className="ml-3 text-red-500">Log out</span>}

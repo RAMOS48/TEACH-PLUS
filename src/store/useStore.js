@@ -25,7 +25,7 @@ user: null,
       // Store token in cookies (expires in 7 days)
       Cookies.set("session", token, { expires: 7 });
 
-      set({ user: userData, token });
+      set({ user: userData, token:token });
     } catch (err) {
       set({ error: err.response?.data?.message || "Login failed" });
     } finally {
@@ -56,9 +56,12 @@ user: null,
       if (!token) throw new Error("No token found");
 
       const res = await axios.get(`/api/auth/${adminId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "x-admin-id": `${token}`
+        }
       });
-
+    console.log(adminId);
+    
       set({ user: res.data.admin });
     } catch (error) {
       set({ error: error.response?.data?.message || "Failed to fetch admin data" });
@@ -175,13 +178,13 @@ uploidImage: async (image) => {
 
     filteredTeachers: [],
   getTeachers:  async () => {
+    const data= get();
     // work 
     try {
-      const response = await axios.get(`http://localhost:3000/api/teachers`);
-      set({ teachers: response.data });
-      
-      
-      set({ filteredTeachers: response.data });
+      const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}`);
+      set({ teachers: response.data.teachers });
+          
+      set({ filteredTeachers: response.data.teachers });
 
     } catch (error) {
       console.log("Error fetching teachers:", error);
@@ -210,8 +213,9 @@ uploidImage: async (image) => {
 
   searchTeacher: async (query) => {
     // work
+    const data = get();
     try {
-      const response = await axios.get(`http://localhost:3000/api/teachers?name=${query}`);
+      const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}/search?keyword=${query}`);
       set({teachers: response.data});
       set({filteredTeachers: response.data});
       

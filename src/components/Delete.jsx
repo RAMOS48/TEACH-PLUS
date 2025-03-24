@@ -12,13 +12,13 @@ export default function DeleteTeacher({onClose}) {
     };
 
     return (
-        <div className="flex flex-col items-center p-6 bg-white shadow-lg rounded-xl max-w-md mx-auto">
-            <div className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="flex flex-col items-center p-6 shadow-lg rounded-xl max-w-md mx-auto">
+            <div className="text-lg font-semibold text-blue-900 mb-4">
                 Are you sure you want to delete this teacher?
             </div>
             <button
                 onClick={handleDelete}
-                className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition"
+                className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-800 transition"
             >
                 Confirm
             </button>
