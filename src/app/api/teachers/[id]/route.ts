@@ -9,13 +9,8 @@ export async function GET(req : Request, context: { params: { id: string } }) {
     if (!rows.length) {
       return Response.json({status : "FAILED", message : "Teacher not found or doesn't belong to this admin !"}, {status : 400 })
     }
-    const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks) LIMIT 1;", [id])
-    if (rank.length) {
-      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : Object.assign({}, rows[0], rank[0])}, {status : 200})
-    }
-    else {
-      return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : rows[0]}, {status : 200});
-    }
+
+    return Response.json({status : "SUCCESS", message : "Teacher found successfully !", teacher : rows[0]}, {status : 200});
   } catch (error) {
     return Response.json({ error: "Database query failed" }, {status : 500});
   }

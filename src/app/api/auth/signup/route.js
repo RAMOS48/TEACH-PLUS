@@ -32,7 +32,7 @@ export async function POST(req) {
         const insertionQuery = `
             INSERT INTO Admins 
             (email, password_hash, first_name, family_name, phone_number, date_of_birth, address, picture, department, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         `;
         
         await database.execute(insertionQuery, [email, hashedPassword, firstName, familyName, ...nonRequiredData, department]);

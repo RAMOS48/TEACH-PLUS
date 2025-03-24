@@ -14,7 +14,17 @@ export async function GET(req : NextRequest) {
       if (!teachers) {
         return NextResponse.json({status : "FAILED", message : "Teachers not found !"}, {status : 404})
       }
-      return NextResponse.json({status : "SUCCESS", message : "Teachers found successfully !", teachers : teachers}, {status : 200})
+      let teachersWithRanks = []
+      for (const teacher of teachers) {
+        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks WHERE teacher_id = ?) LIMIT 1;", [teacher.teacher_id, teacher.teacher_id])
+        if (rank.length) {
+          teachersWithRanks.push(Object.assign({}, teacher, rank[0]))
+        }
+        else {
+          teachersWithRanks.push(Object.assign({}, teacher, {rank : null}))
+        }
+      }
+      return NextResponse.json({status : "SUCCESS", message : "Teachers found successfully !", teachers : teachersWithRanks}, {status : 200})
     }
     else {
       const [rows]: any = await database.query("SELECT * FROM Teachers;");
@@ -59,7 +69,7 @@ export async function POST(req: Request) {
 
 
     const [result]: any = await database.query(
-      "INSERT INTO Teachers (first_name, family_name, email, picture, extra_hours_outside, phone_number, date_of_birth, admin_id, bio, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_DATE)",
+      "INSERT INTO Teachers (first_name, family_name, email, picture, extra_hours_outside, phone_number, date_of_birth, admin_id, bio, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
       [firstName, familyName, email, picture, extraHoursOutside, phoneNumber, dateOfBirth, authorizedAdminId, bio]
     );
 

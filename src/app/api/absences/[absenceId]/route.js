@@ -40,13 +40,18 @@ export async function PATCH(req, {params}) {
             return NextResponse.json({ message: "JSON invalide" }, { status: 400 });
         }
 
-        const { teacherId, sessionId, date, notes, reason } = body;
+        let { teacherId, sessionId, date, notes, reason } = body;
         const {absenceId} = await params
+        const [absence] = await database.execute("SELECT * FROM Absences WHERE absence_id = ?", [absenceId])
 
         if (!absenceId) {
             return NextResponse.json({ message: "ID de l'absence requis" }, { status: 400 });
         }
-        if (!teacherId || !sessionId || !date) {
+        if (!absence.length) {
+            return NextResponse.json({status : "FAILED", message : "Absence not found !"}, {status : 404})
+        }
+        teacherId = teacherId || absence[0].teacher_id
+        if (!sessionId || !date) {
             return NextResponse.json({ message: "teacherId et sessionId et date sont requis" }, { status: 400 });
         }
 

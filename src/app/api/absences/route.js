@@ -1,5 +1,6 @@
 import { database } from "@/lib/mysql"
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";  
+
 export async function GET(req) {
     try {
         const authorizedAdminId = req.headers.get("x-admin-id")
@@ -54,7 +55,6 @@ export async function POST(req) {
         if (!teacherId || !sessionId || !date) {
             return NextResponse.json({ message: "teacherId et sessionId et date sont requis" }, { status: 400 });
         }
-
         //special case 1 : if the entered teacher doesn't belong to this admin : 
         const [adminOfTeacher] = await database.execute("SELECT admin_id FROM Teachers WHERE teacher_id = ?", [teacherId])
         if (!adminOfTeacher.length) {
@@ -79,7 +79,7 @@ export async function POST(req) {
         if (teacherOfSession[0].teacher_id != teacherId) {
             return Response.json({status : "FAILED", message : "This session dosn't belong to this teacher !"}, {status : 400})
         }
-        const query = `INSERT INTO Absences (teacher_id, session_id, date, notes, reason, created_at) VALUES (?, ?, ?, ?, ?, CURRENT_DATE)`;
+        const query = `INSERT INTO Absences (teacher_id, session_id, date, notes, reason, created_at) VALUES (?, ?, ?, ?, ?, NOW())`;
         const values = [teacherId, sessionId, date,  notes || "", reason || ""];
 
         const [result] = await database.execute(query, values);
