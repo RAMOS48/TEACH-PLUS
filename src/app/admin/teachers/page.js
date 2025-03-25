@@ -16,15 +16,15 @@ export default function Teachers() {
     filterTeachers(selectedFilter);
   }, [selectedFilter]);
 
-  useEffect(() => {
-    if (!query || query == "") {
-      getTeachers();
-      return;
-    }
+  useEffect( () => {
+    
+    if (query !==""){
     const timeoutId = setTimeout(() => {
-      searchTeacher(query);
+     searchTeacher(query);
+     
     }, 500);
     return () => clearTimeout(timeoutId);
+  }
   }, [query]);
 
   const handleAddTeacher = () => {

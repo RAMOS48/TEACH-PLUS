@@ -1,18 +1,11 @@
 "use client";
 
 import  useStore  from "@/store/useStore.js";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Dashboard() {
-  const { user, logout } = useStore();
-  const router = useRouter();
+  const { user, logout  } = useStore();
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     router.push("/");
-  //   }
-  // }, [user, router]);
+  
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">

@@ -70,7 +70,7 @@ const TeacherCard = ({ teacherData }) => {
   return (
     <div className="relative bg-gray-100 p-1 rounded-lg  w-full text-center border border-gray-200">
       <div className="w-1/3 m-4  bg-gray-300 rounded-full  overflow-hidden  border border-gray-400">
-          <img className="w-full h-full object-cover" src={teacherData.picture ? teacherData.picture : "/default-avatar.png"} alt={teacherData.family_name} />
+          <img className="w-full h-full object-cover" src={teacherData.picture ? teacherData.picture : "https://www.smithshearer.com.au/static/uploads/images/smsf-compliance-esperance-wfjxcpafclmz.png"} alt={teacherData.family_name} />
         </div>
       <div className="flex flex-col items-center">
         
