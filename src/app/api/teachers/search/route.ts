@@ -5,6 +5,7 @@ export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     let keyword = searchParams.get('keyword');
+    let adminId = searchParams.get('adminId')
 
     if (!keyword) {
       return NextResponse.json({ message: 'Keyword is required' }, { status: 400 });
@@ -21,8 +22,10 @@ export async function GET(req) {
     let values = [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`];
 
     let [results] = await database.execute(query, values);
-
-    return NextResponse.json(results, { status: 200 });
+    
+     const filteredResults = results.filter(teacher => teacher.admin_id == adminId);
+    
+    return NextResponse.json(filteredResults, { status: 200 });
 
   } catch (error) {
     console.error(error);

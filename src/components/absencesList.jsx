@@ -33,17 +33,22 @@ export default function AbsenceList() {
         selectAbsence(absenceId);
         
     };
-    
-
+    const handleAdd = (e) => {
+        e.preventDefault();
+        if(date.current.value && selectedSession.current.value){
+    markAbsence({teacherId :selectedTeacher , date: date.current.value, sessionId: selectedSession.current.value , reason:reason.current.value , notes:notes.current.value });
+        }
+}
     const handleUpdate = (e) => {
         e.preventDefault(); 
+        if(newDate.current.value && newSelectedSession.current.value){
         updateAbsence({
             date: newDate.current.value,
             sessionId: newSelectedSession.current.value,
             reason:newReason.current.value,
             notes:newNotes.current.value
             
-        });
+        });}
         setUpdateForm(false);
 
         
@@ -52,7 +57,7 @@ export default function AbsenceList() {
     return (
         <div className="p-4 bg-gray-100 min-h-screen">
             <h1 className="  ml-3 p-3 text-[#141F75] font-bold text-3xl">Absences</h1>
-             {!updateForm && <div><div className=" w-full flex">
+             {!updateForm && absences.length > 0 && <div><div className=" w-full flex">
             <div  className="cursor-pointer flex  w-full ">
             <div className="  w-1/6 font-semibold text-sm p-2 text-[#141F75] ">Date</div>
             <div className="  w-1/6 font-semibold text-sm p-2 text-[#141F75] ">Caught up ?</div>
@@ -63,7 +68,7 @@ export default function AbsenceList() {
             </div>
             
         </div>
-        {absences.length == 0 && <div>no absences</div>}
+        {absences.length == 0 && <div className=" text-blue-950 text-2xl font-bold">No absences</div>}
         {absences.length > 0 && absences.map((absence) => (
     <div key={absence.absence_id} className="bg-gray-200 p-4 my-2 rounded-lg shadow-md">
         <div className=" w-full flex justify-between items-center">
@@ -89,9 +94,9 @@ export default function AbsenceList() {
                 <button className=" text-left bg-[#141F75] text-white p-2 m-1 rounded-2xl  hover:cursor-pointer" onClick={()=>{setUpdateForm(false)}}> {"<Back"}</button>
                 <form onSubmit={handleUpdate} className="bg-white p-4 rounded-lg shadow-md mt-4">
                     <label className="block font-semibold">Updated starting date:</label>
-                    <input ref={newDate} type="date" className="border p-2 rounded w-full" />
+                    <input ref={newDate} type="date" className="border p-2 rounded w-full" required />
                     <label className="block font-semibold mt-2">Updated session:</label>
-                    <select ref={newSelectedSession} className="border p-2 rounded w-full mt-2">
+                    <select ref={newSelectedSession} className="border p-2 rounded w-full mt-2" required>
                     <option value="" disabled>Select session</option>
             {(teacherTimeTable  ).map((session) => (
               <option key={session.session_id} value={session.session_id}>{session.day_of_week}_{session.start_time}</option>
@@ -107,14 +112,14 @@ export default function AbsenceList() {
                 </div>
             )}
 
-            {!updateForm && (
+            {!updateForm && (teacherTimeTable.length !==0) && (
                 <div className="bg-white p-4 rounded-lg shadow-md mt-4">
                     <h1 className=" text-left p-3 text-[#141F75] text-2xl">Mark new absence</h1>
                     <form>
                     <label className="block font-semibold"> Select date : </label>
-                    <input ref={date} type="date" className="border p-2 rounded w-full" />
+                    <input ref={date} type="date" className="border p-2 rounded w-full" required />
                     <label className="block font-semibold"> Select Session : </label>
-                    <select ref={selectedSession} className="border p-2 rounded w-full mt-2">
+                    <select ref={selectedSession} className="border p-2 rounded w-full mt-2" required>
                     <option value="" disabled>Select session</option>
             {teacherTimeTable.map((session) => (
               <option key={session.session_id} value={session.session_id}>{session.day_of_week}_{session.start_time}</option>
@@ -125,17 +130,16 @@ export default function AbsenceList() {
                     <label className="block font-semibold"> Notes : </label>
                     <input type="text" ref={notes} className="border p-2 rounded w-full"/>
                     <button 
-                        onClick={() => {
-                            markAbsence({teacherId :selectedTeacher , date: date.current.value, sessionId: selectedSession.current.value , reason:reason.current.value , notes:notes.current.value });
-                            
-                        }}
-                        className="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                        onClick={handleAdd}
+                        className={"w-full p-2 text-white rounded-md bg-blue-500 hover:bg-blue-800 "}
                     >
                         Add Absence
                     </button>
+                    
                     </form>
                 </div>
             )}
+            {teacherTimeTable.length ==0 && <div className=" text-red-700 font-semibold">This teacher has no timetable !</div>}
         </div>
     );
 }

@@ -49,22 +49,19 @@ user: null,
   },
 
   //  Get Admin Info
-  getAdmin: async (adminId) => {
+  getAdmin: async () => {
     set({ isLoading: true, error: null });
     try {
-      const token = get().token;
-      if (!token) throw new Error("No token found");
-
-      const res = await axios.get(`/api/auth/${adminId}`, {
-        headers: {
-          "x-admin-id": `${token}`
-        }
-      });
-    console.log(adminId);
+     
+      const response = await axios.get(`/api/auth/admin`);
+      const adminId =response.data.adminId
+      
+      const res = await axios.get(`/api/auth/${adminId}`);
+   
     
       set({ user: res.data.admin });
     } catch (error) {
-      set({ error: error.response?.data?.message || "Failed to fetch admin data" });
+      console.log("error fetching admin : " , error)
     } finally {
       set({ isLoading: false });
     }
@@ -214,8 +211,10 @@ uploidImage: async (image) => {
   searchTeacher: async (query) => {
     // work
     const data = get();
+    
     try {
-      const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}/search?keyword=${query}`);
+
+      const response = await axios.get(`http://localhost:3000/api/teachers/search?keyword=${query}&&adminId=${data.user.admin_id}`);
       set({teachers: response.data});
       set({filteredTeachers: response.data});
       
