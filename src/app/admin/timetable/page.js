@@ -23,16 +23,16 @@ export default function Schedule() {
 
   return (
     <div className="max-w-7xl  p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-[#141F75]">Sessions management</h1>
-      <p className="text-[#141F75] text-sm mb-4">View, organize, and manage all scheduled sessions efficiently</p>
+      <h1 className="text-3xl font-bold text-[#141F75]">Sessions Management</h1>
+      <p className="text-[#141F75] text-sm mb-4">View, organize and manage all scheduled sessions efficiently</p>
       <hr className=" text-gray-400"></hr>
 <br></br>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
        
         <select name="academicYear"  onChange={(e) =>
             setFilterTimeTable({ ...filterTimeTable, academicYear: e.target.value })
-          } className="w-full p-2 border rounded" >
-          <option value="" disabled>Select academic year</option>
+          } className="w-full p-2 border-gray-300 border rounded hover:cursor-pointer" >
+          <option value="" disabled>Select Academic Year</option>
         {academicYears.map((year) => (
           <option key={year} value={year}>
             {year}
@@ -44,7 +44,7 @@ export default function Schedule() {
           onChange={(e) =>
             setFilterTimeTable({ ...filterTimeTable, semester: e.target.value })
           }
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 hover:cursor-pointer"
         >
           <option value="">Select Semester</option>
           <option value="s1">S1</option>
@@ -55,9 +55,9 @@ export default function Schedule() {
           onChange={(e) =>
             setFilterTimeTable({ ...filterTimeTable, promo: e.target.value })
           }
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 hover:cursor-pointer"
         >
-          <option value="">Select Promotion</option>
+          <option value="">Select Academic Level</option>
           <option value="1cp">1CP</option>
           <option value="2cp">2CP</option>
           <option value="1cs">1CS</option>

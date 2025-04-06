@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import UpdateSession from "./updateSession";
 import useStore from "@/store/useStore";
 
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",  "Saturday"];
 const startTimes = Array.from({ length: 20 }, (_, i) => {
   const h = Math.floor(i / 2) + 8;
   const m = i % 2 === 0 ? "00" : "30";
@@ -58,7 +58,7 @@ const Timetable = ({ sessions }) => {
                                   selectSession(session.session_id)
                                   getTeachers()
                                 }}
-                                className="text-xs text-white space-y-1"
+                                className="text-xs text-white space-y-1 hover:cursor-pointer"
                               >
                                 <div className="font-semibold">{session.module} ({session.type})</div>
                                 <div>Classroom: {session.classroom}</div>

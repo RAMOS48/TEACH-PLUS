@@ -18,7 +18,7 @@ export default function DeleteTeacher({onClose}) {
             </div>
             <button
                 onClick={handleDelete}
-                className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-800 transition"
+                className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-800 cursor-pointer transition"
             >
                 Confirm
             </button>
