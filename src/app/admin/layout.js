@@ -20,11 +20,11 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="flex h-screen">
-      
+      <div className=" max-w-1/5">
       <Sidebar />
-
+      </div>
     
-      <div className="flex-1 overflow-y-auto bg-gray-100 p-1">
+      <div className="flex-1 overflow-y-auto p-1 w-4/5">
         {children}
       </div>
     </div>

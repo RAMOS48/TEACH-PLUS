@@ -10,7 +10,7 @@ const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { name: "Teachers", icon: User, path: "/admin/teachers" },
   { name: "Schedules", icon: Calendar, path: "/admin/sessions" },
-  { name: "TimeTables", icon: Table, path: "/admin/timetable" },
+  { name: "Timetables", icon: Table, path: "/admin/timetable" },
   { name: "Absences", icon: User, path: "/admin/absences" },
   { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
   { name: "Reports", icon: FileText, path: "/admin/reports" },
@@ -35,7 +35,7 @@ const Sidebar = () => {
             TEACH<span className=" text-bleu-950 font-light">PLUS</span>
           </h1>
         )}
-        <button onClick={() => setIsOpen(!isOpen)}>
+        <button className=" hover:cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <FiX /> : <FiMenu />}
         </button>
       </div>

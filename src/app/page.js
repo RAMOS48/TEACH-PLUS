@@ -106,7 +106,7 @@ const LoginPage = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-950 text-white py-3 rounded-lg hover:bg-indigo-800 transition duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-blue-950 text-white py-3 rounded-lg hover:bg-indigo-800 cursor-pointer transition duration-200 flex items-center justify-center gap-2"
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Proceed to my Account"}

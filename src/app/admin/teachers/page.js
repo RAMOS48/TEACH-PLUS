@@ -6,8 +6,7 @@ import useStore from "@/store/useStore.js";
 import Modal from "@/components/Modal";
 
 export default function Teachers() {
-  const { filteredTeachers, getTeachers, teachers, searchTeacher, filterTeachers } = useStore();
-
+  const { filteredTeachers,  searchTeacher, filterTeachers } = useStore();
   const [query, setQuery] = useState("");
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedFilter, setFilter] = useState("ALL");
@@ -18,13 +17,13 @@ export default function Teachers() {
 
   useEffect( () => {
     
-    if (query !==""){
+  
     const timeoutId = setTimeout(() => {
      searchTeacher(query);
      
     }, 500);
     return () => clearTimeout(timeoutId);
-  }
+  
   }, [query]);
 
   const handleAddTeacher = () => {
@@ -32,40 +31,45 @@ export default function Teachers() {
   };
 
   return (
-    <div className="max-w-7xl  p-6 bg-white rounded-lg shadow-md">
+    
+    <div className=" w-full p-3">
       <h1 className="text-3xl font-bold text-[#141F75]">Teacher Management Panel</h1>
-      <p className="text-[#141F75] text-sm mb-4">Browse and manage teachers, view profiles, and update information.</p>
+      <p className="text-[#141F75] text-sm mb-4 font-mono">Browse and manage teachers, view profiles, and update information.</p>
       <hr className=" text-gray-400"></hr>
-      <div className="flex flex-wrap items-center justify-between m-4 gap-4">
+      <div className="flex flex-row items-center justify-between m-4 gap-4">
+        <div className=" w-[70%]">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder=" 🔍 Search by name, grade, or status..."
-          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <div className="relative inline-block"> <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-blue-900">
-    ▼
-  </span>
+          className=" w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+        /></div>
+
+
+        <div className="relative inline-block w-[13%]">
+         
   <select
     onChange={(e) => setFilter(e.target.value)}
-    className="px-2 py-2 bg-gray-100 text-blue-900 font-normal  appearance-none shadow-md"
+    className="px-2 py-2 text-center bg-gray-200 rounded-md  text-blue-900  w-full   h-full hover:cursor-pointer"
   >
-    <option value="" disabled>Filter</option>
-    <option value="MCA">MCA</option>
-    <option value="MCB">MCB</option>
-    <option value="PROFESSOR">PROFESSOR</option>
-    <option value="ALL">ALL</option>
+    <option value="ALL" > ▼  Filter</option>
+    <option value="MCA">  MCA</option>
+    <option value="MCB"> MCB</option>
+    <option value="PROFESSOR"> PROFESSOR</option>
+    <option value="ALL"> ALL</option>
   </select>
  
 </div>
-        <button className="p-2 text-white bg-[#2738BD] rounded-md" onClick={handleAddTeacher}>+ Add Teacher</button>
+<div className="w-[17%]">     
+     <button className="p-2 text-white bg-[#2738BD] rounded-md hover:cursor-pointer" onClick={handleAddTeacher}>+ Add Teacher</button>
+</div>
       </div>
       
       <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {filteredTeachers.map((teacher) => (
+        {filteredTeachers.length>0 ? filteredTeachers.map((teacher) => (
           <TeacherCard key={teacher.teacher_id} teacherData={teacher} />
-        ))}
+        )):<div>No teachers</div>}
       </div>
       
       {openAdd && (
@@ -75,4 +79,5 @@ export default function Teachers() {
       )}
     </div>
   );
+  
 }

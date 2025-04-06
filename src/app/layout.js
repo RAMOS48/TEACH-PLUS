@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "TEACH PLUS",
+  title: "Teach Plus",
   description: "our 1cs project application ",
 };
 

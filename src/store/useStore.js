@@ -214,11 +214,16 @@ const useStore = create((set, get) => ({
 
     try {
 
+      if (query == "") {
+       data.getTeachers();
+      }
+      else{
+
       const response = await axios.get(`http://localhost:3000/api/teachers/search?keyword=${query}&&adminId=${data.user.admin_id}`);
-      set({ teachers: response.data });
-      set({ filteredTeachers: response.data });
-
-
+      set({teachers: response.data});
+      set({filteredTeachers: response.data});
+      
+}
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
