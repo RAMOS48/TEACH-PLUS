@@ -1,16 +1,16 @@
 import { create } from "zustand";
 import axios from "axios";
 import Cookies from "js-cookie";
-const useStore = create((set , get) => ({
+const useStore = create((set, get) => ({
 
-// handle Admins 
+  // handle Admins 
 
-// here [esma] define admin APIs for
+  // here [esma] define admin APIs for
 
-// handle Admins 
+  // handle Admins 
 
-// here [esma] define admin APIs for
-user: null,
+  // here [esma] define admin APIs for
+  user: null,
   token: Cookies.get("session") || null,
   isLoading: false,
   error: null,
@@ -25,7 +25,7 @@ user: null,
       // Store token in cookies (expires in 7 days)
       Cookies.set("session", token, { expires: 7 });
 
-      set({ user: userData, token:token });
+      set({ user: userData, token: token });
     } catch (err) {
       set({ error: err.response?.data?.message || "Login failed" });
     } finally {
@@ -34,7 +34,7 @@ user: null,
   },
 
   // Logout
-  
+
   logout: async () => {
     try {
       await axios.delete("/api/auth/logout"); // Change to DELETE
@@ -44,7 +44,7 @@ user: null,
       //  Remove token from cookies and reset state
       Cookies.remove("session");
       set({ user: null, token: null });
-    
+
     }
   },
 
@@ -52,16 +52,16 @@ user: null,
   getAdmin: async () => {
     set({ isLoading: true, error: null });
     try {
-     
+
       const response = await axios.get(`/api/auth/admin`);
-      const adminId =response.data.adminId
-      
+      const adminId = response.data.adminId
+
       const res = await axios.get(`/api/auth/${adminId}`);
-   
-    
+
+
       set({ user: res.data.admin });
     } catch (error) {
-      console.log("error fetching admin : " , error)
+      console.log("error fetching admin : ", error)
     } finally {
       set({ isLoading: false });
     }
@@ -99,8 +99,8 @@ user: null,
       set({ error: error.response?.data?.message || "Failed to delete account" });
     }
   },
-   //  Update Profile
-   updateProfile: async (updatedData) => {
+  //  Update Profile
+  updateProfile: async (updatedData) => {
     set({ isLoading: true, error: null });
     try {
       const token = get().token;
@@ -119,8 +119,8 @@ user: null,
       set({ isLoading: false });
     }
   },
-   // Forgot Password
-   forgotPassword: async (email) => {
+  // Forgot Password
+  forgotPassword: async (email) => {
     set({ isLoading: true, error: null });
     try {
       const res = await axios.post('/api/auth/forgot-password', { email });
@@ -149,38 +149,38 @@ user: null,
     }
   },
 
-// cloudinary ..........................................................................
+  // cloudinary ..........................................................................
 
-uploidImage: async (image) => {
-  try {
-    const formData = new FormData();
-    formData.append('file', image);
+  uploidImage: async (image) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', image);
 
-    const response = await axios.post('/api/uploid', formData, {
+      const response = await axios.post('/api/uploid', formData, {
         headers: {
-            'Content-Type': 'multipart/form-data', 
+          'Content-Type': 'multipart/form-data',
         },
-    });
+      });
 
-    return response.data.url;
-} catch (error) {
-    console.error('Upload error:', error.response?.data || error.message);
-    alert('Upload failed');
-}
-},
-// handle Teachers .....................................................................
+      return response.data.url;
+    } catch (error) {
+      console.error('Upload error:', error.response?.data || error.message);
+      alert('Upload failed');
+    }
+  },
+  // handle Teachers .....................................................................
 
   teachers: [],
 
 
-    filteredTeachers: [],
-  getTeachers:  async () => {
-    const data= get();
+  filteredTeachers: [],
+  getTeachers: async () => {
+    const data = get();
     // work 
     try {
       const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}`);
       set({ teachers: response.data.teachers });
-          
+
       set({ filteredTeachers: response.data.teachers });
 
     } catch (error) {
@@ -190,7 +190,7 @@ uploidImage: async (image) => {
 
   filterTeachers: (filter) => {
     // work
-    const { teachers  } = get(); 
+    const { teachers } = get();
     switch (filter) {
       case "MCA":
         set({ filteredTeachers: teachers.filter(teacher => teacher.rank === "MCA") });
@@ -202,16 +202,16 @@ uploidImage: async (image) => {
         set({ filteredTeachers: teachers.filter(teacher => teacher.rank === "PROFESSOR") });
         break;
       default:
-        set({ filteredTeachers: teachers }); 
+        set({ filteredTeachers: teachers });
         break;
     }
   },
-  
+
 
   searchTeacher: async (query) => {
     // work
     const data = get();
-    
+
     try {
 
       if (query == "") {
@@ -229,14 +229,14 @@ uploidImage: async (image) => {
     }
   },
 
-  addTeacher : async (addedTeacher) => {
+  addTeacher: async (addedTeacher) => {
     // work
     try {
       const data = get();
 
-      const response = await axios.post(`http://localhost:3000/api/teachers`, addedTeacher );
+      const response = await axios.post(`http://localhost:3000/api/teachers`, addedTeacher);
       data.getTeachers();
-      
+
     } catch (error) {
       console.log("Error inserting teacher:", error);
     }
@@ -244,74 +244,74 @@ uploidImage: async (image) => {
 
 
   selectedTeacher: null,
-  teacher:{},
-  teacherTimeTable : [],
+  teacher: {},
+  teacherTimeTable: [],
   // work
-  selectTeacher: (teacher) => { set({ selectedTeacher: teacher } ) },
+  selectTeacher: (teacher) => { set({ selectedTeacher: teacher }) },
 
   // work
-  updateStateTeacher: (newTeacher) => { set({ teacher: newTeacher }  ) },
+  updateStateTeacher: (newTeacher) => { set({ teacher: newTeacher }) },
 
   // work
-  getTeacher:  async () => {
+  getTeacher: async () => {
     try {
       const data = get();
       const response = await axios.get(`http://localhost:3000/api/teachers/${data.selectedTeacher}`);
-      
+
       set({ teacher: response.data });
     } catch (error) {
       console.log("Error fetching teacher:", error);
     }
   },
 
-  updateTeacher : async (updatedTeacher) => {
+  updateTeacher: async (updatedTeacher) => {
     // work
     try {
-     const data = get();
-      const response = await axios.put(`http://localhost:3000/api/teachers/${data.selectedTeacher}`, updatedTeacher );
+      const data = get();
+      const response = await axios.put(`http://localhost:3000/api/teachers/${data.selectedTeacher}`, updatedTeacher);
       data.getTeachers();
     } catch (error) {
       console.log("Error updating teacher :", error);
     }
   },
 
-  deleteTeacher : async () => {
+  deleteTeacher: async () => {
     // work
     try {
-  const data = get()
-      const response = await axios.delete(`http://localhost:3000/api/teachers/${data.selectedTeacher}` );
+      const data = get()
+      const response = await axios.delete(`http://localhost:3000/api/teachers/${data.selectedTeacher}`);
       data.getTeachers();
     } catch (error) {
       console.log("Error deleting teacher:", error);
     }
   },
-  
 
-  getTeacherTimeTable :  async () => {
+
+  getTeacherTimeTable: async () => {
     try {
-      const data = get ();
+      const data = get();
       const response = await axios.get(`http://localhost:3000/api/timetable/${data.selectedTeacher}`);
       set({ teacherTimeTable: response.data.timeTable });
-      
+
     } catch (error) {
       console.log("Error fetching timeTable:", error);
     }
   },
 
-  
-
-  
 
 
 
-  
 
-// handle Absences  .................................................................
-  
 
-  absences:[] ,
 
-  getAbsences :  async () => {
+
+
+  // handle Absences  .................................................................
+
+
+  absences: [],
+
+  getAbsences: async () => {
     // work 
     try {
       const data = get()
@@ -323,12 +323,12 @@ uploidImage: async (image) => {
     }
   },
 
-  markAbsence : async (absenceData) => {
+  markAbsence: async (absenceData) => {
     try {
       const data = get()
 
-   // work      
-      const response = await axios.post(`http://localhost:3000/api/absences`, absenceData );
+      // work      
+      const response = await axios.post(`http://localhost:3000/api/absences`, absenceData);
       data.getAbsences();
     } catch (error) {
       console.log("Error inserting absence:", error);
@@ -341,7 +341,7 @@ uploidImage: async (image) => {
 
 
 
-  updateAbsence : async (updatedAbsence) => {
+  updateAbsence: async (updatedAbsence) => {
     try {
       // work
       const data = get();
@@ -353,8 +353,9 @@ uploidImage: async (image) => {
     }
   },
 
-  catchUpAbsence : async (absenceId) => {
-    try {      const data = get();
+  catchUpAbsence: async (absenceId) => {
+    try {
+      const data = get();
 
       // work
       const response = await axios.patch(`http://localhost:3000/api/catch_up_absence/${absenceId}`);
@@ -365,12 +366,12 @@ uploidImage: async (image) => {
     }
   },
 
-  deleteAbsence : async (absenceId) => {
+  deleteAbsence: async (absenceId) => {
     // work
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3000/api/absences/${absenceId}` );
+      const response = await axios.delete(`http://localhost:3000/api/absences/${absenceId}`);
       data.getAbsences();
 
     } catch (error) {
@@ -379,28 +380,28 @@ uploidImage: async (image) => {
   },
 
 
-// handle Ranks .........................................................................
+  // handle Ranks .........................................................................
 
 
 
-  historyRank:[] ,
-  getRanks :  async () => {
+  historyRank: [],
+  getRanks: async () => {
     // work
     try {
       const data = get();
       const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
       set({ historyRank: response.data.ranksHistory });
-      
+
     } catch (error) {
       console.log("Error fetching ranks:", error);
     }
   },
-  addRank : async (addedRank) => {
+  addRank: async (addedRank) => {
     // work
     try {
-     
-      const data = get(); 
-      const response = await axios.post(`http://localhost:3000/api/ranks`,{teacherId:data.selectedTeacher , ...addedRank}  );
+
+      const data = get();
+      const response = await axios.post(`http://localhost:3000/api/ranks`, { teacherId: data.selectedTeacher, ...addedRank });
       data.getRanks()
     } catch (error) {
       console.log("Error inserting rank:", error);
@@ -411,22 +412,22 @@ uploidImage: async (image) => {
   // work
   selectRank: (rank) => set({ selectedRank: rank }),
 
-  updateRank : async (newRank) => {
+  updateRank: async (newRank) => {
     // work 
     try {
       const data = get();
-      const response = await axios.put(`http://localhost:3000/api/ranks/${data.selectedRank}`, {newTeacherId:data.selectedTeacher , ...newRank});
+      const response = await axios.put(`http://localhost:3000/api/ranks/${data.selectedRank}`, { newTeacherId: data.selectedTeacher, ...newRank });
       data.getRanks()
     } catch (error) {
       console.log("Error updating rank", error);
     }
   },
-  deleteRank : async (rankId) => {
+  deleteRank: async (rankId) => {
     // work
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3000/api/ranks/${rankId}` );
+      const response = await axios.delete(`http://localhost:3000/api/ranks/${rankId}`);
       data.getRanks()
     } catch (error) {
       console.log("Error deleting rank :", error);
@@ -438,24 +439,24 @@ uploidImage: async (image) => {
 
 
 
-  filteredTimeTable :{},
-  sessions:[
-  ] ,
-  getSessions :  async (filter) => {
+  filteredTimeTable: {},
+  sessions: [
+  ],
+  getSessions: async (filter) => {
     try {
       // work
       const response = await axios.get(`http://localhost:3000/api/timetable?promo=${filter.promo}&academicYear=${filter.academicYear}&semester=${filter.semester}`);
       set({ sessions: response.data.timetable });
-      set({filteredTimeTable:filter})
+      set({ filteredTimeTable: filter })
     } catch (error) {
       set({ sessions: [] });
     }
   },
-  addSession : async (addedSession , filter) => {
+  addSession: async (addedSession, filter) => {
     // work 
     try {
-      const data= get();
-      const response = await axios.post(`http://localhost:3000/api/sessions`, addedSession );
+      const data = get();
+      const response = await axios.post(`http://localhost:3000/api/sessions`, addedSession);
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error inserting session:", error);
@@ -463,34 +464,34 @@ uploidImage: async (image) => {
   },
 
   selectedSession: null,
-  
+
   selectSession: (session) => set({ selectedSession: session }),
 
-  updateSession : async (updatedSession ) => {
+  updateSession: async (updatedSession) => {
     // work 
     try {
       const data = get();
-      const response = await axios.put(`http://localhost:3000/api/sessions/${data.selectedSession}`, updatedSession );
+      const response = await axios.put(`http://localhost:3000/api/sessions/${data.selectedSession}`, updatedSession);
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error updating session:", error);
     }
   },
-  deleteSession : async (sessionId ) => {
+  deleteSession: async (sessionId) => {
     // work 
     try {
-      const data= get();
-      const response = await axios.delete(`http://localhost:3000/api/sessions/${sessionId}` );
+      const data = get();
+      const response = await axios.delete(`http://localhost:3000/api/sessions/${sessionId}`);
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error deleting session:", error);
     }
   },
 
-  
 
 
-  
+
+
 }));
 
 export default useStore;
