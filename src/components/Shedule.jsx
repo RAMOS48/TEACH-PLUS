@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import UpdateSession from "./updateSession";
 import useStore from "@/store/useStore";
 
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",  "Saturday"];
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Saturday"];
 const startTimes = Array.from({ length: 20 }, (_, i) => {
   const h = Math.floor(i / 2) + 8;
   const m = i % 2 === 0 ? "00" : "30";
@@ -14,7 +14,7 @@ const Timetable = ({ sessions }) => {
   const [hoveredSession, setHoveredSession] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
   const [isOpenUpdateSession, setIsOpenUpdateSession] = useState(false);
-  const {selectSession , getTeachers}= useStore();
+  const { selectSession, getTeachers } = useStore();
 
   return (
     <div className="overflow-x-auto p-4">
@@ -32,23 +32,22 @@ const Timetable = ({ sessions }) => {
             <tr key={time} className="text-center">
               <td className="border p-2 font-medium">{time}</td>
               {daysOfWeek.map((day) => {
-                const matchingSessions = sessions.filter(
+                const matchingSessions = sessions?.filter(
                   (s) => s.day_of_week === day && s.start_time.slice(0, 5) === time
                 );
-                
+
 
                 return (
                   <td key={day + time} className="border p-2">
-                    {matchingSessions.length > 0 ? (
+                    {matchingSessions?.length > 0 ? (
                       <div className="space-y-1">
                         {matchingSessions.map((session) => (
                           <div
                             key={session.session_id}
                             onMouseEnter={() => setHoveredSession(session)}
                             onMouseLeave={() => setHoveredSession(null)}
-                            className={`bg-blue-500 text-white p-2 rounded text-sm transition-all duration-300 transform ${
-                              hoveredSession === session ? "scale-105 shadow-md" : ""
-                            }`}
+                            className={`bg-blue-500 text-white p-2 rounded text-sm transition-all duration-300 transform ${hoveredSession === session ? "scale-105 shadow-md" : ""
+                              }`}
                           >
                             {hoveredSession === session ? (
                               <div

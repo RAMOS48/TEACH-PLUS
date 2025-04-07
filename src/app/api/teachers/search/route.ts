@@ -11,7 +11,7 @@ export async function GET(req) {
       return NextResponse.json({ message: 'Keyword is required' }, { status: 400 });
     }
 
-    keyword = keyword.trim(); 
+    keyword = keyword.trim();
 
     let query = `
       SELECT * FROM Teachers
@@ -22,10 +22,20 @@ export async function GET(req) {
     let values = [`%${keyword}%`, `%${keyword}%`, `%${keyword}%`];
 
     let [results] = await database.execute(query, values);
-    
-     const filteredResults = results.filter(teacher => teacher.admin_id == adminId);
-    
-    return NextResponse.json(filteredResults, { status: 200 });
+
+    const filteredResults = results.filter(teacher => teacher.admin_id == adminId);
+    let teachersWithRanks = []
+    for (const teacher of filteredResults) {
+      const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks WHERE teacher_id = ?) LIMIT 1;", [teacher.teacher_id, teacher.teacher_id])
+      if (rank.length) {
+        teachersWithRanks.push(Object.assign({}, teacher, rank[0]))
+      }
+      else {
+        teachersWithRanks.push(Object.assign({}, teacher, { rank: null }))
+      }
+    }
+
+    return NextResponse.json(teachersWithRanks, { status: 200 });
 
   } catch (error) {
     console.error(error);

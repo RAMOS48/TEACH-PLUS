@@ -54,7 +54,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
   return (
     <div>
       <h1 className="text-left p-3 text-[#141F75] text-3xl">Update teacher</h1>
-      <div className="max-w-3xl mx-auto p-2 bg-white shadow-md rounded-lg flex flex-col">
+      <div className=" w-full mx-auto p-2 bg-white shadow-md rounded-lg flex flex-col">
 
         <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="col-span-1 sm:col-span-1 lg:col-span-3 flex justify-center mb-4">

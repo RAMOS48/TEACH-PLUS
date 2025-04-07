@@ -29,12 +29,12 @@ const Sidebar = () => {
 
   useEffect(() => {
     const checkScreenSize = () => {
-      const isSmall = window.innerWidth < 768; 
+      const isSmall = window.innerWidth < 768;
       setIsSmallScreen(isSmall);
       if (isSmall) setIsOpen(false);
     };
 
-    checkScreenSize(); 
+    checkScreenSize();
 
     window.addEventListener("resize", checkScreenSize);
     return () => window.removeEventListener("resize", checkScreenSize);
@@ -73,10 +73,10 @@ const Sidebar = () => {
       {/* Logout */}
       <div
         onClick={handleLogout}
-        className="absolute bottom-4 w-full flex items-center p-3 cursor-pointer hover:bg-gray-200"
+        className="absolute bottom-4 flex items-center p-3 cursor-pointer hover:bg-gray-200"
       >
         <FiLogOut className="text-red-500" />
-        {isOpen && <span className="ml-3 text-red-500">Log out</span>}
+        {isOpen && <span className="ml-3 text-red-500">Logout</span>}
       </div>
     </div>
   );
