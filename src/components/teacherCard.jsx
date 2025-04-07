@@ -92,7 +92,7 @@ const TeacherCard = ({ teacherData }) => {
     <div className="relative bg-gray-100 p-1 rounded-lg w-full text-center border border-gray-200">
       <div className="w-1/3 m-4 bg-gray-300 rounded-full overflow-hidden border border-gray-400">
         <img
-          className="w-full h-full object-cover"
+          className="w-full aspect-square"
           src={
             teacherData.picture
               ? teacherData.picture
@@ -101,8 +101,8 @@ const TeacherCard = ({ teacherData }) => {
           alt={teacherData.family_name}
         />
       </div>
-      <div className="flex flex-col items-center">
-        <div className="bg-white m-4 p-2 w-full rounded-xl">
+      <div className="flex flex-col items-center m-4">
+        <div className="bg-white mx-4 p-2 w-full rounded-xl">
           <h2 className="text-md font-semibold text-left text-[#141F75]">
             {teacherData.family_name} {teacherData.first_name}
           </h2>

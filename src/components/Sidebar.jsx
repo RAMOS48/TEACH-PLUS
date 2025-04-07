@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { LayoutDashboard, User, Calendar, Table, Clock, FileText } from "lucide-react";
-import useStore from "@/store/useStore"; 
+import useStore from "@/store/useStore";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
@@ -18,13 +18,27 @@ const menuItems = [
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const router = useRouter();
-  const { logout } = useStore(); 
+  const { logout } = useStore();
 
   const handleLogout = async () => {
     await logout();
     router.push("/");
   };
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const isSmall = window.innerWidth < 768; 
+      setIsSmallScreen(isSmall);
+      if (isSmall) setIsOpen(false);
+    };
+
+    checkScreenSize(); 
+
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   return (
     <div className={`h-screen bg-gray-50 ${isOpen ? "w-64" : "w-16"} transition-all duration-300`}>
@@ -35,9 +49,11 @@ const Sidebar = () => {
             TEACH<span className=" text-bleu-950 font-light">PLUS</span>
           </h1>
         )}
-        <button className=" hover:cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <FiX /> : <FiMenu />}
-        </button>
+        {!isSmallScreen && (
+          <button className="hover:cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <FiX /> : <FiMenu />}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -57,7 +73,7 @@ const Sidebar = () => {
       {/* Logout */}
       <div
         onClick={handleLogout}
-        className=" bottom-4 w-full flex items-center p-3 cursor-pointer hover:bg-gray-200"
+        className="absolute bottom-4 w-full flex items-center p-3 cursor-pointer hover:bg-gray-200"
       >
         <FiLogOut className="text-red-500" />
         {isOpen && <span className="ml-3 text-red-500">Log out</span>}

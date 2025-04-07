@@ -2,10 +2,9 @@
 
 import { useRef, useState } from "react";
 import useStore from "@/store/useStore";
-import axios from "axios";
 
 export default function AddTeacher({ onClose }) {
-  const { addTeacher, uploidImage } = useStore();
+  const { addTeacher, uploidImage , isLoading } = useStore();
   const firstName = useRef();
   const familyName = useRef();
   const phoneNumber = useRef();
@@ -15,7 +14,6 @@ export default function AddTeacher({ onClose }) {
   const isActive = useRef();
   const extraOursOutside = useRef();
   const [image, setImage] = useState(null);
-  const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(null);
 
   const handleImageChange = (event) => {
@@ -27,7 +25,6 @@ export default function AddTeacher({ onClose }) {
   };
 
   const handleAdd = async () => {
-    setMessage("Loading")
     let imageUrl = "";
     if (image) {
       imageUrl = await uploidImage(image);
@@ -158,7 +155,7 @@ export default function AddTeacher({ onClose }) {
         onClick={handleAdd}
         className="w-full mt-4 p-3 text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg shadow-md transition"
       >
-        {message !== "" ? "Loading ..." : "Confirm"}
+        {isLoading  ? "Loading ..." : "Confirm"}
       </button>
     </div>
   </div>

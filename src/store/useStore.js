@@ -14,10 +14,11 @@ const useStore = create((set, get) => ({
   token: Cookies.get("session") || null,
   isLoading: false,
   error: null,
+  empty:false ,
 
   //  Login
   login: async (email, password) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true});
     try {
       const res = await axios.post("/api/auth/login", { email, password });
       const { token, userData } = res.data;
@@ -50,7 +51,7 @@ const useStore = create((set, get) => ({
 
   //  Get Admin Info
   getAdmin: async () => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
     try {
 
       const response = await axios.get(`/api/auth/admin`);
@@ -101,7 +102,7 @@ const useStore = create((set, get) => ({
   },
   //  Update Profile
   updateProfile: async (updatedData) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true });
     try {
       const token = get().token;
       if (!token) throw new Error("No token found");
@@ -121,7 +122,7 @@ const useStore = create((set, get) => ({
   },
   // Forgot Password
   forgotPassword: async (email) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true});
     try {
       const res = await axios.post('/api/auth/forgot-password', { email });
       console.log(res.data.message);
@@ -136,7 +137,7 @@ const useStore = create((set, get) => ({
 
   // Reset Password
   resetPassword: async (token, newPassword) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true});
     try {
       const res = await axios.post('/api/auth/reset-password', { token, newPassword });
       console.log(res.data.message);
@@ -152,7 +153,9 @@ const useStore = create((set, get) => ({
   // cloudinary ..........................................................................
 
   uploidImage: async (image) => {
+     set({ isLoading: true});
     try {
+     
       const formData = new FormData();
       formData.append('file', image);
 
@@ -161,31 +164,34 @@ const useStore = create((set, get) => ({
           'Content-Type': 'multipart/form-data',
         },
       });
-
+      
       return response.data.url;
     } catch (error) {
       console.error('Upload error:', error.response?.data || error.message);
       alert('Upload failed');
-    }
+    } finally {set({ isLoading: false });}
   },
   // handle Teachers .....................................................................
 
-  teachers: [],
-
-
-  filteredTeachers: [],
+  teachers:null,
+  filteredTeachers: null,
   getTeachers: async () => {
+    set({ isLoading: true});
     const data = get();
     // work 
     try {
+      
       const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}`);
-      set({ teachers: response.data.teachers });
+      
 
-      set({ filteredTeachers: response.data.teachers });
-
+      set({teachers: response.data.teachers , filteredTeachers: response.data.teachers, error:true });
+     if (!response.data.teachers) { set({ empty:true });}
     } catch (error) {
-      console.log("Error fetching teachers:", error);
-    }
+      set({ teachers: [] , filteredTeachers: [] });
+
+    
+      
+    }finally{set({ isLoading: false });}
   },
 
   filterTeachers: (filter) => {
@@ -209,6 +215,7 @@ const useStore = create((set, get) => ({
 
 
   searchTeacher: async (query) => {
+    set({ isLoading: true});
     // work
     const data = get();
 
@@ -220,16 +227,18 @@ const useStore = create((set, get) => ({
       else{
 
       const response = await axios.get(`http://localhost:3000/api/teachers/search?keyword=${query}&&adminId=${data.user.admin_id}`);
+     if (!response.data) {set({empty:true})}
       set({teachers: response.data});
       set({filteredTeachers: response.data});
       
 }
     } catch (error) {
       console.error('Error fetching search results:', error);
-    }
+    } finally {set({ isLoading: false });}
   },
 
   addTeacher: async (addedTeacher) => {
+    set({ isLoading: true});
     // work
     try {
       const data = get();
@@ -239,7 +248,7 @@ const useStore = create((set, get) => ({
 
     } catch (error) {
       console.log("Error inserting teacher:", error);
-    }
+    } finally {set({ isLoading: false });}
   },
 
 
@@ -265,6 +274,7 @@ const useStore = create((set, get) => ({
   },
 
   updateTeacher: async (updatedTeacher) => {
+    set({ isLoading: true});
     // work
     try {
       const data = get();
@@ -272,10 +282,11 @@ const useStore = create((set, get) => ({
       data.getTeachers();
     } catch (error) {
       console.log("Error updating teacher :", error);
-    }
+    }finally {set({ isLoading:false });}
   },
 
   deleteTeacher: async () => {
+    set({ isLoading: true});
     // work
     try {
       const data = get()
@@ -283,7 +294,7 @@ const useStore = create((set, get) => ({
       data.getTeachers();
     } catch (error) {
       console.log("Error deleting teacher:", error);
-    }
+    }finally{set({ isLoading: false });}
   },
 
 
@@ -309,9 +320,10 @@ const useStore = create((set, get) => ({
   // handle Absences  .................................................................
 
 
-  absences: [],
+  absences: null,
 
   getAbsences: async () => {
+    set({ isLoading: true});
     // work 
     try {
       const data = get()
@@ -319,11 +331,12 @@ const useStore = create((set, get) => ({
       set({ absences: response.data.absences });
 
     } catch (error) {
-      console.log("Error fetching absences:", error);
-    }
+      set({ absences:[] });
+    }finally{set({ isLoading: false });}
   },
 
   markAbsence: async (absenceData) => {
+    set({ isLoading: true});
     try {
       const data = get()
 
@@ -332,7 +345,7 @@ const useStore = create((set, get) => ({
       data.getAbsences();
     } catch (error) {
       console.log("Error inserting absence:", error);
-    }
+    }finally{set({ isLoading: false})}
   },
 
 
@@ -342,6 +355,7 @@ const useStore = create((set, get) => ({
 
 
   updateAbsence: async (updatedAbsence) => {
+    set({ isLoading: true});
     try {
       // work
       const data = get();
@@ -350,10 +364,11 @@ const useStore = create((set, get) => ({
 
     } catch (error) {
       console.log("Error updating absence:", error);
-    }
+    }finally{set({ isLoading: false });}
   },
 
   catchUpAbsence: async (absenceId) => {
+    set({ isLoading: true});
     try {
       const data = get();
 
@@ -363,10 +378,11 @@ const useStore = create((set, get) => ({
 
     } catch (error) {
       console.log("Error catching up absence:", error);
-    }
+    }finally {set({ isLoading:false });}
   },
 
   deleteAbsence: async (absenceId) => {
+    set({ isLoading: true});
     // work
     try {
       const data = get();
@@ -376,7 +392,7 @@ const useStore = create((set, get) => ({
 
     } catch (error) {
       console.log("Error deleting absence:", error);
-    }
+    }finally{set({ isLoading: false});}
   },
 
 
@@ -384,8 +400,9 @@ const useStore = create((set, get) => ({
 
 
 
-  historyRank: [],
+  historyRank: null,
   getRanks: async () => {
+    set({ isLoading: true});
     // work
     try {
       const data = get();
@@ -393,10 +410,11 @@ const useStore = create((set, get) => ({
       set({ historyRank: response.data.ranksHistory });
 
     } catch (error) {
-      console.log("Error fetching ranks:", error);
-    }
+      set({ historyRank:[] });
+    }finally{set({ isLoading: false});}
   },
   addRank: async (addedRank) => {
+    set({ isLoading: true});
     // work
     try {
 
@@ -405,7 +423,7 @@ const useStore = create((set, get) => ({
       data.getRanks()
     } catch (error) {
       console.log("Error inserting rank:", error);
-    }
+    }finally {set({ isLoading: false});}
   },
 
   selectedRank: {},
@@ -413,6 +431,7 @@ const useStore = create((set, get) => ({
   selectRank: (rank) => set({ selectedRank: rank }),
 
   updateRank: async (newRank) => {
+    set({ isLoading: true});
     // work 
     try {
       const data = get();
@@ -420,9 +439,10 @@ const useStore = create((set, get) => ({
       data.getRanks()
     } catch (error) {
       console.log("Error updating rank", error);
-    }
+    }finally {set({ isLoading: false });}
   },
   deleteRank: async (rankId) => {
+    set({ isLoading: true});
     // work
     try {
       const data = get();
@@ -431,7 +451,7 @@ const useStore = create((set, get) => ({
       data.getRanks()
     } catch (error) {
       console.log("Error deleting rank :", error);
-    }
+    }finally{set({ isLoading: false});}
   },
 
 
@@ -439,10 +459,10 @@ const useStore = create((set, get) => ({
 
 
 
-  filteredTimeTable: {},
-  sessions: [
-  ],
+  filteredTimeTable: null,
+  sessions: null,
   getSessions: async (filter) => {
+    set({ isLoading: true});
     try {
       // work
       const response = await axios.get(`http://localhost:3000/api/timetable?promo=${filter.promo}&academicYear=${filter.academicYear}&semester=${filter.semester}`);
@@ -450,9 +470,11 @@ const useStore = create((set, get) => ({
       set({ filteredTimeTable: filter })
     } catch (error) {
       set({ sessions: [] });
-    }
+      set({ filteredTimeTable: [] });
+    }finally { set({ isLoading: false});}
   },
   addSession: async (addedSession, filter) => {
+    set({ isLoading: true});
     // work 
     try {
       const data = get();
@@ -460,7 +482,7 @@ const useStore = create((set, get) => ({
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error inserting session:", error);
-    }
+    }finally { set({ isLoading: false });}
   },
 
   selectedSession: null,
@@ -468,6 +490,7 @@ const useStore = create((set, get) => ({
   selectSession: (session) => set({ selectedSession: session }),
 
   updateSession: async (updatedSession) => {
+    set({ isLoading: true});
     // work 
     try {
       const data = get();
@@ -475,9 +498,10 @@ const useStore = create((set, get) => ({
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error updating session:", error);
-    }
+    }finally { set({ isLoading: false});}
   },
   deleteSession: async (sessionId) => {
+    set({ isLoading: true});
     // work 
     try {
       const data = get();
@@ -485,7 +509,7 @@ const useStore = create((set, get) => ({
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error deleting session:", error);
-    }
+    }finally{ set({ isLoading: false});}
   },
 
 
