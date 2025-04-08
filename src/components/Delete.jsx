@@ -12,7 +12,7 @@ export default function DeleteTeacher({onClose}) {
     };
 
     return (
-        <div className="flex flex-col items-center p-6 shadow-lg rounded-xl max-w-md mx-auto">
+        <div className="flex flex-col items-center p-6 shadow-lg rounded-xl  w-full mx-auto">
             <div className="text-lg font-semibold text-blue-900 mb-4">
                 Are you sure you want to delete this teacher?
             </div>

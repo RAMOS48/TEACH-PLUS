@@ -45,7 +45,7 @@ export default function AddSession({ onClose }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 shadow-md rounded-lg">
+    <div className=" w-full mx-auto bg-white p-6 shadow-md rounded-lg ">
   <h2 className="text-xl font-semibold text-blue-900 mb-4">Add a Session</h2>
 
   <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

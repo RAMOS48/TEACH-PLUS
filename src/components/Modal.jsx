@@ -21,9 +21,10 @@ const Modal = ({ isOpen, onClose, children }) => {
     id="modal-overlay"
     className="fixed inset-0 flex items-center justify-center bg-opacity-00 z-50"
   >
-    <div className="bg-white  border-gray-300 border-2  p-4 rounded-md shadow-lg relative z-50 w-8/12 h-auto max-h-8/12 overflow-y-auto">
-      <button onClick={onClose} className="absolute top-2 right-2 text-lg hover:cursor-pointer">✖</button>
-      <div>{children}</div>
+    <div className="bg-white  border-gray-300 border-2  p-4 rounded-md shadow-lg relative z-50 sm:w-full  lg:w-9/12 sm:h-auto h-auto max-h-10/12 overflow-y-auto">
+    <div className="sticky top-0 right-0 z-50 flex justify-end p-2 ">
+  <button onClick={onClose} className="text-lg hover:cursor-pointer text-white bg-[#2e398e] px-2 rounded-md">✖</button>
+</div>      <div>{children}</div>
     </div>
   </div>
   );

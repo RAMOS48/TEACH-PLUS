@@ -52,7 +52,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
   };
 
   return (
-    <div>
+    <div className=" w-full">
       <h1 className="text-left p-3 text-[#141F75] text-3xl">Update teacher</h1>
       <div className=" w-full mx-auto p-2 bg-white shadow-md rounded-lg flex flex-col">
 

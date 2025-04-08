@@ -59,7 +59,7 @@ export default function AddTeacher({ onClose }) {
 
   return (<div className=" w-full ">
     <h1 className=" text-left p-3 text-[#141F75] text-3xl">Add teacher</h1>
-    <div className="max-w-3xl w-full mx-auto p-6 bg-gray-100  rounded-xl flex flex-col h-full">
+    <div className=" w-full mx-auto p-6 bg-gray-100  rounded-xl flex flex-col h-full">
       <div className="flex flex-col items-center mb-6">
         <img
           src={

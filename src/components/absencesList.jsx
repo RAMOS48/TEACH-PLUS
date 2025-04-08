@@ -56,7 +56,7 @@ export default function AbsenceList() {
   };
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen">
+    <div className=" w-full p-4 bg-gray-100 min-h-screen">
       <h1 className="ml-3 p-3 text-[#141F75] font-bold text-3xl">Absences</h1>
 
       {!updateForm && absences?.length > 0 && (
@@ -85,7 +85,7 @@ export default function AbsenceList() {
                 <div className="w-full flex flex-col lg:flex-row justify-between items-start lg:items-center">
                   <div
                     onClick={() => openUpdateForm(absence.absence_id)}
-                    className="cursor-pointer flex flex-col lg:flex-row w-full lg:w-4/6"
+                    className="cursor-pointer flex flex-col lg:flex-row w-full lg:w-4/6 hover:bg-gray-300"
                   >
                     <div className="w-full lg:w-1/4 text-gray-600 p-2">
                       {new Date(absence.date).toLocaleDateString("en-GB")}
