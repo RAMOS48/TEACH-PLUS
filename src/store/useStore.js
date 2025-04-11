@@ -16,6 +16,10 @@ const useStore = create((set, get) => ({
   error: null,
   empty:false ,
 
+success: null,
+
+
+
   //  Login
   login: async (email, password) => {
     set({ isLoading: true});
@@ -120,36 +124,75 @@ const useStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
+  // // Forgot Password
+  // forgotPassword: async (email) => {
+  //   set({ isLoading: true});
+  //   try {
+  //     const res = await axios.post('/api/auth/forgot-password', { email });
+  //     console.log(res.data.message);
+  //     alert(res.data.message); // Display success message
+  //   } catch (err) {
+  //     set({ error: err.response?.data?.message || 'Failed to send reset link' });
+  //     alert(err.response?.data?.message || 'Failed to send reset link');
+  //   } finally {
+  //     set({ isLoading: false });
+  //   }
+  // },
   // Forgot Password
-  forgotPassword: async (email) => {
-    set({ isLoading: true});
-    try {
-      const res = await axios.post('/api/auth/forgot-password', { email });
-      console.log(res.data.message);
-      alert(res.data.message); // Display success message
-    } catch (err) {
-      set({ error: err.response?.data?.message || 'Failed to send reset link' });
-      alert(err.response?.data?.message || 'Failed to send reset link');
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+forgotPassword: async (email) => {
+  set({ isLoading: true, success: null, error: null });
+  try {
+    const res = await axios.post('/api/auth/forgot-password', { email });
 
-  // Reset Password
+    // Message de succès depuis le backend
+    set({ success: res.data.message || "Lien envoyé avec succès" });
+
+  } catch (err) {
+    const message = err.response?.data?.message || 'Échec de l\'envoi du lien';
+    set({ error: message });
+  } finally {
+    set({ isLoading: false });
+  }
+},
+
+  // // Reset Password
+  // resetPassword: async (token, newPassword) => {
+  //   set({ isLoading: true});
+  //   try {
+  //     const res = await axios.post('/api/auth/reset-password', { token, newPassword });
+  //     console.log(res.data.message);
+  //     alert(res.data.message); // Display success message
+  //   } catch (err) {
+  //     set({ error: err.response?.data?.message || 'Failed to reset password' });
+  //     alert(err.response?.data?.message || 'Failed to reset password');
+  //   } finally {
+  //     set({ isLoading: false });
+  //   }
+  // },
+
   resetPassword: async (token, newPassword) => {
-    set({ isLoading: true});
+    set({ isLoading: true, success: null, error: null });
     try {
       const res = await axios.post('/api/auth/reset-password', { token, newPassword });
-      console.log(res.data.message);
-      alert(res.data.message); // Display success message
+      
+      // Message de succès ou échec depuis le backend
+      if (res.data.status === "SUCCESS") {
+        set({ success: res.data.message });
+        alert(res.data.message); // Afficher le message de succès
+      } else {
+        set({ error: res.data.message });
+        alert(res.data.message); // Afficher le message d'erreur
+      }
+  
     } catch (err) {
-      set({ error: err.response?.data?.message || 'Failed to reset password' });
-      alert(err.response?.data?.message || 'Failed to reset password');
+      // Gérer les erreurs dans le cas où l'API renvoie une erreur
+      set({ error: err.response?.data?.message || 'Échec de la réinitialisation du mot de passe' });
+      alert(err.response?.data?.message || 'Échec de la réinitialisation du mot de passe');
     } finally {
       set({ isLoading: false });
     }
   },
-
+  
   // cloudinary ..........................................................................
 
   uploidImage: async (image) => {
