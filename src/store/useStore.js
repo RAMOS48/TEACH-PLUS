@@ -104,12 +104,8 @@ const useStore = create((set, get) => ({
   updateProfile: async (updatedData) => {
     set({ isLoading: true });
     try {
-      const token = get().token;
-      if (!token) throw new Error("No token found");
-
-      const res = await axios.put("/api/auth/update-profile", updatedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    
+      const res = await axios.put("/api/auth/update-profile", updatedData);
 
       // Update state with new user data
       set({ user: res.data.admin });
@@ -515,7 +511,153 @@ const useStore = create((set, get) => ({
 
 
 
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+//  SPRINT 02
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  // handle Periods .........................................................................
+
+
+
+  periods: [],
+
+
+  getPeriods: async () => {
+    set({ isLoading: true});
+    // work
+    try {
+      const data = get();
+      const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
+      set({ periods: response.data.periods });
+
+    } catch (error) {
+      set({ periods:[] });
+    }finally{set({ isLoading: false});}
+  },
+
+
+
+  addPeriod: async (addedPeriod) => {
+    set({ isLoading: true});
+    // work
+    try {
+
+      const data = get();
+      const response = await axios.post(`http://localhost:3000/api/ranks`, addedPeriod);
+      data.getPeriods()
+    } catch (error) {
+      console.log("Error inserting rank:", error);
+    }finally {set({ isLoading: false});}
+  },
+
+ 
+
+  updatePeriod: async (newPeriod) => {
+    set({ isLoading: true});
+    // work 
+    try {
+      const data = get();
+      const response = await axios.put(`http://localhost:3000/api/ranks`, newPeriod);
+      data.getPeriods()
+    } catch (error) {
+      console.log("Error updating rank", error);
+    }finally {set({ isLoading: false });}
+  },
+
+
+  deletePeriod: async (periodId) => {
+    set({ isLoading: true});
+    // work
+    try {
+      const data = get();
+
+      const response = await axios.delete(`http://localhost:3000/api/ranks/${periodId}`);
+      data.getPeriods()
+    } catch (error) {
+      console.log("Error deleting rank :", error);
+    }finally{set({ isLoading: false});}
+  },
+
+
+
+  // handle holidays
+
+
+
+  holidays: [],
+
+
+  getHolidays: async () => {
+    set({ isLoading: true});
+    // work
+    try {
+      const data = get();
+      const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
+      set({ holidays: response.data.holidays });
+
+    } catch (error) {
+      set({ holidays:[] });
+    }finally{set({ isLoading: false});}
+  },
+
+
+
+  addHoliday: async (addedHoliday) => {
+    set({ isLoading: true});
+    // work
+    try {
+
+      const data = get();
+      const response = await axios.post(`http://localhost:3000/api/ranks`, addedHoliday);
+      data.getHolidays()
+    } catch (error) {
+      console.log("Error inserting rank:", error);
+    }finally {set({ isLoading: false});}
+  },
+
+ 
+
+  updateHoliday: async (idHoliday , newHoliday) => {
+    set({ isLoading: true});
+    // work 
+    try {
+      const data = get();
+      const response = await axios.put(`http://localhost:3000/api/ranks`, newHoliday);
+      data.getHolidays()
+    } catch (error) {
+      console.log("Error updating rank", error);
+    }finally {set({ isLoading: false });}
+  },
+
+
+  deleteHoliday: async (holidayId) => {
+    set({ isLoading: true});
+    // work
+    try {
+      const data = get();
+
+      const response = await axios.delete(`http://localhost:3000/api/ranks/${holidayId}`);
+      data.getHolidays()
+    } catch (error) {
+      console.log("Error deleting rank :", error);
+    }finally{set({ isLoading: false});}
+  },
 
 }));
 
 export default useStore;
+
+

@@ -14,6 +14,8 @@ const menuItems = [
   { name: "Absences", icon: User, path: "/admin/absences" },
   { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
   { name: "Reports", icon: FileText, path: "/admin/reports" },
+  { name: "Settings", icon: FileText, path: "/admin/settings" },
+
 ];
 
 const Sidebar = () => {

@@ -10,8 +10,10 @@ export async function PUT(req) {
         const {newFirstName, newFamilyName, newPhoneNumber, newDateOfBirth, newDepartment, newAddress, newPicture} = await req.json()
         // phone number must be unique ...
         const [phoneNumbers] = await database.execute("SELECT phone_number from Admins WHERE admin_id != ?", [authorizedAdminId])
+        console.log(newPhoneNumber);
         for (const element of phoneNumbers) {
             if (element.phone_number == newPhoneNumber) {
+                
                 return Response.json({status : "FAILED", message : "Phone Number already used ! Choose another one"}, {status : 400})
             }
         }

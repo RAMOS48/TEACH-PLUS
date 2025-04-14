@@ -2,20 +2,10 @@
 import useStore from "@/store/useStore";
 import { useRef, useState, useEffect } from "react";
 
-
-
-
-
-
-// add in form the select sessions options 
-
-
-
-
 export default function AbsenceList() {
   const { absences, selectedTeacher, getAbsences, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
   const [updateForm, setUpdateForm] = useState(false);
-
+  const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable); // Filtered sessions based on selected date
 
   const date = useRef("");
   const selectedSession = useRef("");
@@ -26,19 +16,39 @@ export default function AbsenceList() {
   const newNotes = useRef("");
   const newReason = useRef("");
 
+  // Filter sessions based on the selected date's day of the week
+  const filterSessionsByDate = (selectedDate) => {
+    const dayOfWeek = new Date(selectedDate).toLocaleString("en-us", { weekday: "long" });
 
+    // Filter teacherTimeTable to only show sessions that match the selected day
+    const filtered = teacherTimeTable.filter((session) => session.day_of_week.toLowerCase() === dayOfWeek.toLowerCase());
+    setFilteredSessions(filtered);
+  };
+
+  useEffect(() => {
+    if (date.current?.value) {
+      filterSessionsByDate(date.current.value); // Filter sessions when date changes
+    }
+  }, [date.current?.value]); // Dependency on date input change
 
   const openUpdateForm = (absenceId) => {
     setUpdateForm(!updateForm);
     selectAbsence(absenceId);
-
   };
+
   const handleAdd = (e) => {
     e.preventDefault();
     if (date.current.value && selectedSession.current.value) {
-      markAbsence({ teacherId: selectedTeacher, date: date.current.value, sessionId: selectedSession.current.value, reason: reason.current.value, notes: notes.current.value });
+      markAbsence({
+        teacherId: selectedTeacher,
+        date: date.current.value,
+        sessionId: selectedSession.current.value,
+        reason: reason.current.value,
+        notes: notes.current.value
+      });
     }
-  }
+  };
+
   const handleUpdate = (e) => {
     e.preventDefault();
     if (newDate.current.value && newSelectedSession.current.value) {
@@ -47,16 +57,13 @@ export default function AbsenceList() {
         sessionId: newSelectedSession.current.value,
         reason: newReason.current.value,
         notes: newNotes.current.value
-
       });
     }
     setUpdateForm(false);
-
-
   };
 
   return (
-    <div className=" w-full p-4 bg-gray-100 min-h-screen">
+    <div className="w-full p-4 bg-gray-100 min-h-screen">
       <h1 className="ml-3 p-3 text-[#141F75] font-bold text-3xl">Absences</h1>
 
       {!updateForm && absences?.length > 0 && (
@@ -155,7 +162,7 @@ export default function AbsenceList() {
               <option value="" disabled>
                 Select session
               </option>
-              {teacherTimeTable.map((session) => (
+              {filteredSessions.map((session) => (
                 <option
                   key={session.session_id}
                   value={session.session_id}
@@ -210,7 +217,7 @@ export default function AbsenceList() {
               <option value="" disabled>
                 Select session
               </option>
-              {teacherTimeTable.map((session) => (
+              {filteredSessions.map((session) => (
                 <option
                   key={session.session_id}
                   value={session.session_id}
@@ -250,6 +257,5 @@ export default function AbsenceList() {
         </div>
       )}
     </div>
-
   );
 }
