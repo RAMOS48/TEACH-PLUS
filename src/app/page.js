@@ -3,17 +3,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiMail, FiLock } from "react-icons/fi";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import useStore from "@/store/useStore";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
 
   const router = useRouter();
   const { login, isLoading } = useStore();
+
+  const handleForgotPassword = () => {
+    router.push("/forgotPassword");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ const LoginPage = () => {
 
     try {
       await login(email, password);
-      router.push("/admin/dashboard"); 
+      router.push("/admin/dashboard");
     } catch (err) {
       setError(err.message);
     }
@@ -43,12 +49,14 @@ const LoginPage = () => {
     <div className="w-full h-screen font-poppins flex flex-wrap">
       {/* Left side */}
       <div className="p-6 flex flex-col justify-center bg-gray-50 w-full md:w-1/3">
-        <div className="mb-10 text-center">
+        <div className="mb-52 text-center">
           <p className="text-blue-950 text-3xl md:text-4xl">
             <span className="font-extrabold">Teach</span>Plus
+           
           </p>
+        
         </div>
-        <div className="mt-10 text-center">
+        <div className="mt-16 text-center">
           <p className="text-2xl md:text-3xl font-bold text-blue-950">
             Simplify teaching schedules & payments
           </p>
@@ -91,14 +99,20 @@ const LoginPage = () => {
             <div className="relative">
               <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full pl-10 p-3 border rounded-lg bg-gray-100 focus:outline-none ${
+                className={`w-full pl-10 pr-10 p-3 border rounded-lg bg-gray-100 focus:outline-none ${
                   passwordError ? "border-red-500" : "focus:border-indigo-500"
                 }`}
               />
+              <div
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+              >
+                {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              </div>
             </div>
             {passwordError && <p className="mt-1 text-red-500">{passwordError}</p>}
           </div>
@@ -114,7 +128,10 @@ const LoginPage = () => {
           </button>
 
           {/* Forgot Password */}
-          <p className="mt-4 text-right text-sm text-gray-500">
+          <p
+            className="mt-4 text-right text-sm text-gray-500 cursor-pointer"
+            onClick={handleForgotPassword}
+          >
             Having Issues with your Password?
           </p>
 
