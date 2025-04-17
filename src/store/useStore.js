@@ -14,15 +14,15 @@ const useStore = create((set, get) => ({
   token: Cookies.get("session") || null,
   isLoading: false,
   error: null,
-  empty:false ,
+  empty: false,
 
-success: null,
+  success: null,
 
 
 
   //  Login
   login: async (email, password) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     try {
       const res = await axios.post("/api/auth/login", { email, password });
       const { token, userData } = res.data;
@@ -108,11 +108,11 @@ success: null,
   updateProfile: async (updatedData) => {
     set({ isLoading: true });
     try {
-    
-      const res = await axios.put("/api/auth/update-profile", updatedData);
+      const data = get();
+      await axios.put("/api/auth/update-profile", updatedData);
 
       // Update state with new user data
-      set({ user: res.data.admin });
+      data.getAdmin();
     } catch (error) {
       console.error("Failed to update profile:", error);
       set({ error: error.response?.data?.message || "Failed to update profile" });
@@ -135,21 +135,21 @@ success: null,
   //   }
   // },
   // Forgot Password
-forgotPassword: async (email) => {
-  set({ isLoading: true, success: null, error: null });
-  try {
-    const res = await axios.post('/api/auth/forgot-password', { email });
+  forgotPassword: async (email) => {
+    set({ isLoading: true, success: null, error: null });
+    try {
+      const res = await axios.post('/api/auth/forgot-password', { email });
 
-    // Message de succès depuis le backend
-    set({ success: res.data.message || "Lien envoyé avec succès" });
+      // Message de succès depuis le backend
+      set({ success: res.data.message || "Lien envoyé avec succès" });
 
-  } catch (err) {
-    const message = err.response?.data?.message || 'Échec de l\'envoi du lien';
-    set({ error: message });
-  } finally {
-    set({ isLoading: false });
-  }
-},
+    } catch (err) {
+      const message = err.response?.data?.message || 'Échec de l\'envoi du lien';
+      set({ error: message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   // // Reset Password
   // resetPassword: async (token, newPassword) => {
@@ -170,7 +170,7 @@ forgotPassword: async (email) => {
     set({ isLoading: true, success: null, error: null });
     try {
       const res = await axios.post('/api/auth/reset-password', { token, newPassword });
-      
+
       // Message de succès ou échec depuis le backend
       if (res.data.status === "SUCCESS") {
         set({ success: res.data.message });
@@ -179,7 +179,7 @@ forgotPassword: async (email) => {
         set({ error: res.data.message });
         alert(res.data.message); // Afficher le message d'erreur
       }
-  
+
     } catch (err) {
       // Gérer les erreurs dans le cas où l'API renvoie une erreur
       set({ error: err.response?.data?.message || 'Échec de la réinitialisation du mot de passe' });
@@ -188,13 +188,13 @@ forgotPassword: async (email) => {
       set({ isLoading: false });
     }
   },
-  
+
   // cloudinary ..........................................................................
 
   uploidImage: async (image) => {
-     set({ isLoading: true});
+    set({ isLoading: true });
     try {
-     
+
       const formData = new FormData();
       formData.append('file', image);
 
@@ -203,34 +203,34 @@ forgotPassword: async (email) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       return response.data.url;
     } catch (error) {
       console.error('Upload error:', error.response?.data || error.message);
       alert('Upload failed');
-    } finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
   // handle Teachers .....................................................................
 
-  teachers:null,
+  teachers: null,
   filteredTeachers: null,
   getTeachers: async () => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     const data = get();
     // work 
     try {
-      
+
       const response = await axios.get(`http://localhost:3000/api/teachers?adminId=${data.user.admin_id}`);
-      
 
-      set({teachers: response.data.teachers , filteredTeachers: response.data.teachers, error:true });
-     if (!response.data.teachers) { set({ empty:true });}
+
+      set({ teachers: response.data.teachers, filteredTeachers: response.data.teachers, error: true });
+      if (!response.data.teachers) { set({ empty: true }); }
     } catch (error) {
-      set({ teachers: [] , filteredTeachers: [] });
+      set({ teachers: [], filteredTeachers: [] });
 
-    
-      
-    }finally{set({ isLoading: false });}
+
+
+    } finally { set({ isLoading: false }); }
   },
 
   filterTeachers: (filter) => {
@@ -254,30 +254,30 @@ forgotPassword: async (email) => {
 
 
   searchTeacher: async (query) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     const data = get();
 
     try {
 
       if (query == "") {
-       data.getTeachers();
+        data.getTeachers();
       }
-      else{
+      else {
 
-      const response = await axios.get(`http://localhost:3000/api/teachers/search?keyword=${query}&&adminId=${data.user.admin_id}`);
-     if (!response.data) {set({empty:true})}
-      set({teachers: response.data});
-      set({filteredTeachers: response.data});
-      
-}
+        const response = await axios.get(`http://localhost:3000/api/teachers/search?keyword=${query}&&adminId=${data.user.admin_id}`);
+        if (!response.data) { set({ empty: true }) }
+        set({ teachers: response.data });
+        set({ filteredTeachers: response.data });
+
+      }
     } catch (error) {
       console.error('Error fetching search results:', error);
-    } finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
   addTeacher: async (addedTeacher) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -287,7 +287,7 @@ forgotPassword: async (email) => {
 
     } catch (error) {
       console.log("Error inserting teacher:", error);
-    } finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -313,7 +313,7 @@ forgotPassword: async (email) => {
   },
 
   updateTeacher: async (updatedTeacher) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -321,11 +321,11 @@ forgotPassword: async (email) => {
       data.getTeachers();
     } catch (error) {
       console.log("Error updating teacher :", error);
-    }finally {set({ isLoading:false });}
+    } finally { set({ isLoading: false }); }
   },
 
   deleteTeacher: async () => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get()
@@ -333,7 +333,7 @@ forgotPassword: async (email) => {
       data.getTeachers();
     } catch (error) {
       console.log("Error deleting teacher:", error);
-    }finally{set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -362,7 +362,7 @@ forgotPassword: async (email) => {
   absences: null,
 
   getAbsences: async () => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work 
     try {
       const data = get()
@@ -370,12 +370,12 @@ forgotPassword: async (email) => {
       set({ absences: response.data.absences });
 
     } catch (error) {
-      set({ absences:[] });
-    }finally{set({ isLoading: false });}
+      set({ absences: [] });
+    } finally { set({ isLoading: false }); }
   },
 
   markAbsence: async (absenceData) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     try {
       const data = get()
 
@@ -384,7 +384,7 @@ forgotPassword: async (email) => {
       data.getAbsences();
     } catch (error) {
       console.log("Error inserting absence:", error);
-    }finally{set({ isLoading: false})}
+    } finally { set({ isLoading: false }) }
   },
 
 
@@ -394,7 +394,7 @@ forgotPassword: async (email) => {
 
 
   updateAbsence: async (updatedAbsence) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     try {
       // work
       const data = get();
@@ -403,11 +403,11 @@ forgotPassword: async (email) => {
 
     } catch (error) {
       console.log("Error updating absence:", error);
-    }finally{set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
   catchUpAbsence: async (absenceId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     try {
       const data = get();
 
@@ -417,11 +417,11 @@ forgotPassword: async (email) => {
 
     } catch (error) {
       console.log("Error catching up absence:", error);
-    }finally {set({ isLoading:false });}
+    } finally { set({ isLoading: false }); }
   },
 
   deleteAbsence: async (absenceId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -431,7 +431,7 @@ forgotPassword: async (email) => {
 
     } catch (error) {
       console.log("Error deleting absence:", error);
-    }finally{set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -441,7 +441,7 @@ forgotPassword: async (email) => {
 
   historyRank: null,
   getRanks: async () => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -449,11 +449,11 @@ forgotPassword: async (email) => {
       set({ historyRank: response.data.ranksHistory });
 
     } catch (error) {
-      set({ historyRank:[] });
-    }finally{set({ isLoading: false});}
+      set({ historyRank: [] });
+    } finally { set({ isLoading: false }); }
   },
   addRank: async (addedRank) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
 
@@ -462,7 +462,7 @@ forgotPassword: async (email) => {
       data.getRanks()
     } catch (error) {
       console.log("Error inserting rank:", error);
-    }finally {set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
   selectedRank: {},
@@ -470,7 +470,7 @@ forgotPassword: async (email) => {
   selectRank: (rank) => set({ selectedRank: rank }),
 
   updateRank: async (newRank) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -478,10 +478,10 @@ forgotPassword: async (email) => {
       data.getRanks()
     } catch (error) {
       console.log("Error updating rank", error);
-    }finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
   deleteRank: async (rankId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -490,7 +490,7 @@ forgotPassword: async (email) => {
       data.getRanks()
     } catch (error) {
       console.log("Error deleting rank :", error);
-    }finally{set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -501,7 +501,7 @@ forgotPassword: async (email) => {
   filteredTimeTable: null,
   sessions: null,
   getSessions: async (filter) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     try {
       // work
       const response = await axios.get(`http://localhost:3000/api/timetable?promo=${filter.promo}&academicYear=${filter.academicYear}&semester=${filter.semester}`);
@@ -510,10 +510,10 @@ forgotPassword: async (email) => {
     } catch (error) {
       set({ sessions: [] });
       set({ filteredTimeTable: [] });
-    }finally { set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
   addSession: async (addedSession, filter) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -521,7 +521,7 @@ forgotPassword: async (email) => {
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error inserting session:", error);
-    }finally { set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
   selectedSession: null,
@@ -529,7 +529,7 @@ forgotPassword: async (email) => {
   selectSession: (session) => set({ selectedSession: session }),
 
   updateSession: async (updatedSession) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -537,10 +537,10 @@ forgotPassword: async (email) => {
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error updating session:", error);
-    }finally { set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
   deleteSession: async (sessionId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -548,7 +548,7 @@ forgotPassword: async (email) => {
       data.getSessions(data.filteredTimeTable);
     } catch (error) {
       console.log("Error deleting session:", error);
-    }finally{ set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -561,7 +561,7 @@ forgotPassword: async (email) => {
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
-//  SPRINT 02
+  //  SPRINT 02
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -579,7 +579,7 @@ forgotPassword: async (email) => {
 
 
   getPeriods: async () => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -587,14 +587,14 @@ forgotPassword: async (email) => {
       set({ periods: response.data.periods });
 
     } catch (error) {
-      set({ periods:[] });
-    }finally{set({ isLoading: false});}
+      set({ periods: [] });
+    } finally { set({ isLoading: false }); }
   },
 
 
 
   addPeriod: async (addedPeriod) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
 
@@ -603,13 +603,13 @@ forgotPassword: async (email) => {
       data.getPeriods()
     } catch (error) {
       console.log("Error inserting period:", error);
-    }finally {set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
- 
 
-  updatePeriod: async (periodId , newPeriod) => {
-    set({ isLoading: true});
+
+  updatePeriod: async (periodId, newPeriod) => {
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -617,12 +617,12 @@ forgotPassword: async (email) => {
       data.getPeriods()
     } catch (error) {
       console.log("Error updating period", error);
-    }finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
 
   deletePeriod: async (periodId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -631,7 +631,7 @@ forgotPassword: async (email) => {
       data.getPeriods()
     } catch (error) {
       console.log("Error deleting rank :", error);
-    }finally{set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
 
@@ -644,20 +644,20 @@ forgotPassword: async (email) => {
   getCurrentAcademicYear() {
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; 
-    
+    const currentMonth = now.getMonth() + 1;
+
     if (currentMonth >= 9) {
-        return `${currentYear}/${currentYear + 1}`;
+      return `${currentYear}/${currentYear + 1}`;
     } else if (currentMonth <= 7) {
-        return `${currentYear - 1}/${currentYear}`;
+      return `${currentYear - 1}/${currentYear}`;
     } else {
-        return `${currentYear}/${currentYear + 1}`;
+      return `${currentYear}/${currentYear + 1}`;
     }
-},
+  },
 
   getHolidays: async () => {
-    
-    set({ isLoading: true});
+
+    set({ isLoading: true });
 
     // work
     try {
@@ -666,14 +666,14 @@ forgotPassword: async (email) => {
       set({ holidays: response.data.holidays });
 
     } catch (error) {
-      set({ holidays:[] });
-    }finally{set({ isLoading: false});}
+      set({ holidays: [] });
+    } finally { set({ isLoading: false }); }
   },
 
- 
+
 
   addHoliday: async (addedHoliday) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
 
@@ -682,13 +682,13 @@ forgotPassword: async (email) => {
       data.getHolidays()
     } catch (error) {
       console.log("Error inserting rank:", error);
-    }finally {set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
- 
 
-  updateHoliday: async (holidayId ,  newHoliday) => {
-    set({ isLoading: true});
+
+  updateHoliday: async (holidayId, newHoliday) => {
+    set({ isLoading: true });
     // work 
     try {
       const data = get();
@@ -696,12 +696,12 @@ forgotPassword: async (email) => {
       data.getHolidays()
     } catch (error) {
       console.log("Error updating holiday", error);
-    }finally {set({ isLoading: false });}
+    } finally { set({ isLoading: false }); }
   },
 
 
   deleteHoliday: async (holidayId) => {
-    set({ isLoading: true});
+    set({ isLoading: true });
     // work
     try {
       const data = get();
@@ -710,7 +710,7 @@ forgotPassword: async (email) => {
       data.getHolidays()
     } catch (error) {
       console.log("Error deleting holiday :", error);
-    }finally{set({ isLoading: false});}
+    } finally { set({ isLoading: false }); }
   },
 
 }));
