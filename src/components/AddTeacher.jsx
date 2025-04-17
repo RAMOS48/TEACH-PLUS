@@ -107,7 +107,7 @@ export default function AddTeacher({ onClose }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-grow">
-          {/* Column 1 */}
+         
           <div className="space-y-4">
             <label className="block text-left text-[#141F75]">First Name</label>
             <input
@@ -149,7 +149,7 @@ export default function AddTeacher({ onClose }) {
             )}
           </div>
 
-          {/* Column 2 */}
+   
           <div className="space-y-4">
             <label className="block text-left text-[#141F75]">Date Of Birth</label>
             <input
@@ -192,7 +192,7 @@ export default function AddTeacher({ onClose }) {
             )}
           </div>
 
-          {/* Column 3 */}
+         
           <div className="space-y-4">
             <label className="block text-left text-[#141F75]">Photo</label>
             <input

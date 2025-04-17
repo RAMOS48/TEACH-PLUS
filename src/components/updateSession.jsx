@@ -48,7 +48,6 @@ export default function UpdateSession({ session, onClose }) {
       "teacherId"
     ];
 
-    // Validation des champs requis
     fields.forEach((field) => {
       if (!updatedSession[field]) {
         newErrors[field] = "This field is required.";
@@ -57,7 +56,6 @@ export default function UpdateSession({ session, onClose }) {
 
     const { startTime, endTime } = updatedSession;
 
-    // Validation de l'heure de début
     if (startTime) {
       if (startTime < "08:00" || startTime > "17:00") {
         newErrors.startTime = "Start time must be between 08:00 and 17:00.";
@@ -66,7 +64,6 @@ export default function UpdateSession({ session, onClose }) {
       }
     }
 
-    // Validation de l'heure de fin
     if (endTime) {
       if (endTime < "08:30" || endTime > "17:30") {
         newErrors.endTime = "End time must be between 08:30 and 17:30.";
@@ -75,7 +72,6 @@ export default function UpdateSession({ session, onClose }) {
       }
     }
 
-    // Validation que l'heure de début est avant l'heure de fin
     if (startTime && endTime && startTime >= endTime) {
       newErrors.endTime = newErrors.endTime || "";
       newErrors.endTime += " End time must be after start time.";
@@ -111,7 +107,6 @@ export default function UpdateSession({ session, onClose }) {
       <h2 className="text-xl font-semibold text-blue-900 mb-4">Update Session</h2>
 
       <form className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Jour de la semaine */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Day of the Week</label>
           <select
@@ -128,7 +123,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.dayOfWeek && <p className="text-red-600 text-sm mt-1">{errors.dayOfWeek}</p>}
         </div>
 
-        {/* Heure de début */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Start Time</label>
           <input
@@ -142,7 +136,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.startTime && <p className="text-red-600 text-sm mt-1">{errors.startTime}</p>}
         </div>
 
-        {/* Heure de fin */}
         <div>
           <label className="block text-sm font-medium text-blue-900">End Time</label>
           <input
@@ -156,7 +149,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.endTime && <p className="text-red-600 text-sm mt-1">{errors.endTime}</p>}
         </div>
 
-        {/* Enseignant */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Teacher</label>
           <select
@@ -175,7 +167,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.teacherId && <p className="text-red-600 text-sm mt-1">{errors.teacherId}</p>}
         </div>
 
-        {/* Type de session */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Type</label>
           <select
@@ -192,7 +183,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.type && <p className="text-red-600 text-sm mt-1">{errors.type}</p>}
         </div>
 
-        {/* Module */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Module</label>
           <input
@@ -205,7 +195,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.module && <p className="text-red-600 text-sm mt-1">{errors.module}</p>}
         </div>
 
-        {/* Salle de classe */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Classroom</label>
           <select
@@ -222,7 +211,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.classroom && <p className="text-red-600 text-sm mt-1">{errors.classroom}</p>}
         </div>
 
-        {/* Numéro de groupe */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Group Number</label>
           <select
@@ -239,7 +227,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.groupNumber && <p className="text-red-600 text-sm mt-1">{errors.groupNumber}</p>}
         </div>
 
-        {/* Année académique */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Academic Year</label>
           <select
@@ -256,7 +243,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.academicYear && <p className="text-red-600 text-sm mt-1">{errors.academicYear}</p>}
         </div>
 
-        {/* Niveau académique */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Academic Level</label>
           <select
@@ -273,7 +259,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.academicLevel && <p className="text-red-600 text-sm mt-1">{errors.academicLevel}</p>}
         </div>
 
-        {/* Semestre */}
         <div>
           <label className="block text-sm font-medium text-blue-900">Semester</label>
           <select
@@ -290,7 +275,6 @@ export default function UpdateSession({ session, onClose }) {
           {errors.semester && <p className="text-red-600 text-sm mt-1">{errors.semester}</p>}
         </div>
 
-        {/* Boutons */}
         <div className="col-span-1 md:col-span-3 flex justify-between mt-4">
           <button
             type="submit"

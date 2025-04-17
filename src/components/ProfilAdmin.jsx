@@ -16,19 +16,17 @@ export default function Profiluser() {
         picture: ''
     });
 
-    // Convert ISO date to YYYY-MM-DD format for the input
     const isoToInputDate = (isoString) => {
         if (!isoString) return '';
         const date = new Date(isoString);
         return date.toISOString().split('T')[0];
     };
 
-    // Initialize form with user data
     useEffect(() => {
         if (user) {
             setFormData({
                 email: user.email || '',
-                phoneNumber: user.phone_number || '',  // Match your backend property names
+                phoneNumber: user.phone_number || '', 
                 firstName: user.first_name || '',
                 familyName: user.family_name || '',
                 dateOfBirth: isoToInputDate(user.date_of_birth) || '',
@@ -49,7 +47,7 @@ export default function Profiluser() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Convert back to your backend's expected property names
+       
         const dataToSubmit = {
             newEmail: formData.email,
             newPhoneNumber: formData.phoneNumber,
@@ -65,9 +63,8 @@ export default function Profiluser() {
         updateProfile(dataToSubmit);
     };
 
-
     return (
-        <div className=" w-full mx-auto p-4">
+        <div className="w-full mx-auto p-4">
             <h1 className="text-2xl font-bold mb-6">Update Profile</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -93,48 +90,50 @@ export default function Profiluser() {
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                        <input
+                            type="tel"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-                    <input
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-                    <input
-                        type="date"
-                        name="dateOfBirth"
-                        value={formData.dateOfBirth}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Department</label>
-                    <input
-                        type="text"
-                        name="department"
-                        value={formData.department}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                        <input
+                            type="date"
+                            name="dateOfBirth"
+                            value={formData.dateOfBirth}
+                            onChange={handleChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Department</label>
+                        <input
+                            type="text"
+                            name="department"
+                            value={formData.department}
+                            onChange={handleChange}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                    </div>
                 </div>
 
                 <div>
@@ -147,8 +146,6 @@ export default function Profiluser() {
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
                 </div>
-
-                
 
                 <div className="pt-4">
                     <button

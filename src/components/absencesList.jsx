@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 export default function AbsenceList() {
   const { absences, selectedTeacher, getAbsences, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
   const [updateForm, setUpdateForm] = useState(false);
-  const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable); // Filtered sessions based on selected date
+  const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable);
 
   const date = useRef("");
   const selectedSession = useRef("");
@@ -16,20 +16,30 @@ export default function AbsenceList() {
   const newNotes = useRef("");
   const newReason = useRef("");
 
-  // Filter sessions based on the selected date's day of the week
   const filterSessionsByDate = (selectedDate) => {
-    const dayOfWeek = new Date(selectedDate).toLocaleString("en-us", { weekday: "long" });
+    if (!selectedDate) {
+      setFilteredSessions(teacherTimeTable);
+      return;
+    }
 
-    // Filter teacherTimeTable to only show sessions that match the selected day
-    const filtered = teacherTimeTable.filter((session) => session.day_of_week.toLowerCase() === dayOfWeek.toLowerCase());
+    const dayOfWeek = new Date(selectedDate).toLocaleString("en-us", { weekday: "long" });
+    const filtered = teacherTimeTable.filter((session) => 
+      session.day_of_week.toLowerCase() === dayOfWeek.toLowerCase()
+    );
     setFilteredSessions(filtered);
   };
 
   useEffect(() => {
+    setFilteredSessions(teacherTimeTable);
+  }, [teacherTimeTable]);
+
+  useEffect(() => {
     if (date.current?.value) {
-      filterSessionsByDate(date.current.value); // Filter sessions when date changes
+      filterSessionsByDate(date.current.value);
+    } else {
+      setFilteredSessions(teacherTimeTable);
     }
-  }, [date.current?.value]); // Dependency on date input change
+  }, [date.current?.value, teacherTimeTable]);
 
   const openUpdateForm = (absenceId) => {
     setUpdateForm(!updateForm);
@@ -46,6 +56,12 @@ export default function AbsenceList() {
         reason: reason.current.value,
         notes: notes.current.value
       });
+     
+      date.current.value = "";
+      selectedSession.current.value = "";
+      reason.current.value = "";
+      notes.current.value = "";
+      setFilteredSessions(teacherTimeTable);
     }
   };
 
@@ -151,6 +167,17 @@ export default function AbsenceList() {
               type="date"
               className="border p-2 rounded w-full hover:cursor-text"
               required
+              onChange={(e) => {
+                if (e.target.value) {
+                  const dayOfWeek = new Date(e.target.value).toLocaleString("en-us", { weekday: "long" });
+                  const filtered = teacherTimeTable.filter((session) => 
+                    session.day_of_week.toLowerCase() === dayOfWeek.toLowerCase()
+                  );
+                  setFilteredSessions(filtered);
+                } else {
+                  setFilteredSessions(teacherTimeTable);
+                }
+              }}
             />
 
             <label className="block font-semibold mt-2">Updated session:</label>
@@ -199,13 +226,13 @@ export default function AbsenceList() {
       {!updateForm && teacherTimeTable.length !== 0 && (
         <div className="bg-white p-4 rounded-lg shadow-md mt-4">
           <h1 className="text-left p-3 text-[#141F75] text-2xl">Mark new absence</h1>
-          <form>
+          <form onSubmit={handleAdd}>
             <label className="block font-semibold">Select date:</label>
             <input
               ref={date}
               type="date"
               className="border p-2 rounded w-full hover:cursor-text"
-              required
+              onChange={(e) => filterSessionsByDate(e.target.value)}
             />
 
             <label className="block font-semibold">Select Session:</label>
@@ -242,7 +269,7 @@ export default function AbsenceList() {
             />
 
             <button
-              onClick={handleAdd}
+              type="submit"
               className="w-full p-2 text-white rounded-md bg-blue-500 hover:bg-blue-800 mt-3 cursor-pointer"
             >
               Add Absence

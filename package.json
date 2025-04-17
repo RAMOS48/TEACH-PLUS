@@ -16,6 +16,7 @@
     "cloudinary": "^2.6.0",
     "cookie": "^1.0.2",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.7.3",
     "jose": "^6.0.10",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.483.0",

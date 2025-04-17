@@ -1,7 +1,7 @@
 "use client"
 
 import Shedule from "@/components/Shedule";
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import dynamic from "next/dynamic";
 
 export default function Sessions() {
@@ -26,7 +26,7 @@ const ProfilAdmin = dynamic(() => import("../../../components/ProfilAdmin"), {
 });
 
 const [ isActive , setIsActive] = useState([true , false , false , false]);
-
+ 
 
 
     return (

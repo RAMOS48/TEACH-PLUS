@@ -29,7 +29,7 @@ export async function POST(req) {
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url)
-        const academicYear = searchParams.get("academic_year")
+        const academicYear = searchParams.get("academicYear")
         if (!academicYear) {
             return Response.json({ status: "FAILED", message: "A required data field is missing !" }, { status: 400 })
         }

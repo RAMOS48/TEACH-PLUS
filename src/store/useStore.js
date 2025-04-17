@@ -583,7 +583,7 @@ forgotPassword: async (email) => {
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/periods`);
       set({ periods: response.data.periods });
 
     } catch (error) {
@@ -599,24 +599,24 @@ forgotPassword: async (email) => {
     try {
 
       const data = get();
-      const response = await axios.post(`http://localhost:3000/api/ranks`, addedPeriod);
+      const response = await axios.post(`http://localhost:3000/api/periods`, addedPeriod);
       data.getPeriods()
     } catch (error) {
-      console.log("Error inserting rank:", error);
+      console.log("Error inserting period:", error);
     }finally {set({ isLoading: false});}
   },
 
  
 
-  updatePeriod: async (newPeriod) => {
+  updatePeriod: async (periodId , newPeriod) => {
     set({ isLoading: true});
     // work 
     try {
       const data = get();
-      const response = await axios.put(`http://localhost:3000/api/ranks`, newPeriod);
+      const response = await axios.put(`http://localhost:3000/api/periods/${periodId}`, newPeriod);
       data.getPeriods()
     } catch (error) {
-      console.log("Error updating rank", error);
+      console.log("Error updating period", error);
     }finally {set({ isLoading: false });}
   },
 
@@ -627,7 +627,7 @@ forgotPassword: async (email) => {
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3000/api/ranks/${periodId}`);
+      const response = await axios.delete(`http://localhost:3000/api/periods/${periodId}`);
       data.getPeriods()
     } catch (error) {
       console.log("Error deleting rank :", error);
@@ -641,14 +641,28 @@ forgotPassword: async (email) => {
 
 
   holidays: [],
-
+  getCurrentAcademicYear() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; 
+    
+    if (currentMonth >= 9) {
+        return `${currentYear}/${currentYear + 1}`;
+    } else if (currentMonth <= 7) {
+        return `${currentYear - 1}/${currentYear}`;
+    } else {
+        return `${currentYear}/${currentYear + 1}`;
+    }
+},
 
   getHolidays: async () => {
+    
     set({ isLoading: true});
+
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3000/api/ranks-history/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/holidays?academicYear=${data.getCurrentAcademicYear()}`);
       set({ holidays: response.data.holidays });
 
     } catch (error) {
@@ -656,7 +670,7 @@ forgotPassword: async (email) => {
     }finally{set({ isLoading: false});}
   },
 
-
+ 
 
   addHoliday: async (addedHoliday) => {
     set({ isLoading: true});
@@ -664,7 +678,7 @@ forgotPassword: async (email) => {
     try {
 
       const data = get();
-      const response = await axios.post(`http://localhost:3000/api/ranks`, addedHoliday);
+      const response = await axios.post(`http://localhost:3000/api/holidays`, addedHoliday);
       data.getHolidays()
     } catch (error) {
       console.log("Error inserting rank:", error);
@@ -673,15 +687,15 @@ forgotPassword: async (email) => {
 
  
 
-  updateHoliday: async (idHoliday , newHoliday) => {
+  updateHoliday: async (holidayId ,  newHoliday) => {
     set({ isLoading: true});
     // work 
     try {
       const data = get();
-      const response = await axios.put(`http://localhost:3000/api/ranks`, newHoliday);
+      const response = await axios.put(`http://localhost:3000/api/holidays/${holidayId}`, newHoliday);
       data.getHolidays()
     } catch (error) {
-      console.log("Error updating rank", error);
+      console.log("Error updating holiday", error);
     }finally {set({ isLoading: false });}
   },
 
@@ -692,10 +706,10 @@ forgotPassword: async (email) => {
     try {
       const data = get();
 
-      const response = await axios.delete(`http://localhost:3000/api/ranks/${holidayId}`);
+      const response = await axios.delete(`http://localhost:3000/api/holidays/${holidayId}`);
       data.getHolidays()
     } catch (error) {
-      console.log("Error deleting rank :", error);
+      console.log("Error deleting holiday :", error);
     }finally{set({ isLoading: false});}
   },
 

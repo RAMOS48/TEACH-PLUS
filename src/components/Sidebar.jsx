@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { LayoutDashboard, User, Calendar, Table, Clock, FileText } from "lucide-react";
 import useStore from "@/store/useStore";
@@ -9,19 +9,16 @@ import useStore from "@/store/useStore";
 const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { name: "Teachers", icon: User, path: "/admin/teachers" },
-  { name: "Schedules", icon: Calendar, path: "/admin/sessions" },
   { name: "Timetables", icon: Table, path: "/admin/timetable" },
-  { name: "Absences", icon: User, path: "/admin/absences" },
   { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
-  { name: "Reports", icon: FileText, path: "/admin/reports" },
   { name: "Settings", icon: FileText, path: "/admin/settings" },
-
 ];
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
   const { logout } = useStore();
 
   const handleLogout = async () => {
@@ -44,7 +41,6 @@ const Sidebar = () => {
 
   return (
     <div className={`h-screen bg-gray-50 ${isOpen ? "w-64" : "w-16"} transition-all duration-300`}>
-      {/* Header */}
       <div className="flex items-center justify-between p-3">
         {isOpen && (
           <h1 className="text-blue-950 font-extrabold text-xl">
@@ -58,21 +54,24 @@ const Sidebar = () => {
         )}
       </div>
 
-      {/* Navigation */}
       <nav className="mt-4">
-        {menuItems.map((item) => (
-          <div
-            key={item.name}
-            onClick={() => router.push(item.path)}
-            className="flex items-center p-3 cursor-pointer hover:bg-gray-200"
-          >
-            <item.icon className="text-gray-600" />
-            {isOpen && <span className="ml-3">{item.name}</span>}
-          </div>
-        ))}
+        {menuItems.map((item) => {
+          const isActive = pathname === item.path;
+          return (
+            <div
+              key={item.name}
+              onClick={() => router.push(item.path)}
+              className={`flex items-center p-3 cursor-pointer hover:bg-gray-200 ${
+                isActive ? "bg-blue-100 text-blue-600" : ""
+              }`}
+            >
+              <item.icon className={isActive ? "text-blue-600" : "text-gray-600"} />
+              {isOpen && <span className="ml-3">{item.name}</span>}
+            </div>
+          );
+        })}
       </nav>
 
-      {/* Logout */}
       <div
         onClick={handleLogout}
         className="absolute bottom-4 flex items-center p-3 cursor-pointer hover:bg-gray-200"
