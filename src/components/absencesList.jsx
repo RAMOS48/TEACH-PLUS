@@ -1,11 +1,20 @@
 "use client";
 import useStore from "@/store/useStore";
 import { useRef, useState, useEffect } from "react";
+import { translations } from "@/app/admin/translate";
 
 export default function AbsenceList() {
   const { absences, selectedTeacher, getAbsences, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
   const [updateForm, setUpdateForm] = useState(false);
   const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable);
+
+  // Accès aux traductions
+  const t = translations[0].manageAbsences;
+  const commonT = {
+    confirm: translations[0].modalAddTeacher.confirmButton,
+    back: translations[0].manageAbsences.buttonBack,
+    delete: translations[0].deleteTeacher.buttonDelete
+  };
 
   const date = useRef("");
   const selectedSession = useRef("");
@@ -80,18 +89,18 @@ export default function AbsenceList() {
 
   return (
     <div className="w-full p-4 bg-gray-100 min-h-screen">
-      <h1 className="ml-3 p-3 text-[#141F75] font-bold text-3xl">Absences</h1>
+      <h1 className="ml-3 p-3 text-[#141F75] font-bold text-3xl">{t.title}</h1>
 
       {!updateForm && absences?.length > 0 && (
         <div>
           <div className="w-full overflow-x-auto">
             <div className="hidden lg:flex text-[#141F75] font-semibold text-sm">
-              <div className="w-1/6 p-2">Date</div>
-              <div className="w-1/6 p-2">Caught up ?</div>
-              <div className="w-1/6 p-2">Reason</div>
-              <div className="w-1/6 p-2">Notes</div>
-              <div className="w-1/6 p-2">Catch up</div>
-              <div className="w-1/6 p-2">Delete</div>
+              <div className="w-1/6 p-2">{t.date}</div>
+              <div className="w-1/6 p-2">{t.caughtUp}</div>
+              <div className="w-1/6 p-2">{t.reason}</div>
+              <div className="w-1/6 p-2">{t.notes}</div>
+              <div className="w-1/6 p-2">{t.buttonCaughtUp}</div>
+              <div className="w-1/6 p-2">{t.buttonDelete}</div>
             </div>
           </div>
 
@@ -129,13 +138,13 @@ export default function AbsenceList() {
                       onClick={() => catchUpAbsence(absence.absence_id)}
                       className="bg-blue-700 text-white p-2 w-1/2 rounded hover:bg-[#141F75] cursor-pointer transition"
                     >
-                      {absence.caught_up ? "Undo" : "Catch up"}
+                      {absence.caught_up ? "Undo" : t.buttonCaughtUp}
                     </button>
                     <button
                       onClick={() => deleteAbsence(absence.absence_id)}
                       className="bg-red-500 text-white p-2 w-1/2 rounded hover:bg-red-600 cursor-pointer transition"
                     >
-                      Delete
+                      {commonT.delete}
                     </button>
                   </div>
                 </div>
@@ -147,7 +156,7 @@ export default function AbsenceList() {
       {updateForm && (
         <div>
           <h1 className="text-left ml-3 p-3 text-[#141F75] text-2xl">
-            Update Absence
+            {t.titleUpdate}
           </h1>
           <button
             className="text-left bg-[#141F75] text-white p-2 m-1 rounded-2xl hover:cursor-pointer"
@@ -155,13 +164,13 @@ export default function AbsenceList() {
               setUpdateForm(false);
             }}
           >
-            {"< Back"}
+            {"< " + commonT.back}
           </button>
           <form
             onSubmit={handleUpdate}
             className="bg-white p-4 rounded-lg shadow-md mt-4"
           >
-            <label className="block font-semibold">Updated starting date:</label>
+            <label className="block font-semibold">{t.date}:</label>
             <input
               ref={newDate}
               type="date"
@@ -180,14 +189,14 @@ export default function AbsenceList() {
               }}
             />
 
-            <label className="block font-semibold mt-2">Updated session:</label>
+            <label className="block font-semibold mt-2">{translations[0].modalAddTeacher.status}:</label>
             <select
               ref={newSelectedSession}
               className="border p-2 rounded w-full mt-2 hover:cursor-pointer"
               required
             >
               <option value="" disabled>
-                Select session
+                {t.buttonAdd}
               </option>
               {filteredSessions.map((session) => (
                 <option
@@ -199,14 +208,14 @@ export default function AbsenceList() {
               ))}
             </select>
 
-            <label className="block font-semibold">Reason:</label>
+            <label className="block font-semibold">{t.reason}:</label>
             <input
               type="text"
               ref={newReason}
               className="border p-2 rounded w-full"
             />
 
-            <label className="block font-semibold">Notes:</label>
+            <label className="block font-semibold">{t.notes}:</label>
             <input
               type="text"
               ref={newNotes}
@@ -217,7 +226,7 @@ export default function AbsenceList() {
               type="submit"
               className="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer transition"
             >
-              Confirm
+              {commonT.confirm}
             </button>
           </form>
         </div>
@@ -225,9 +234,9 @@ export default function AbsenceList() {
 
       {!updateForm && teacherTimeTable.length !== 0 && (
         <div className="bg-white p-4 rounded-lg shadow-md mt-4">
-          <h1 className="text-left p-3 text-[#141F75] text-2xl">Mark new absence</h1>
+          <h1 className="text-left p-3 text-[#141F75] text-2xl">{t.titleAdd}</h1>
           <form onSubmit={handleAdd}>
-            <label className="block font-semibold">Select date:</label>
+            <label className="block font-semibold">{t.date}:</label>
             <input
               ref={date}
               type="date"
@@ -235,14 +244,14 @@ export default function AbsenceList() {
               onChange={(e) => filterSessionsByDate(e.target.value)}
             />
 
-            <label className="block font-semibold">Select Session:</label>
+            <label className="block font-semibold">{translations[0].modalAddTeacher.status}:</label>
             <select
               ref={selectedSession}
               className="border p-2 rounded w-full mt-2 hover:cursor-pointer"
               required
             >
               <option value="" disabled>
-                Select session
+                {t.buttonAdd}
               </option>
               {filteredSessions.map((session) => (
                 <option
@@ -254,14 +263,14 @@ export default function AbsenceList() {
               ))}
             </select>
 
-            <label className="block font-semibold">Reason:</label>
+            <label className="block font-semibold">{t.reason}:</label>
             <input
               type="text"
               ref={reason}
               className="border p-2 rounded w-full"
             />
 
-            <label className="block font-semibold">Notes:</label>
+            <label className="block font-semibold">{t.notes}:</label>
             <input
               type="text"
               ref={notes}
@@ -272,7 +281,7 @@ export default function AbsenceList() {
               type="submit"
               className="w-full p-2 text-white rounded-md bg-blue-500 hover:bg-blue-800 mt-3 cursor-pointer"
             >
-              Add Absence
+              {t.buttonAdd}
             </button>
           </form>
         </div>

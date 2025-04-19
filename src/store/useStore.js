@@ -713,6 +713,28 @@ forgotPassword: async (email) => {
     }finally{set({ isLoading: false});}
   },
 
+
+// sub periods and calculate extra hours 
+
+
+
+getSubPeriods: async (teacherId , academicYear) => {
+    
+  set({ isLoading: true});
+
+  // work
+  try {
+    const data = get();
+    const response = await axios.get(`http://localhost:3000/api/teacher-periods?teacherId=${teacherId}&academicYear=${academicYear}`);
+    return response.data
+
+  } catch (error) {
+    return []
+  }finally{set({ isLoading: false});}
+},
+
+
+
 }));
 
 export default useStore;

@@ -4,7 +4,6 @@ import useStore from "@/store/useStore";
 import { useEffect } from "react";
 import { motion } from 'framer-motion'
 
-
 export default function AdminLayout({ children }) {
   const { getAdmin, getTeachers, isLoading , getPeriods , getHolidays } = useStore();
 
@@ -19,6 +18,8 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     setAdmin();
   }, []);
+
+  
 
   return (<div>
     <motion.div 

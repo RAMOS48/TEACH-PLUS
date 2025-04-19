@@ -3,6 +3,9 @@
 import { useState } from "react";
 import useStore from "@/store/useStore";
 
+// Utilisation de la même variable isEnglish que dans translate.js
+const isEnglish = false;
+
 export default function ProfileTeacher({ teacher, onClose }) {
   const [isChanged, setIsChanged] = useState(false);
   const [errors, setErrors] = useState({});
@@ -31,31 +34,31 @@ export default function ProfileTeacher({ teacher, onClose }) {
     const age = new Date().getFullYear() - new Date(updatedTeacher.dateOfBirth).getFullYear();
 
     if (!pascalCaseRegex.test(updatedTeacher.firstName)) {
-      newErrors.firstName = "First name must be in PascalCase (e.g., John)";
+      newErrors.firstName = isEnglish ? "First name must be in PascalCase (e.g., John)" : "Le prénom doit être en PascalCase (ex. Jean)";
     }
 
     if (!pascalCaseRegex.test(updatedTeacher.familyName)) {
-      newErrors.familyName = "Family name must be in PascalCase (e.g., Smith)";
+      newErrors.familyName = isEnglish ? "Family name must be in PascalCase (e.g., Smith)" : "Le nom de famille doit être en PascalCase (ex. Dupont)";
     }
 
     if (age < 20 || age > 80) {
-      newErrors.dateOfBirth = "Teacher age must be between 20 and 80 years";
+      newErrors.dateOfBirth = isEnglish ? "Teacher age must be between 20 and 80 years" : "L'âge de l'enseignant doit être entre 20 et 80 ans";
     }
 
     if (!phoneRegex.test(updatedTeacher.phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must be exactly 10 digits";
+      newErrors.phoneNumber = isEnglish ? "Phone number must be exactly 10 digits" : "Le numéro de téléphone doit comporter exactement 10 chiffres";
     }
 
     if (!emailRegex.test(updatedTeacher.email)) {
-      newErrors.email = "Invalid email format";
+      newErrors.email = isEnglish ? "Invalid email format" : "Format d'email invalide";
     }
 
     if (!/^\d+$/.test(updatedTeacher.extraHoursOutside)) {
-      newErrors.extraHoursOutside = "Extra hours must be an integer";
+      newErrors.extraHoursOutside = isEnglish ? "Extra hours must be an integer" : "Les heures supplémentaires doivent être un entier";
     }
 
     if (updatedTeacher.bio.length > 100) {
-      newErrors.bio = "Bio must be under 100 characters";
+      newErrors.bio = isEnglish ? "Bio must be under 100 characters" : "La biographie doit faire moins de 100 caractères";
     }
 
     setErrors(newErrors);
@@ -93,9 +96,30 @@ export default function ProfileTeacher({ teacher, onClose }) {
     onClose();
   };
 
+  // Définition des traductions directement dans le composant
+  const translations = {
+    title: isEnglish ? "Update Teacher" : "Modifier l'Enseignant",
+    firstName: isEnglish ? "First Name" : "Prénom",
+    familyName: isEnglish ? "Family Name" : "Nom de Famille",
+    dateOfBirth: isEnglish ? "Date of Birth" : "Date de Naissance",
+    phoneNumber: isEnglish ? "Phone Number" : "Numéro de Téléphone",
+    photo: isEnglish ? "Photo" : "Photo",
+    extraHours: isEnglish ? "Extra Hours" : "Heures Supplémentaires",
+    status: isEnglish ? "Status" : "Statut",
+    email: isEnglish ? "Email" : "Email",
+    bio: isEnglish ? "Biography" : "Biographie",
+    updateButton: isEnglish ? "Update" : "Mettre à Jour",
+    statusOptions: {
+      active: isEnglish ? "Active" : "Actif",
+      inactive: isEnglish ? "Not Active" : "Non Actif"
+    }
+  };
+
   return (
     <div className="w-full">
-      <h1 className="text-left p-3 text-[#141F75] text-3xl">Update teacher</h1>
+      <h1 className="text-left p-3 text-[#141F75] text-3xl">
+        {translations.title}
+      </h1>
       <div className="w-full mx-auto p-2 bg-white shadow-md rounded-lg flex flex-col">
         <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="col-span-1 sm:col-span-1 lg:col-span-3 flex justify-center mb-4">
@@ -108,65 +132,65 @@ export default function ProfileTeacher({ teacher, onClose }) {
 
           {[
             {
-              label: "First Name",
+              label: translations.firstName,
               name: "firstName",
               type: "text",
               value: updatedTeacher.firstName,
               error: errors.firstName,
             },
             {
-              label: "Family Name",
+              label: translations.familyName,
               name: "familyName",
               type: "text",
               value: updatedTeacher.familyName,
               error: errors.familyName,
             },
             {
-              label: "Date Of Birth",
+              label: translations.dateOfBirth,
               name: "dateOfBirth",
               type: "date",
               value: new Date(updatedTeacher.dateOfBirth).toISOString().split("T")[0],
               error: errors.dateOfBirth,
             },
             {
-              label: "Phone Number",
+              label: translations.phoneNumber,
               name: "phoneNumber",
               type: "number",
               value: updatedTeacher.phoneNumber,
               error: errors.phoneNumber,
             },
             {
-              label: "Photo",
+              label: translations.photo,
               name: "picture",
               type: "file",
               onChange: handleFileChange,
             },
             {
-              label: "Extra hours outside this departement",
+              label: translations.extraHours,
               name: "extraHoursOutside",
               type: "text",
               value: updatedTeacher.extraHoursOutside,
               error: errors.extraHoursOutside,
             },
             {
-              label: "Status",
+              label: translations.status,
               name: "isActive",
               type: "select",
               value: updatedTeacher.isActive,
               options: [
-                { label: "Not Active", value: 0 },
-                { label: "Active", value: 1 },
+                { label: translations.statusOptions.inactive, value: 0 },
+                { label: translations.statusOptions.active, value: 1 },
               ],
             },
             {
-              label: "Email",
+              label: translations.email,
               name: "email",
               type: "email",
               value: updatedTeacher.email,
               error: errors.email,
             },
             {
-              label: "Bio",
+              label: translations.bio,
               name: "bio",
               type: "textarea",
               value: updatedTeacher.bio,
@@ -229,7 +253,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               : "bg-gray-300 cursor-not-allowed"
           }`}
         >
-          Confirm Update
+          {translations.updateButton}
         </button>
       </div>
     </div>

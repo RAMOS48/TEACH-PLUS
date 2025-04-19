@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import useStore from "@/store/useStore";
+import { translations } from "@/app/admin/translate";
 
 export default function AddTeacher({ onClose }) {
   const { addTeacher, uploidImage, isLoading } = useStore();
+  const isEnglish = true; // You can make this dynamic based on user preference
+  const t = translations.find(item => item.page === "teachers").modalAddTeacher;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -39,11 +42,15 @@ export default function AddTeacher({ onClose }) {
     const nameRegex = /^[A-Z][a-z]*$/;
 
     if (!nameRegex.test(form.firstName)) {
-      newErrors.firstName = "First name must be PascalCase. Ex: Mustapha";
+      newErrors.firstName = isEnglish 
+        ? "First name must be PascalCase. Ex: Mustapha" 
+        : "Le prénom doit être en PascalCase. Ex: Mustapha";
     }
 
     if (!nameRegex.test(form.familyName)) {
-      newErrors.familyName = "Family name must be PascalCase. Ex: Rahal";
+      newErrors.familyName = isEnglish 
+        ? "Family name must be PascalCase. Ex: Rahal" 
+        : "Le nom de famille doit être en PascalCase. Ex: Rahal";
     }
 
     const birthDate = new Date(form.dateOfBirth);
@@ -51,25 +58,35 @@ export default function AddTeacher({ onClose }) {
     const age = today.getFullYear() - birthDate.getFullYear();
 
     if (age < 23 || age > 80) {
-      newErrors.dateOfBirth = "Age must be between 23 and 80 years.";
+      newErrors.dateOfBirth = isEnglish 
+        ? "Age must be between 23 and 80 years." 
+        : "L'âge doit être compris entre 23 et 80 ans.";
     }
 
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.phoneNumber)) {
-      newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
+      newErrors.phoneNumber = isEnglish 
+        ? "Phone number must be exactly 10 digits." 
+        : "Le numéro de téléphone doit comporter exactement 10 chiffres.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      newErrors.email = "Email is not valid.";
+      newErrors.email = isEnglish 
+        ? "Email is not valid." 
+        : "L'email n'est pas valide.";
     }
 
     if (!/^\d+$/.test(form.extraOursOutside)) {
-      newErrors.extraOursOutside = "Extra hours must be a valid number.";
+      newErrors.extraOursOutside = isEnglish 
+        ? "Extra hours must be a valid number." 
+        : "Les heures supplémentaires doivent être un nombre valide.";
     }
 
     if (form.bio.length > 100) {
-      newErrors.bio = "Bio must be under 100 characters.";
+      newErrors.bio = isEnglish 
+        ? "Bio must be under 100 characters." 
+        : "La biographie doit contenir moins de 100 caractères.";
     }
 
     setErrors(newErrors);
@@ -93,7 +110,7 @@ export default function AddTeacher({ onClose }) {
 
   return (
     <div className="w-full">
-      <h1 className="text-left p-3 text-[#141F75] text-3xl">Add teacher</h1>
+      <h1 className="text-left p-3 text-[#141F75] text-3xl">{t.title}</h1>
       <div className="w-full mx-auto p-6 bg-gray-100 rounded-xl flex flex-col h-full">
         <div className="flex flex-col items-center mb-6">
           <img
@@ -107,41 +124,40 @@ export default function AddTeacher({ onClose }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-grow">
-         
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">First Name</label>
+            <label className="block text-left text-[#141F75]">{t.firstname}</label>
             <input
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
               type="text"
-              placeholder="Enter first name"
+              placeholder={isEnglish ? "Enter first name" : "Entrez le prénom"}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.firstName && (
               <p className="text-red-500 text-sm">{errors.firstName}</p>
             )}
 
-            <label className="block text-left text-[#141F75]">Family Name</label>
+            <label className="block text-left text-[#141F75]">{t.familyName}</label>
             <input
               name="familyName"
               value={form.familyName}
               onChange={handleChange}
               type="text"
-              placeholder="Enter family name"
+              placeholder={isEnglish ? "Enter family name" : "Entrez le nom de famille"}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.familyName && (
               <p className="text-red-500 text-sm">{errors.familyName}</p>
             )}
 
-            <label className="block text-left text-[#141F75]">Email</label>
+            <label className="block text-left text-[#141F75]">{t.email}</label>
             <input
               name="email"
               value={form.email}
               onChange={handleChange}
               type="email"
-              placeholder="Enter email"
+              placeholder={isEnglish ? "Enter email" : "Entrez l'email"}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.email && (
@@ -149,9 +165,8 @@ export default function AddTeacher({ onClose }) {
             )}
           </div>
 
-   
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">Date Of Birth</label>
+            <label className="block text-left text-[#141F75]">{t.dateOfBirth}</label>
             <input
               name="dateOfBirth"
               value={form.dateOfBirth}
@@ -163,13 +178,13 @@ export default function AddTeacher({ onClose }) {
               <p className="text-red-500 text-sm">{errors.dateOfBirth}</p>
             )}
 
-            <label className="block text-left text-[#141F75]">Phone Number</label>
+            <label className="block text-left text-[#141F75]">{t.phoneNumber}</label>
             <input
               name="phoneNumber"
               value={form.phoneNumber}
               onChange={handleChange}
               type="text"
-              placeholder="Enter phone number"
+              placeholder={isEnglish ? "Enter phone number" : "Entrez le numéro de téléphone"}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.phoneNumber && (
@@ -177,14 +192,14 @@ export default function AddTeacher({ onClose }) {
             )}
 
             <label className="block text-left text-[#141F75]">
-              Extra hours outside this department
+              {t.extraHours}
             </label>
             <input
               name="extraOursOutside"
               value={form.extraOursOutside}
               onChange={handleChange}
               type="text"
-              placeholder="Enter extra hours"
+              placeholder={isEnglish ? "Enter extra hours" : "Entrez les heures supplémentaires"}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.extraOursOutside && (
@@ -192,32 +207,31 @@ export default function AddTeacher({ onClose }) {
             )}
           </div>
 
-         
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">Photo</label>
+            <label className="block text-left text-[#141F75]">{t.photo}</label>
             <input
               type="file"
               onChange={handleImageChange}
               className="w-full p-2 border rounded-md border-gray-200 cursor-pointer"
             />
 
-            <label className="block text-left text-[#141F75]">Status</label>
+            <label className="block text-left text-[#141F75]">{t.status}</label>
             <select
               name="isActive"
               value={form.isActive}
               onChange={handleChange}
               className="w-full p-2 border rounded-md border-gray-200 cursor-pointer"
             >
-              <option value="0">Not Active</option>
-              <option value="1">Active</option>
+              <option value="0">{isEnglish ? "Not Active" : "Non Actif"}</option>
+              <option value="1">{isEnglish ? "Active" : "Actif"}</option>
             </select>
 
-            <label className="block text-left text-[#141F75]">Bio</label>
+            <label className="block text-left text-[#141F75]">{t.bio}</label>
             <textarea
               name="bio"
               value={form.bio}
               onChange={handleChange}
-              placeholder="Write a short bio..."
+              placeholder={isEnglish ? "Write a short bio..." : "Écrivez une courte biographie..."}
               className="w-full p-2 border rounded-md border-gray-200"
             />
             {errors.bio && (
@@ -230,7 +244,7 @@ export default function AddTeacher({ onClose }) {
           onClick={handleAdd}
           className="w-full mt-4 p-3 text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg shadow-md transition"
         >
-          {isLoading ? "Loading ..." : "Confirm"}
+          {isLoading ? (isEnglish ? "Loading..." : "Chargement...") : t.confirmButton}
         </button>
       </div>
     </div>
