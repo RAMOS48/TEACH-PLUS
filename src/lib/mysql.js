@@ -11,6 +11,8 @@ try {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    timezone: "local",
+    dateStrings: true,
   });
   console.log("MySQL Database Connected Successfully !");
 } catch (error) {

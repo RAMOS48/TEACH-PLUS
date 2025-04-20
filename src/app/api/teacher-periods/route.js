@@ -4,39 +4,34 @@ async function getTeacherPeriods(teacherId, academicYear) {
   const [startYear, endYear] = academicYear.split('/');
   if (!startYear || !endYear) throw new Error("Format d'année invalide");
 
-  const periodStart = new Date(`${startYear}-09-01`);
-  const periodEnd = new Date(`${endYear}-07-31`);
-
+  const academicYearStart = new Date(`${startYear}-09-01`);
+  const academicYearEnd = new Date(`${endYear}-07-31`);
   const [periods] = await database.execute(
     `SELECT * FROM Periods WHERE \`from\` >= ? AND \`to\` <= ?`,
-    [periodStart, periodEnd]
+    [academicYearStart, academicYearEnd]
   );
 
   const [rankChanges] = await database.execute(
-    `SELECT startingDate FROM Ranks 
+    `SELECT starting_date FROM Ranks 
      WHERE teacher_id = ? AND starting_date BETWEEN ? AND ?
      ORDER BY starting_date`,
-    [teacherId, periodStart, periodEnd]
+    [teacherId, academicYearStart, academicYearEnd]
   );
-
   if (rankChanges.length === 0) {
     return periods.map(p => ({
-      from: p.from.toISOString().split('T')[0],
-      to: p.to.toISOString().split('T')[0]
+      from: new Date(p.from).toISOString().split('T')[0],
+      to: new Date(p.to).toISOString().split('T')[0]
     }));
   }
-
   const result = [];
-  
+
   for (const period of periods) {
     const periodStart = new Date(period.from);
     const periodEnd = new Date(period.to);
-    
     const changesInPeriod = rankChanges.filter(change => {
-      const changeDate = new Date(change.startingDate);
-      return changeDate > periodStart && changeDate < periodEnd;
+      const changeDate = new Date(change.starting_date);
+      return changeDate.getTime() > periodStart.getTime() && changeDate.getTime() < periodEnd.getTime();
     });
-
     if (changesInPeriod.length === 0) {
       result.push({
         from: period.from.toISOString().split('T')[0],
@@ -45,9 +40,8 @@ async function getTeacherPeriods(teacherId, academicYear) {
     } else {
       let currentStart = periodStart;
       const sortedChanges = changesInPeriod
-        .map(c => new Date(c.startingDate))
+        .map(c => new Date(c.starting_date))
         .sort((a, b) => a.getTime() - b.getTime());
-
       for (const changeDate of sortedChanges) {
         result.push({
           from: currentStart.toISOString().split('T')[0],
@@ -57,7 +51,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
       }
       result.push({
         from: currentStart.toISOString().split('T')[0],
-        to: periodEnd.toISOString().split('T')[0]
+        to: periodEnd.toISOString().split('T')[0],
       });
     }
   }
@@ -72,26 +66,14 @@ export async function GET(request) {
     const academicYear = searchParams.get('academicYear');
 
     if (!teacherId || !academicYear) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'Paramètres requis'
-      }), { status: 400 });
+      return Response.json({ status: "FAILED", message: "A required data field is missing !" }, { status: 400 })
     }
 
     const periods = await getTeacherPeriods(teacherId, academicYear);
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      data: periods 
-    }), { 
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+
+    return Response.json({ status: "SUCCESS", message: "Sub-Periods found successfully !", data: periods }, { status: 200 })
 
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      message: error.message || 'Erreur serveur'
-    }), { status: 500 });
+    return Response.json({ status: "FAILED", message: error.message }, { status: 500 })
   }
 }
