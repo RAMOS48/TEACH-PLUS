@@ -726,7 +726,9 @@ getSubPeriods: async (teacherId , academicYear) => {
   try {
     const data = get();
     const response = await axios.get(`http://localhost:3000/api/teacher-periods?teacherId=${teacherId}&academicYear=${academicYear}`);
-    return response.data
+    
+    
+    return response.data.data
 
   } catch (error) {
     return []

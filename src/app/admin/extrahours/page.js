@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import useStore from "@/store/useStore";
 import { useRouter } from "next/navigation";
+import ExtraHoursSheet from '@/components/ExtraHoursSheet';
 
 export default function ExtraHours() {
   const { teachers, getSubPeriods } = useStore();
@@ -125,6 +126,7 @@ export default function ExtraHours() {
         <p>Année académique: {academicYear || 'Non sélectionnée'}</p>
         <p>Sous-période sélectionnée: {selectedSubPeriod ? subPeriods[selectedSubPeriod].from + ' - ' + subPeriods[selectedSubPeriod].to : 'Aucune'}</p>
       </div>
+      <ExtraHoursSheet />
     </div>
   );
 }
