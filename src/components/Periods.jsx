@@ -23,7 +23,7 @@ export default function Periods() {
       ...prev,
       [name]: value
     }));
-    
+
     if (error) setError('');
   };
 
@@ -32,28 +32,28 @@ export default function Periods() {
       setError('Please enter a name for the period');
       return false;
     }
-    
+
     if (!formData.from || !formData.to) {
       setError('Please fill both date fields');
       return false;
     }
-    
+
     if (new Date(formData.to) <= new Date(formData.from)) {
       setError('End date must be after start date');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateDates()) return;
 
     if (editingId !== null) {
-      updatePeriod(editingId, { 
-        name: formData.name,
+      updatePeriod(editingId, {
+        newName: formData.name,
         newFrom: formData.from,
         newTo: formData.to
       });
@@ -95,9 +95,9 @@ export default function Periods() {
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Manage Periods</h1>
-      
+
       <div className="flex flex-col lg:flex-row gap-8">
-        <div 
+        <div
           ref={formRef}
           className="bg-gray-50 p-4 rounded-lg flex-1"
         >
@@ -110,7 +110,7 @@ export default function Periods() {
                 {error}
               </div>
             )}
-            
+
             <div>
               <label htmlFor="name" className="block mb-1 font-medium">Period Name</label>
               <input
@@ -123,7 +123,7 @@ export default function Periods() {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="from" className="block mb-1 font-medium">From Date</label>
               <input
@@ -136,7 +136,7 @@ export default function Periods() {
                 required
               />
             </div>
-            
+
             <div>
               <label htmlFor="to" className="block mb-1 font-medium">To Date</label>
               <input
@@ -149,7 +149,7 @@ export default function Periods() {
                 required
               />
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 type="submit"
@@ -157,7 +157,7 @@ export default function Periods() {
               >
                 {editingId !== null ? 'Update Period' : 'Add Period'}
               </button>
-              
+
               {editingId !== null && (
                 <button
                   type="button"
@@ -182,9 +182,9 @@ export default function Periods() {
               <p className="text-gray-500">No periods added yet.</p>
             </div>
           ) : (
-            <div 
+            <div
               className="space-y-3 overflow-y-auto pr-2"
-              style={{ 
+              style={{
                 height: `calc(${formHeight} - 40px)`,
                 scrollbarWidth: 'thin'
               }}
@@ -200,13 +200,13 @@ export default function Periods() {
                       </div>
                     </div>
                     <div className="space-x-2">
-                      <button 
+                      <button
                         onClick={() => handleEdit(period)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
                         Edit
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(period.period_id)}
                         className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                       >
