@@ -14,6 +14,8 @@ export default function ExtraHours() {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [academicYear, setAcademicYear] = useState('');
   const [subPeriods, setSubPeriods] = useState([]);
+  const [extraDays, setExtraDays] = useState([]);
+
   const [selectedSubPeriod, setSelectedSubPeriod] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sheet , setSheet] = useState ({});
@@ -39,7 +41,12 @@ export default function ExtraHours() {
   const handleExtraHours = async () => {
 
     const sheet = await getExtraHoursSheet({teacherId:selectedTeacher.teacher_id , from:subPeriods[selectedSubPeriod].from ,to:subPeriods[selectedSubPeriod].to ,rank:subPeriods[selectedSubPeriod].rank , academicYear:academicYear ,rankPrice:100 });
-    setSheet(sheet);
+    setSheet(sheet.sheet);
+    setExtraDays(sheet.extraDays)
+    console.log(sheet.extraDays);
+    console.log(sheet.sheet);
+    
+    
     setIsModalOpen(true)
     
   };
@@ -138,14 +145,8 @@ export default function ExtraHours() {
 
       {isModalOpen &&
       <div className="mt-8 p-4 bg-gray-50 rounded">
-        <h2 className="font-bold mb-2">Fiche des heures supplimentaires:</h2>
-        <p>Enseignant : { `${selectedTeacher.first_name} ${selectedTeacher.family_name}`}</p>
-        <p>Année : {academicYear}</p>
-        <p>Période : { subPeriods[selectedSubPeriod]?.from + ' - ' + subPeriods[selectedSubPeriod]?.to }</p>
-        <p>Rank : {subPeriods[selectedSubPeriod]?.rank}</p>
-        <p>Rank Price :{sheet?.rank_price} </p>
-        <p>Total extra hours :{sheet?.extra_hours_number} </p>
-        <ExtraHoursSheet teacher={{firstName:selectedTeacher.first_name , familyName: selectedTeacher.family_name , academicYear:academicYear , from:subPeriods[selectedSubPeriod]?.from, to:subPeriods[selectedSubPeriod]?.to}}/>
+        
+        <ExtraHoursSheet teacher={{rank:sheet.rank , extraDays:extraDays , firstName:selectedTeacher.first_name , familyName: selectedTeacher.family_name , academicYear:academicYear , from:subPeriods[selectedSubPeriod]?.from, to:subPeriods[selectedSubPeriod]?.to }}/>
       </div>
 }
     </div>

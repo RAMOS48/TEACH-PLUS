@@ -13,7 +13,8 @@ export async function POST(req) {
         );
         
         if (sheet.length) {
-            return Response.json({ status: "EXISTS", message: "Sheet already exists", sheet: sheet[0] }, { status: 200 })
+            const [ extraDays ]= await database.execute("SELECT * FROM Extra_days WHERE sheet_id =? " , [sheet[0].sheet_id])
+            return Response.json({ status: "EXISTS", message: "Sheet already exists", sheet: sheet[0] , extraDays:extraDays }, { status: 200 })
         }
         else {
             const toDate = new Date(to)

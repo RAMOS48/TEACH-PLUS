@@ -37,16 +37,20 @@ function groupWeeksByMonth(from, to) {
 
 export default function ExtraHoursSheet({ teacher }) {
   const weeksByMonth = groupWeeksByMonth(teacher.from, teacher.to);
+  const extraHoursDays = teacher.extraDays;
 
-  // Compter seulement les jours valides (dimanche à jeudi)
-  const totalHours = Object.values(weeksByMonth)
+  function getExtraHoursEntry(date) {
+    const formatted = format(date, 'yyyy-MM-dd');
+    return extraHoursDays.find(d => d.date === formatted);
+  }
+
+  const totalExtraHours = Object.values(weeksByMonth)
     .flat()
     .reduce((sum, week) => {
-      const validDays = week.filter(d => {
-        const day = getDay(d);
-        return day >= 0 && day <= 4;
-      });
-      return sum + validDays.length;
+      return sum + week.reduce((innerSum, d) => {
+        const match = getExtraHoursEntry(d);
+        return match ? innerSum + Number(match.number_of_hours) : innerSum;
+      }, 0);
     }, 0);
 
   return (
@@ -85,6 +89,15 @@ export default function ExtraHoursSheet({ teacher }) {
                   return day >= 0 && day <= 4; // Sunday to Thursday
                 });
 
+                const extraHours = validDays.reduce((sum, d) => {
+                  const match = getExtraHoursEntry(d);
+                  return match ? sum + Number(match.number_of_hours) : sum;
+                }, 0);
+
+                const extraDates = validDays
+                  .filter(d => getExtraHoursEntry(d))
+                  .map(d => format(d, 'MM/dd'));
+
                 return (
                   <tr key={`${month}-${weekIndex}`}>
                     {weekIndex === 0 && (
@@ -93,19 +106,22 @@ export default function ExtraHoursSheet({ teacher }) {
                       </td>
                     )}
                     <td className="border border-black p-1">Semaine {weekIndex + 1}</td>
-                    <td className="border border-black p-1">{validDays.length}h</td>
-                    <td className="border border-black p-1">
-                      {validDays.map(d => format(d, 'dd/MM')).join(', ')}
-                    </td>
+                    <td className="border border-black p-1">{extraHours}h</td>
+                    <td className="border border-black p-1">{extraDates.join(', ')}</td>
                   </tr>
                 );
               })}
               <tr>
                 <td className="border border-black p-1 font-bold" colSpan={2}>Total {month}</td>
                 <td className="border border-black p-1 font-bold">
-                  {weeks.reduce((sum, week) => {
-                    return sum + week.filter(d => getDay(d) >= 0 && getDay(d) <= 4).length;
-                  }, 0)}h
+                  {
+                    weeks.reduce((sum, week) => {
+                      return sum + week.reduce((innerSum, d) => {
+                        const match = getExtraHoursEntry(d);
+                        return match ? innerSum + Number(match.number_of_hours) : innerSum;
+                      }, 0);
+                    }, 0)
+                  }h
                 </td>
                 <td className="border border-black p-1" />
               </tr>
@@ -113,7 +129,7 @@ export default function ExtraHoursSheet({ teacher }) {
           ))}
           <tr>
             <td className="border border-black p-1 font-bold" colSpan={2}>Total</td>
-            <td className="border border-black p-1 font-bold">{totalHours}h</td>
+            <td className="border border-black p-1 font-bold">{totalExtraHours}h</td>
             <td className="border border-black p-1" />
           </tr>
         </tbody>
