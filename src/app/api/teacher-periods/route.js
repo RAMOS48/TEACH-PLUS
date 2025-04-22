@@ -25,10 +25,25 @@ async function getTeacherPeriods(teacherId, academicYear) {
       return periodEnd.getTime() < now.getTime() && periodStart.getTime() < now.getTime();
     }
     );
-    return availablePeriods.map(p => ({
-      from: new Date(p.from).toISOString().split('T')[0],
-      to: new Date(p.to).toISOString().split('T')[0]
-    }));
+    let periodsWithRanks = [];
+    for (const period of availablePeriods) {
+      const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
+      if (rank.length) {
+        periodsWithRanks.push({
+          from: new Date(period.from).toISOString().split('T')[0],
+          to: new Date(period.to).toISOString().split('T')[0],
+          rank: rank[0].rank
+        });
+      }
+      else {
+        periodsWithRanks.push({
+          from: new Date(period.from).toISOString().split('T')[0],
+          to: new Date(period.to).toISOString().split('T')[0],
+          rank: null
+        });
+      }
+    }
+    return periodsWithRanks
   }
   const result = [];
 
@@ -41,28 +56,62 @@ async function getTeacherPeriods(teacherId, academicYear) {
     });
     if (changesInPeriod.length === 0) {
       if (periodEnd.getTime() < new Date().getTime()) {
-        result.push({
-          from: new Date(period.from).toISOString().split('T')[0],
-          to: new Date(period.to).toISOString().split('T')[0]
-        });
+        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
+        if (rank.length) {
+          result.push({
+            from: new Date(period.from).toISOString().split('T')[0],
+            to: new Date(period.to).toISOString().split('T')[0],
+            rank: rank[0].rank
+          });
+        }
+        else {
+          result.push({
+            from: new Date(period.from).toISOString().split('T')[0],
+            to: new Date(period.to).toISOString().split('T')[0],
+            rank: null
+          });
+        }
       }
     } else {
       let currentStart = periodStart;
       const sortedChanges = changesInPeriod
         .map(c => new Date(c.starting_date))
         .sort((a, b) => a.getTime() - b.getTime());
+
       for (const changeDate of sortedChanges) {
-        result.push({
-          from: currentStart.toISOString().split('T')[0],
-          to: new Date(changeDate.getTime() - 86400000).toISOString().split('T')[0]
-        });
+        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
+        if (rank.length) {
+          result.push({
+            from: currentStart.toISOString().split('T')[0],
+            to: new Date(changeDate.getTime() - 86400000).toISOString().split('T')[0],
+            rank: rank[0].rank
+          });
+        }
+        else {
+          result.push({
+            from: currentStart.toISOString().split('T')[0],
+            to: new Date(changeDate.getTime() - 86400000).toISOString().split('T')[0],
+            rank: null
+          });
+        }
         currentStart = changeDate;
       }
       if (periodEnd.getTime() < new Date().getTime()) {
-        result.push({
-          from: currentStart.toISOString().split('T')[0],
-          to: periodEnd.toISOString().split('T')[0]
-        });
+        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
+        if (rank.length) {
+          result.push({
+            from: currentStart.toISOString().split('T')[0],
+            to: periodEnd.toISOString().split('T')[0],
+            rank: rank[0].rank
+          });
+        }
+        else {
+          result.push({
+            from: currentStart.toISOString().split('T')[0],
+            to: periodEnd.toISOString().split('T')[0],
+            rank: null
+          });
+        }
       }
     }
   }

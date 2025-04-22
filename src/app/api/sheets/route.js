@@ -1,9 +1,9 @@
 import { database } from "@/lib/mysql";
 import { generateDatedSessions, getExtraSessions, groupSessionsByDate } from "@/lib/calculate"
-export async function OPTIONS(req) {
+export async function POST(req) {
     try {
-        const { from, to, teacherId, academicYear, rankPrice } = await req.json();
-        if (!from || !to || !teacherId || !academicYear || !rankPrice) {
+        const { from, to, teacherId, academicYear, rankPrice, rank } = await req.json();
+        if (!from || !to || !teacherId || !academicYear || !rankPrice || !rank) {
             return Response.json({ status: "FAILED", message: "A required data field is missing" }, { status: 400 })
         }
         const [sheet] = await database.execute(
@@ -35,12 +35,11 @@ export async function OPTIONS(req) {
                 extraDays.push({ extra_day_id: extraDayResult.insertId, day: day.day_of_week, date: day.date, number_of_hours: day.totalDuration })
             }
 
-            const [periodRank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, from])
-            const [sheetResult] = await database.execute("INSERT INTO Extra_hours_sheet (teacher_id, `from`, `to`, rank, rank_price, extra_hours_number, amount_of_money, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())", [teacherId, from, to, periodRank[0], rankPrice, sheetTotalHours, sheetTotalHours * rankPrice])
+            const [sheetResult] = await database.execute("INSERT INTO Extra_hours_sheet (teacher_id, `from`, `to`, rank, rank_price, extra_hours_number, amount_of_money, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())", [teacherId, from, to, rank, rankPrice, sheetTotalHours, sheetTotalHours * rankPrice])
             for (const day of extraDays) {
                 await database.execute("UPDATE Extra_days SET sheet_id = ? WHERE extra_day_id = ?", [sheetResult.insertId, day.extra_day_id])
             }
-            return Response.json({ status: "SUCCESS", message: "Successfully calculated extra hours !", sheet: { sheet_id: sheetResult.insertId, from: from, to: to, rank: periodRank[0].rank, rank_price: rankPrice, extra_hours_number: sheetTotalHours, amount_of_money: sheetTotalHours * rankPrice, teacher_id: teacherId }, extraDays: extraDays.map((e) => Object.assign({}, e, { sheet_id: sheetResult.insertId })) }, { status: 200 })
+            return Response.json({ status: "SUCCESS", message: "Successfully calculated extra hours !", sheet: { sheet_id: sheetResult.insertId, from: from, to: to, rank: rank, rank_price: rankPrice, extra_hours_number: sheetTotalHours, amount_of_money: sheetTotalHours * rankPrice, teacher_id: teacherId }, extraDays: extraDays.map((e) => Object.assign({}, e, { sheet_id: sheetResult.insertId })) }, { status: 200 })
         }
     } catch (err) {
         console.error("Error in sheets route:", err)
