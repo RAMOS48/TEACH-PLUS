@@ -18,7 +18,7 @@ export default function AddSession({ onClose }) {
 
   const [errors, setErrors] = useState({});
   const currentYear = new Date().getFullYear();
-  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
+  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}/${currentYear - i + 1}`);
   const { addSession, teachers } = useStore();
 
   const handleChange = (e) => {
@@ -92,7 +92,7 @@ export default function AddSession({ onClose }) {
     <div className="w-full mx-auto bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-xl font-semibold text-blue-900 mb-4">Add a Session</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Day of the Week</label>
           <select
@@ -109,7 +109,7 @@ export default function AddSession({ onClose }) {
           {errors.dayOfWeek && <p className="text-red-600 text-sm mt-1">{errors.dayOfWeek}</p>}
         </div>
 
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Start Time</label>
           <input
@@ -118,12 +118,12 @@ export default function AddSession({ onClose }) {
             value={sessionData.startTime}
             onChange={handleChange}
             className={`w-full p-2 border rounded ${errors.startTime ? "border-red-500" : "border-gray-400"} hover:cursor-text`}
-            step="1800" 
+            step="1800"
           />
           {errors.startTime && <p className="text-red-600 text-sm mt-1">{errors.startTime}</p>}
         </div>
 
-      
+
         <div>
           <label className="block text-sm font-medium text-blue-900">End Time</label>
           <input
@@ -132,12 +132,12 @@ export default function AddSession({ onClose }) {
             value={sessionData.endTime}
             onChange={handleChange}
             className={`w-full p-2 border rounded ${errors.endTime ? "border-red-500" : "border-gray-400"} hover:cursor-text`}
-            step="1800" 
+            step="1800"
           />
           {errors.endTime && <p className="text-red-600 text-sm mt-1">{errors.endTime}</p>}
         </div>
 
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Teacher</label>
           <select
@@ -156,7 +156,7 @@ export default function AddSession({ onClose }) {
           {errors.teacherId && <p className="text-red-600 text-sm mt-1">{errors.teacherId}</p>}
         </div>
 
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Type</label>
           <select
@@ -173,7 +173,7 @@ export default function AddSession({ onClose }) {
           {errors.type && <p className="text-red-600 text-sm mt-1">{errors.type}</p>}
         </div>
 
-     
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Module</label>
           <input
@@ -186,7 +186,7 @@ export default function AddSession({ onClose }) {
           {errors.module && <p className="text-red-600 text-sm mt-1">{errors.module}</p>}
         </div>
 
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Classroom</label>
           <select
@@ -203,7 +203,7 @@ export default function AddSession({ onClose }) {
           {errors.classroom && <p className="text-red-600 text-sm mt-1">{errors.classroom}</p>}
         </div>
 
-        
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Group Number</label>
           <select
@@ -220,7 +220,7 @@ export default function AddSession({ onClose }) {
           {errors.groupNumber && <p className="text-red-600 text-sm mt-1">{errors.groupNumber}</p>}
         </div>
 
-       
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Academic Year</label>
           <select
@@ -237,7 +237,7 @@ export default function AddSession({ onClose }) {
           {errors.academicYear && <p className="text-red-600 text-sm mt-1">{errors.academicYear}</p>}
         </div>
 
-      
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Academic Level</label>
           <select
@@ -254,7 +254,7 @@ export default function AddSession({ onClose }) {
           {errors.academicLevel && <p className="text-red-600 text-sm mt-1">{errors.academicLevel}</p>}
         </div>
 
-      
+
         <div>
           <label className="block text-sm font-medium text-blue-900">Semester</label>
           <select
@@ -271,7 +271,7 @@ export default function AddSession({ onClose }) {
           {errors.semester && <p className="text-red-600 text-sm mt-1">{errors.semester}</p>}
         </div>
 
-        
+
         <div className="col-span-1 md:col-span-3 flex justify-center mt-4">
           <button
             type="submit"
