@@ -2,7 +2,9 @@
 
 import useStore from "@/store/useStore.js";
 import { useState, useEffect } from 'react';
-
+import { MdEmail } from "react-icons/md";
+import { FaPhone } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 export default function Profiluser() {
     const { user, updateProfile } = useStore();
     const [formData, setFormData] = useState({
@@ -64,98 +66,122 @@ export default function Profiluser() {
     };
 
     return (
-        <div className="w-full mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Update Profile</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">First Name</label>
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Family Name</label>
-                        <input
-                            type="text"
-                            name="familyName"
-                            value={formData.familyName}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-                        <input
-                            type="tel"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-                        <input
-                            type="date"
-                            name="dateOfBirth"
-                            value={formData.dateOfBirth}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Department</label>
-                        <input
-                            type="text"
-                            name="department"
-                            value={formData.department}
-                            onChange={handleChange}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Address</label>
-                    <textarea
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        rows={3}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
-
-                <div className="pt-4">
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                        Update Profile
-                    </button>
-                </div>
-            </form>
-        </div>
+        <div className="w-full max-w-4xl mx-auto p-4 bg-indigo-50 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-6 text-center">Update Profile</h1>
+  
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* First + Last Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                first name :
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                last name :
+              </label>
+              <input
+                type="text"
+                name="familyName"
+                value={formData.familyName}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+  
+          {/* Phone + Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                phone number
+              </label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <FaPhone className="absolute right-3 top-9 transform -translate-y-1/2 text-gray-400" />
+            </div>
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                e-mail
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <MdEmail className="absolute right-3 top-9 transform -translate-y-1/2 text-gray-400" />
+            </div>
+          </div>
+  
+          {/* Date of Birth + Department */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="relative">
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                birth date
+              </label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 pr-10 pl-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <FaCalendarAlt className="absolute right-3 top-9 transform -translate-y-1/2 text-gray-400" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 lowercase">
+                Departement
+              </label>
+              <input
+                type="text"
+                name="department"
+                value={formData.department}
+                disabled
+                className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md shadow-sm py-2 px-3 cursor-not-allowed"
+              />
+            </div>
+          </div>
+  
+          {/* Address */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 lowercase">
+              Address
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              rows={3}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+  
+          {/* Submit Button */}
+          <div className="pt-4 flex justify-center">
+            <button
+              type="submit"
+              className="bg-indigo-600 text-white py-2 px-6 rounded-md shadow-lg hover:bg-indigo-700 transition duration-200"
+            >
+              Update Profile
+            </button>
+          </div>
+        </form>
+      </div>
+  
     );
 }

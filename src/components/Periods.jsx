@@ -93,133 +93,127 @@ export default function Periods() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Manage Periods</h1>
-      
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div 
-          ref={formRef}
-          className="bg-gray-50 p-4 rounded-lg flex-1"
-        >
-          <h2 className="text-xl font-semibold mb-4">
-            {editingId !== null ? 'Edit Period' : 'Add New Period'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-2 bg-red-100 text-red-700 rounded">
-                {error}
-              </div>
-            )}
-            
-            <div>
-              <label htmlFor="name" className="block mb-1 font-medium">Period Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="from" className="block mb-1 font-medium">From Date</label>
-              <input
-                type="date"
-                id="from"
-                name="from"
-                value={formData.from}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="to" className="block mb-1 font-medium">To Date</label>
-              <input
-                type="date"
-                id="to"
-                name="to"
-                value={formData.to}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                {editingId !== null ? 'Update Period' : 'Add Period'}
-              </button>
-              
-              {editingId !== null && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(null);
-                    setFormData({ name: '', from: '', to: '' });
-                    setError('');
-                  }}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-
-        <div className="flex-1" style={{ height: formHeight }}>
-          <h2 className="text-xl font-semibold mb-4">Current Periods</h2>
-          {periods.length === 0 ? (
-            <div className="flex items-center justify-center" style={{ height: `calc(${formHeight} - 40px)` }}>
-              <p className="text-gray-500">No periods added yet.</p>
-            </div>
-          ) : (
-            <div 
-              className="space-y-3 overflow-y-auto pr-2"
-              style={{ 
-                height: `calc(${formHeight} - 40px)`,
-                scrollbarWidth: 'thin'
-              }}
-            >
-              {periods.map(period => (
-                <div key={period.period_id} className="p-4 border rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">{period.name}</h3>
-                      <div className="text-sm text-gray-600 mt-1">
-                        <p>From: {formatDate(period.from)}</p>
-                        <p>To: {formatDate(period.to)}</p>
-                      </div>
-                    </div>
-                    <div className="space-x-2">
-                      <button 
-                        onClick={() => handleEdit(period)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(period.period_id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
+    <div className="p-6 max-w-6xl mx-auto">
+    <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Periods</h1>
+  
+    <div className="flex flex-col lg:flex-row gap-6">
+      {/* Form Section */}
+      <div className="bg-[#f3f3fd] p-6 rounded-xl shadow-sm flex-1" style={{ height: formHeight }}>
+        <h2 className="text-lg font-semibold text-[#2f2f79] mb-4">Current Periods</h2>
+  
+        {periods.length === 0 ? (
+          <div className="flex items-center justify-center text-gray-500" style={{ height: `calc(${formHeight} - 40px)` }}>
+            No periods added yet.
+          </div>
+        ) : (
+          <div
+            className="space-y-4 overflow-y-auto pr-2"
+            style={{
+              height: `calc(${formHeight} - 40px)`,
+              scrollbarWidth: 'thin',
+            }}
+          >
+            {periods.map(period => (
+              <div key={period.period_id} className="bg-white p-4 rounded-lg shadow flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-[#2f2f79]">{period.name}</h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {formatDate(period.from)} - {formatDate(period.to)}
+                  </p>
                 </div>
-              ))}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => handleDelete(period.period_id)}
+                    className="text-gray-600 hover:text-red-500 transition"
+                  >
+                    🗑️
+                  </button>
+                  <button
+                    onClick={() => handleEdit(period)}
+                    className="text-gray-600 hover:text-blue-500 transition"
+                  >
+                    ✏️
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      <div
+        ref={formRef}
+        className="bg-[#f3f3fd] p-6 rounded-xl shadow-sm flex-1"
+      >
+        <h2 className="text-lg font-semibold text-[#2f2f79] mb-4">
+          {editingId !== null ? 'Edit Period' : 'Add new period'}
+        </h2>
+  
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="p-2 bg-red-100 text-red-700 rounded">
+              {error}
             </div>
           )}
-        </div>
+  
+          <div>
+            <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-600">
+              Period name :
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="ramadan session"
+              className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-sm"
+              required
+            />
+          </div>
+  
+          <div>
+            <label htmlFor="from" className="block mb-1 text-sm font-medium text-gray-600">
+              start date
+            </label>
+            <input
+              type="date"
+              id="from"
+              name="from"
+              value={formData.from}
+              onChange={handleInputChange}
+              className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-sm"
+              required
+            />
+          </div>
+  
+          <div>
+            <label htmlFor="to" className="block mb-1 text-sm font-medium text-gray-600">
+              end date
+            </label>
+            <input
+              type="date"
+              id="to"
+              name="to"
+              value={formData.to}
+              onChange={handleInputChange}
+              className="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 text-sm"
+              required
+            />
+          </div>
+  
+          <button
+            type="submit"
+            className="bg-[#3b3baf] hover:bg-[#2f2f79] text-white px-6 py-2 mt-4 rounded-md text-sm shadow-lg transition"
+          >
+            {editingId !== null ? 'Update Period' : 'create period'}
+          </button>
+        </form>
       </div>
+  
+      {/* Period List Section */}
+      
     </div>
+  </div>
+  
   );
 }

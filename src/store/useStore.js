@@ -737,6 +737,23 @@ getSubPeriods: async (teacherId , academicYear) => {
 
 
 
+
+getExtraHoursSheet: async (infos) => {
+    
+  set({ isLoading: true});
+
+  // work
+  try {
+    const data = get();
+    const response = await axios.options(`http://localhost:3000/api/sheets` , infos);
+    
+     return response.data.data
+  } catch (error) {
+    return {}
+  }finally{set({ isLoading: false});}
+},
+
+
 }));
 
 export default useStore;

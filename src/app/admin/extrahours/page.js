@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import useStore from "@/store/useStore";
 import { useRouter } from "next/navigation";
 import ExtraHoursSheet from '@/components/ExtraHoursSheet';
+import Modal from '@/components/Modal';
 
 export default function ExtraHours() {
-  const { teachers, getSubPeriods } = useStore();
+  const { getExtraHoursSheet, teachers, getSubPeriods  } = useStore();
   const router = useRouter();
   
   // États pour la gestion des données
@@ -14,6 +15,9 @@ export default function ExtraHours() {
   const [academicYear, setAcademicYear] = useState('');
   const [subPeriods, setSubPeriods] = useState([]);
   const [selectedSubPeriod, setSelectedSubPeriod] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sheet , setSheet] = useState ({});
+
 
   // Générer les 10 dernières années académiques
   const currentYear = new Date().getFullYear();
@@ -27,6 +31,12 @@ export default function ExtraHours() {
     if (!selectedTeacher || !academicYear) return;
     const periods = await getSubPeriods(selectedTeacher.teacher_id, academicYear);
     setSubPeriods(periods);
+  };
+
+  const handleExtraHours = async () => {
+    
+    const sheet = await getSubPeriods({teacherId:selectedTeacher , from:subPeriods[selectedSubPeriod].from ,to:subPeriods[selectedSubPeriod].to , academicYear:academicYear });
+    setSheet(sheet);
   };
 
   // Effet pour charger les sous-périodes quand les sélections changent
@@ -102,7 +112,7 @@ export default function ExtraHours() {
                 key={`${period.from}-${period.to}`} 
                 value={index}
               >
-                Du {period.from} au {period.to}
+                Du {period.from} au {period.to} avec grade {period.rank}
               </option>
             ))}
           </select>
@@ -115,18 +125,23 @@ export default function ExtraHours() {
           !selectedSubPeriod ? 'opacity-50 cursor-not-allowed' : ''
         }`}
         disabled={!selectedSubPeriod}
+        onClick={()=>{handleExtraHours ;setIsModalOpen(true)}}
       >
         Générer la page
       </button>
 
-      {/* Affichage des sélections pour debug */}
+      {isModalOpen &&
       <div className="mt-8 p-4 bg-gray-50 rounded">
-        <h2 className="font-bold mb-2">Debug Info:</h2>
-        <p>Enseignant sélectionné: {selectedTeacher ? `${selectedTeacher.first_name} ${selectedTeacher.family_name}` : 'Aucun'}</p>
-        <p>Année académique: {academicYear || 'Non sélectionnée'}</p>
-        <p>Sous-période sélectionnée: {selectedSubPeriod ? subPeriods[selectedSubPeriod].from + ' - ' + subPeriods[selectedSubPeriod].to : 'Aucune'}</p>
+        <h2 className="font-bold mb-2">Fiche des heures supplimentaires:</h2>
+        <p>Enseignant : { `${selectedTeacher.first_name} ${selectedTeacher.family_name}`}</p>
+        <p>Année : {academicYear}</p>
+        <p>Période : { subPeriods[selectedSubPeriod].from + ' - ' + subPeriods[selectedSubPeriod].to }</p>
+        <p>Rank : {subPeriods[selectedSubPeriod].rank}</p>
+        <p>Rank Price :{sheet?.rank_price} </p>
+        <p>Total extra hours :{sheet?.extra_hours_number} </p>
+        <ExtraHoursSheet teacher={{firstName:selectedTeacher.first_name , familyName: selectedTeacher.family_name , academicYear:academicYear , from:subPeriods[selectedSubPeriod].from, to:subPeriods[selectedSubPeriod].to}}/>
       </div>
-      <ExtraHoursSheet />
+}
     </div>
   );
 }
