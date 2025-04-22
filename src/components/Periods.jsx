@@ -23,7 +23,7 @@ export default function Periods() {
       ...prev,
       [name]: value
     }));
-    
+
     if (error) setError('');
   };
 
@@ -32,28 +32,28 @@ export default function Periods() {
       setError('Please enter a name for the period');
       return false;
     }
-    
+
     if (!formData.from || !formData.to) {
       setError('Please fill both date fields');
       return false;
     }
-    
+
     if (new Date(formData.to) <= new Date(formData.from)) {
       setError('End date must be after start date');
       return false;
     }
-    
+
     return true;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateDates()) return;
 
     if (editingId !== null) {
-      updatePeriod(editingId, { 
-        name: formData.name,
+      updatePeriod(editingId, {
+        newName: formData.name,
         newFrom: formData.from,
         newTo: formData.to
       });

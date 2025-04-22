@@ -28,19 +28,25 @@ export default function ExtraHours() {
 
   // Récupérer les sous-périodes quand un enseignant et une année sont sélectionnés
   const fetchSubPeriods = async () => {
+    setSubPeriods([])
     if (!selectedTeacher || !academicYear) return;
     const periods = await getSubPeriods(selectedTeacher.teacher_id, academicYear);
     setSubPeriods(periods);
+    console.log(periods);
+    
   };
 
   const handleExtraHours = async () => {
-    
-    const sheet = await getSubPeriods({teacherId:selectedTeacher , from:subPeriods[selectedSubPeriod].from ,to:subPeriods[selectedSubPeriod].to , academicYear:academicYear });
+
+    const sheet = await getExtraHoursSheet({teacherId:selectedTeacher.teacher_id , from:subPeriods[selectedSubPeriod].from ,to:subPeriods[selectedSubPeriod].to ,rank:subPeriods[selectedSubPeriod].rank , academicYear:academicYear ,rankPrice:100 });
     setSheet(sheet);
+    setIsModalOpen(true)
+    
   };
 
   // Effet pour charger les sous-périodes quand les sélections changent
   useEffect(() => {
+    setIsModalOpen(false)
     fetchSubPeriods();
   }, [selectedTeacher, academicYear]);
 
@@ -125,7 +131,7 @@ export default function ExtraHours() {
           !selectedSubPeriod ? 'opacity-50 cursor-not-allowed' : ''
         }`}
         disabled={!selectedSubPeriod}
-        onClick={()=>{handleExtraHours ;setIsModalOpen(true)}}
+        onClick={handleExtraHours}
       >
         Générer la page
       </button>
@@ -135,11 +141,11 @@ export default function ExtraHours() {
         <h2 className="font-bold mb-2">Fiche des heures supplimentaires:</h2>
         <p>Enseignant : { `${selectedTeacher.first_name} ${selectedTeacher.family_name}`}</p>
         <p>Année : {academicYear}</p>
-        <p>Période : { subPeriods[selectedSubPeriod].from + ' - ' + subPeriods[selectedSubPeriod].to }</p>
-        <p>Rank : {subPeriods[selectedSubPeriod].rank}</p>
+        <p>Période : { subPeriods[selectedSubPeriod]?.from + ' - ' + subPeriods[selectedSubPeriod]?.to }</p>
+        <p>Rank : {subPeriods[selectedSubPeriod]?.rank}</p>
         <p>Rank Price :{sheet?.rank_price} </p>
         <p>Total extra hours :{sheet?.extra_hours_number} </p>
-        <ExtraHoursSheet teacher={{firstName:selectedTeacher.first_name , familyName: selectedTeacher.family_name , academicYear:academicYear , from:subPeriods[selectedSubPeriod].from, to:subPeriods[selectedSubPeriod].to}}/>
+        <ExtraHoursSheet teacher={{firstName:selectedTeacher.first_name , familyName: selectedTeacher.family_name , academicYear:academicYear , from:subPeriods[selectedSubPeriod]?.from, to:subPeriods[selectedSubPeriod]?.to}}/>
       </div>
 }
     </div>

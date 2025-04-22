@@ -14,7 +14,7 @@ export default function Schedule() {
     academicYear: "",
   });
   const currentYear = new Date().getFullYear();
-  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
+  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}/${currentYear - i + 1}`);
   const [isOpenAddSession, setIsOpenAddSession] = useState(false);
 
   useEffect(() => {

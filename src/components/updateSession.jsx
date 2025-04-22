@@ -25,7 +25,7 @@ export default function UpdateSession({ session, onClose }) {
 
   const { teachers, updateSession, deleteSession } = useStore();
   const currentYear = new Date().getFullYear();
-  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}-${currentYear - i + 1}`);
+  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}/${currentYear - i + 1}`);
 
   const isHalfHour = (time) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -90,7 +90,7 @@ export default function UpdateSession({ session, onClose }) {
   const handleUpdate = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    
+
     updateSession(updatedSession);
     setIsModified(false);
     onClose();

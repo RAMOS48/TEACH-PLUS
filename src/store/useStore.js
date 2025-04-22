@@ -745,10 +745,12 @@ getExtraHoursSheet: async (infos) => {
   // work
   try {
     const data = get();
-    const response = await axios.options(`http://localhost:3000/api/sheets` , infos);
+    const response = await axios.post(`http://localhost:3000/api/sheets` , infos);
     
-     return response.data.data
+     return response.data.sheet
   } catch (error) {
+    console.log(error);
+    
     return {}
   }finally{set({ isLoading: false});}
 },
