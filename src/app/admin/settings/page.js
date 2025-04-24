@@ -30,7 +30,7 @@ const [ isActive , setIsActive] = useState([true , false , false , false]);
 
 
     return (
-      <div className="">
+      <div className=" w-full">
         <div className="border-b border-gray-200">
       <nav className="flex w-full space-x-8">
           <div
@@ -81,7 +81,7 @@ const [ isActive , setIsActive] = useState([true , false , false , false]);
       </nav>
     </div>
     <div > 
-       {isActive[0] && <div><ProfilAdmin /></div>}
+       {isActive[0] && <div className=" w-full"><ProfilAdmin /></div>}
        {isActive[1] && <div><Periods /></div>}
        {isActive[2] && <div><Holidays/></div>}
        {isActive[3] && <div><ManageRanks /></div>}

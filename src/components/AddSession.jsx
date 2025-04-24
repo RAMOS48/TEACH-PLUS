@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useStore from "@/store/useStore";
 
-export default function AddSession({ onClose }) {
+export default function AddSession({ onClose ,timetable }) {
   const [sessionData, setSessionData] = useState({
     dayOfWeek: "",
     startTime: "",
@@ -10,15 +10,13 @@ export default function AddSession({ onClose }) {
     classroom: "",
     module: "",
     groupNumber: "",
-    academicYear: "",
-    academicLevel: "",
-    semester: "",
+    academicYear: timetable.academicYear,
+    academicLevel: timetable.academicLevel,
+    semester: timetable.semester,
     teacherId: ""
   });
 
   const [errors, setErrors] = useState({});
-  const currentYear = new Date().getFullYear();
-  const academicYears = Array.from({ length: 10 }, (_, i) => `${currentYear - i}/${currentYear - i + 1}`);
   const { addSession, teachers } = useStore();
 
   const handleChange = (e) => {
@@ -41,9 +39,6 @@ export default function AddSession({ onClose }) {
       "classroom",
       "module",
       "groupNumber",
-      "academicYear",
-      "academicLevel",
-      "semester",
       "teacherId"
     ];
 
@@ -81,6 +76,8 @@ export default function AddSession({ onClose }) {
   };
 
   const handleSubmit = (e) => {
+    console.log(sessionData);
+    
     e.preventDefault();
     if (!validate()) return;
 
@@ -221,55 +218,13 @@ export default function AddSession({ onClose }) {
         </div>
 
 
-        <div>
-          <label className="block text-sm font-medium text-blue-900">Academic Year</label>
-          <select
-            name="academicYear"
-            value={sessionData.academicYear}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${errors.academicYear ? "border-red-500" : "border-gray-400"} hover:cursor-pointer`}
-          >
-            <option value="">Select academic year</option>
-            {academicYears.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-          {errors.academicYear && <p className="text-red-600 text-sm mt-1">{errors.academicYear}</p>}
-        </div>
+        
 
 
-        <div>
-          <label className="block text-sm font-medium text-blue-900">Academic Level</label>
-          <select
-            name="academicLevel"
-            value={sessionData.academicLevel}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${errors.academicLevel ? "border-red-500" : "border-gray-400"} hover:cursor-pointer`}
-          >
-            <option value="">Select academic level</option>
-            {["1CP", "2CP", "1CS", "2CS", "3CS"].map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-          {errors.academicLevel && <p className="text-red-600 text-sm mt-1">{errors.academicLevel}</p>}
-        </div>
+        
 
 
-        <div>
-          <label className="block text-sm font-medium text-blue-900">Semester</label>
-          <select
-            name="semester"
-            value={sessionData.semester}
-            onChange={handleChange}
-            className={`w-full p-2 border rounded ${errors.semester ? "border-red-500" : "border-gray-400"} hover:cursor-pointer`}
-          >
-            <option value="">Select semester</option>
-            {["S1", "S2"].map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          {errors.semester && <p className="text-red-600 text-sm mt-1">{errors.semester}</p>}
-        </div>
+
 
 
         <div className="col-span-1 md:col-span-3 flex justify-center mt-4">

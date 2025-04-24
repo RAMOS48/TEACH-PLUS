@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import AddTeacher from "@/components/AddTeacher";
 import useStore from "@/store/useStore.js";
 import Modal from "@/components/Modal";
-import { translations } from "../translate";
 
 export default function Teachers() {
   const { filteredTeachers, searchTeacher, empty, filterTeachers } = useStore();
@@ -27,13 +26,10 @@ export default function Teachers() {
     setOpenAdd(true);
   };
 
-  // Accès aux traductions
-  const t = translations[0]; // Puisque votre translations est un array avec un seul objet
-
   return (
     <div className="w-full p-3">
-      <h1 className="text-3xl font-bold text-[#141F75]">{t.title}</h1>
-      <p className="text-[#141F75] text-sm mb-4 font-mono">{t.subtitle}</p>
+      <h1 className="text-3xl font-bold text-[#141F75]">Teachers Management</h1>
+      <p className="text-[#141F75] text-sm mb-4 font-mono">Manage all teachers in your institution</p>
       <hr className="text-gray-400"></hr>
       
       <div className="flex flex-row items-center justify-between m-4 gap-4">
@@ -42,7 +38,7 @@ export default function Teachers() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t.searchPlaceholder}
+            placeholder="Search teachers by name..."
             className="w-full p-2 border bg-gray-200 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
@@ -64,7 +60,7 @@ export default function Teachers() {
             className="p-2 text-white bg-[#2738BD] rounded-md hover:cursor-pointer" 
             onClick={handleAddTeacher}
           >
-            {t.addButton}
+            Add Teacher
           </button>
         </div>
       </div>
@@ -80,8 +76,8 @@ export default function Teachers() {
           <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p className="text-xl font-medium">{t.noTeachers.title}</p>
-          <p className="text-sm">{t.noTeachers.message}</p>
+          <p className="text-xl font-medium">No teachers found</p>
+          <p className="text-sm">Try adjusting your search or add new teachers</p>
         </div>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

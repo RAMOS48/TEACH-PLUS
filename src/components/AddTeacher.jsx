@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import useStore from "@/store/useStore";
-import { translations } from "@/app/admin/translate";
+import { motion } from "framer-motion";
 
 export default function AddTeacher({ onClose }) {
   const { addTeacher, uploidImage, isLoading } = useStore();
-  const isEnglish = true; // You can make this dynamic based on user preference
-  const t = translations.find(item => item.page === "teachers").modalAddTeacher;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -18,6 +16,8 @@ export default function AddTeacher({ onClose }) {
     isActive: "0",
     extraOursOutside: "",
     bio: "",
+    type: "Permanent",
+    accountNumber: ""
   });
 
   const [errors, setErrors] = useState({});
@@ -42,15 +42,11 @@ export default function AddTeacher({ onClose }) {
     const nameRegex = /^[A-Z][a-z]*$/;
 
     if (!nameRegex.test(form.firstName)) {
-      newErrors.firstName = isEnglish 
-        ? "First name must be PascalCase. Ex: Mustapha" 
-        : "Le prénom doit être en PascalCase. Ex: Mustapha";
+      newErrors.firstName = "First name must be PascalCase. Ex: Mustapha";
     }
 
     if (!nameRegex.test(form.familyName)) {
-      newErrors.familyName = isEnglish 
-        ? "Family name must be PascalCase. Ex: Rahal" 
-        : "Le nom de famille doit être en PascalCase. Ex: Rahal";
+      newErrors.familyName = "Family name must be PascalCase. Ex: Rahal";
     }
 
     const birthDate = new Date(form.dateOfBirth);
@@ -58,35 +54,29 @@ export default function AddTeacher({ onClose }) {
     const age = today.getFullYear() - birthDate.getFullYear();
 
     if (age < 23 || age > 80) {
-      newErrors.dateOfBirth = isEnglish 
-        ? "Age must be between 23 and 80 years." 
-        : "L'âge doit être compris entre 23 et 80 ans.";
+      newErrors.dateOfBirth = "Age must be between 23 and 80 years.";
     }
 
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(form.phoneNumber)) {
-      newErrors.phoneNumber = isEnglish 
-        ? "Phone number must be exactly 10 digits." 
-        : "Le numéro de téléphone doit comporter exactement 10 chiffres.";
+      newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
-      newErrors.email = isEnglish 
-        ? "Email is not valid." 
-        : "L'email n'est pas valide.";
+      newErrors.email = "Email is not valid.";
     }
 
     if (!/^\d+$/.test(form.extraOursOutside)) {
-      newErrors.extraOursOutside = isEnglish 
-        ? "Extra hours must be a valid number." 
-        : "Les heures supplémentaires doivent être un nombre valide.";
+      newErrors.extraOursOutside = "Extra hours must be a valid number.";
     }
 
     if (form.bio.length > 100) {
-      newErrors.bio = isEnglish 
-        ? "Bio must be under 100 characters." 
-        : "La biographie doit contenir moins de 100 caractères.";
+      newErrors.bio = "Bio must be under 100 characters.";
+    }
+
+    if (!form.accountNumber.trim()) {
+      newErrors.accountNumber = "Account number is required";
     }
 
     setErrors(newErrors);
@@ -109,10 +99,29 @@ export default function AddTeacher({ onClose }) {
   };
 
   return (
-    <div className="w-full">
-      <h1 className="text-left p-3 text-[#141F75] text-3xl">{t.title}</h1>
-      <div className="w-full mx-auto p-6 bg-gray-100 rounded-xl flex flex-col h-full">
-        <div className="flex flex-col items-center mb-6">
+    <motion.div 
+      className="w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.h1 
+        className="text-left p-3 text-[#141F75] text-3xl"
+        initial={{ x: -20 }}
+        animate={{ x: 0 }}
+      >
+        Add New Teacher
+      </motion.h1>
+      
+      <motion.div 
+        className="w-full mx-auto p-6 bg-gray-100 rounded-xl flex flex-col h-full"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+      >
+        <motion.div 
+          className="flex flex-col items-center mb-6"
+          whileHover={{ scale: 1.02 }}
+        >
           <img
             src={
               preview ||
@@ -121,132 +130,242 @@ export default function AddTeacher({ onClose }) {
             alt="Teacher"
             className="w-28 h-28 object-cover rounded-full border-4 border-gray-300"
           />
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-grow">
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">{t.firstname}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              First Name
+            </motion.label>
+            <motion.input
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
               type="text"
-              placeholder={isEnglish ? "Enter first name" : "Entrez le prénom"}
+              placeholder="Enter first name"
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.firstName && (
-              <p className="text-red-500 text-sm">{errors.firstName}</p>
+              <motion.p 
+                className="text-red-500 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {errors.firstName}
+              </motion.p>
             )}
 
-            <label className="block text-left text-[#141F75]">{t.familyName}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Family Name
+            </motion.label>
+            <motion.input
               name="familyName"
               value={form.familyName}
               onChange={handleChange}
               type="text"
-              placeholder={isEnglish ? "Enter family name" : "Entrez le nom de famille"}
+              placeholder="Enter family name"
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.familyName && (
-              <p className="text-red-500 text-sm">{errors.familyName}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.familyName}
+              </motion.p>
             )}
 
-            <label className="block text-left text-[#141F75]">{t.email}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Email
+            </motion.label>
+            <motion.input
               name="email"
               value={form.email}
               onChange={handleChange}
               type="email"
-              placeholder={isEnglish ? "Enter email" : "Entrez l'email"}
+              placeholder="Enter email"
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.email}
+              </motion.p>
             )}
+            
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Type
+            </motion.label>
+            <motion.select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md border-gray-200 cursor-pointer"
+              whileHover={{ scale: 1.01 }}
+            >
+              <option value="Permanent">Permanent</option>
+              <option value="Vacataire">Vacataire</option>
+            </motion.select>
           </div>
 
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">{t.dateOfBirth}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Date of Birth
+            </motion.label>
+            <motion.input
               name="dateOfBirth"
               value={form.dateOfBirth}
               onChange={handleChange}
               type="date"
               className="w-full p-2 border rounded-md border-gray-200 cursor-text"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.dateOfBirth && (
-              <p className="text-red-500 text-sm">{errors.dateOfBirth}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.dateOfBirth}
+              </motion.p>
             )}
 
-            <label className="block text-left text-[#141F75]">{t.phoneNumber}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Phone Number
+            </motion.label>
+            <motion.input
               name="phoneNumber"
               value={form.phoneNumber}
               onChange={handleChange}
               type="text"
-              placeholder={isEnglish ? "Enter phone number" : "Entrez le numéro de téléphone"}
+              placeholder="Enter phone number"
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.phoneNumber && (
-              <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.phoneNumber}
+              </motion.p>
             )}
 
-            <label className="block text-left text-[#141F75]">
-              {t.extraHours}
-            </label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Extra Hours
+            </motion.label>
+            <motion.input
               name="extraOursOutside"
               value={form.extraOursOutside}
               onChange={handleChange}
               type="text"
-              placeholder={isEnglish ? "Enter extra hours" : "Entrez les heures supplémentaires"}
+              placeholder="Enter extra hours"
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.extraOursOutside && (
-              <p className="text-red-500 text-sm">{errors.extraOursOutside}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.extraOursOutside}
+              </motion.p>
+            )}
+            
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Account Number
+            </motion.label>
+            <motion.input
+              name="accountNumber"
+              value={form.accountNumber}
+              onChange={handleChange}
+              type="text"
+              placeholder="Enter account number"
+              className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
+            />
+            {errors.accountNumber && (
+              <motion.p className="text-red-500 text-sm">
+                {errors.accountNumber}
+              </motion.p>
             )}
           </div>
 
           <div className="space-y-4">
-            <label className="block text-left text-[#141F75]">{t.photo}</label>
-            <input
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Photo
+            </motion.label>
+            <motion.input
               type="file"
               onChange={handleImageChange}
               className="w-full p-2 border rounded-md border-gray-200 cursor-pointer"
+              whileHover={{ scale: 1.01 }}
             />
 
-            <label className="block text-left text-[#141F75]">{t.status}</label>
-            <select
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Status
+            </motion.label>
+            <motion.select
               name="isActive"
               value={form.isActive}
               onChange={handleChange}
               className="w-full p-2 border rounded-md border-gray-200 cursor-pointer"
+              whileHover={{ scale: 1.01 }}
             >
-              <option value="0">{isEnglish ? "Not Active" : "Non Actif"}</option>
-              <option value="1">{isEnglish ? "Active" : "Actif"}</option>
-            </select>
+              <option value="0">Not Active</option>
+              <option value="1">Active</option>
+            </motion.select>
 
-            <label className="block text-left text-[#141F75]">{t.bio}</label>
-            <textarea
+            <motion.label 
+              className="block text-left text-[#141F75]"
+              whileHover={{ x: 5 }}
+            >
+              Bio
+            </motion.label>
+            <motion.textarea
               name="bio"
               value={form.bio}
               onChange={handleChange}
-              placeholder={isEnglish ? "Write a short bio..." : "Écrivez une courte biographie..."}
+              placeholder="Write a short bio..."
               className="w-full p-2 border rounded-md border-gray-200"
+              whileFocus={{ scale: 1.02 }}
             />
             {errors.bio && (
-              <p className="text-red-500 text-sm">{errors.bio}</p>
+              <motion.p className="text-red-500 text-sm">
+                {errors.bio}
+              </motion.p>
             )}
           </div>
         </div>
 
-        <button
+        <motion.button
           onClick={handleAdd}
           className="w-full mt-4 p-3 text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg shadow-md transition"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          {isLoading ? (isEnglish ? "Loading..." : "Chargement...") : t.confirmButton}
-        </button>
-      </div>
-    </div>
+          {isLoading ? "Loading..." : "Add Teacher"}
+        </motion.button>
+      </motion.div>
+    </motion.div>
   );
 }

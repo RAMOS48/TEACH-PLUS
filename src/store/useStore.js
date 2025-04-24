@@ -504,7 +504,7 @@ const useStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       // work
-      const response = await axios.get(`http://localhost:3000/api/timetable?promo=${filter.promo}&academicYear=${filter.academicYear}&semester=${filter.semester}`);
+      const response = await axios.get(`http://localhost:3000/api/timetable?promo=${filter.academicLevel}&academicYear=${filter.academicYear}&semester=${filter.semester}`);
       set({ sessions: response.data.timetable });
       set({ filteredTimeTable: filter })
     } catch (error) {
@@ -512,7 +512,7 @@ const useStore = create((set, get) => ({
       set({ filteredTimeTable: [] });
     } finally { set({ isLoading: false }); }
   },
-  addSession: async (addedSession, filter) => {
+  addSession: async (addedSession) => {
     set({ isLoading: true });
     // work 
     try {

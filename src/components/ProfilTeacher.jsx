@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import useStore from "@/store/useStore";
-
-// Utilisation de la même variable isEnglish que dans translate.js
-const isEnglish = false;
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProfileTeacher({ teacher, onClose }) {
   const [isChanged, setIsChanged] = useState(false);
@@ -22,6 +20,8 @@ export default function ProfileTeacher({ teacher, onClose }) {
     isActive: teacher.is_active,
     bio: teacher.bio,
     picture: teacher.picture,
+    type: teacher.type || "Permanent",
+    accountNumber: teacher.account_number || ""
   };
 
   const [updatedTeacher, setUpdatedTeacher] = useState(initialTeacher);
@@ -34,31 +34,35 @@ export default function ProfileTeacher({ teacher, onClose }) {
     const age = new Date().getFullYear() - new Date(updatedTeacher.dateOfBirth).getFullYear();
 
     if (!pascalCaseRegex.test(updatedTeacher.firstName)) {
-      newErrors.firstName = isEnglish ? "First name must be in PascalCase (e.g., John)" : "Le prénom doit être en PascalCase (ex. Jean)";
+      newErrors.firstName = "First name must be in PascalCase (e.g., John)";
     }
 
     if (!pascalCaseRegex.test(updatedTeacher.familyName)) {
-      newErrors.familyName = isEnglish ? "Family name must be in PascalCase (e.g., Smith)" : "Le nom de famille doit être en PascalCase (ex. Dupont)";
+      newErrors.familyName = "Family name must be in PascalCase (e.g., Smith)";
     }
 
     if (age < 20 || age > 80) {
-      newErrors.dateOfBirth = isEnglish ? "Teacher age must be between 20 and 80 years" : "L'âge de l'enseignant doit être entre 20 et 80 ans";
+      newErrors.dateOfBirth = "Teacher age must be between 20 and 80 years";
     }
 
     if (!phoneRegex.test(updatedTeacher.phoneNumber)) {
-      newErrors.phoneNumber = isEnglish ? "Phone number must be exactly 10 digits" : "Le numéro de téléphone doit comporter exactement 10 chiffres";
+      newErrors.phoneNumber = "Phone number must be exactly 10 digits";
     }
 
     if (!emailRegex.test(updatedTeacher.email)) {
-      newErrors.email = isEnglish ? "Invalid email format" : "Format d'email invalide";
+      newErrors.email = "Invalid email format";
     }
 
     if (!/^\d+$/.test(updatedTeacher.extraHoursOutside)) {
-      newErrors.extraHoursOutside = isEnglish ? "Extra hours must be an integer" : "Les heures supplémentaires doivent être un entier";
+      newErrors.extraHoursOutside = "Extra hours must be an integer";
     }
 
     if (updatedTeacher.bio.length > 100) {
-      newErrors.bio = isEnglish ? "Bio must be under 100 characters" : "La biographie doit faire moins de 100 caractères";
+      newErrors.bio = "Bio must be under 100 characters";
+    }
+
+    if (!updatedTeacher.accountNumber.trim()) {
+      newErrors.accountNumber = "Account number is required";
     }
 
     setErrors(newErrors);
@@ -96,166 +100,220 @@ export default function ProfileTeacher({ teacher, onClose }) {
     onClose();
   };
 
-  // Définition des traductions directement dans le composant
-  const translations = {
-    title: isEnglish ? "Update Teacher" : "Modifier l'Enseignant",
-    firstName: isEnglish ? "First Name" : "Prénom",
-    familyName: isEnglish ? "Family Name" : "Nom de Famille",
-    dateOfBirth: isEnglish ? "Date of Birth" : "Date de Naissance",
-    phoneNumber: isEnglish ? "Phone Number" : "Numéro de Téléphone",
-    photo: isEnglish ? "Photo" : "Photo",
-    extraHours: isEnglish ? "Extra Hours" : "Heures Supplémentaires",
-    status: isEnglish ? "Status" : "Statut",
-    email: isEnglish ? "Email" : "Email",
-    bio: isEnglish ? "Biography" : "Biographie",
-    updateButton: isEnglish ? "Update" : "Mettre à Jour",
-    statusOptions: {
-      active: isEnglish ? "Active" : "Actif",
-      inactive: isEnglish ? "Not Active" : "Non Actif"
-    }
-  };
-
   return (
-    <div className="w-full">
-      <h1 className="text-left p-3 text-[#141F75] text-3xl">
-        {translations.title}
-      </h1>
-      <div className="w-full mx-auto p-2 bg-white shadow-md rounded-lg flex flex-col">
-        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="col-span-1 sm:col-span-1 lg:col-span-3 flex justify-center mb-4">
-            <img
-              src={updatedTeacher.picture || "/default-avatar.png"}
-              alt="Teacher"
-              className="w-24 h-24 object-cover rounded-full border"
-            />
-          </div>
+    <motion.div 
+      className="w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <motion.h1 
+        className="text-left p-3 text-[#141F75] text-3xl"
+        initial={{ x: -20 }}
+        animate={{ x: 0 }}
+      >
+        Update Teacher Profile
+      </motion.h1>
+      
+      <motion.div 
+        className="w-full mx-auto p-6 bg-white shadow-md rounded-lg flex flex-col"
+        initial={{ y: 20 }}
+        animate={{ y: 0 }}
+      >
+        <motion.div 
+          className="flex justify-center mb-6"
+          whileHover={{ scale: 1.02 }}
+        >
+          <img
+            src={updatedTeacher.picture || "/default-avatar.png"}
+            alt="Teacher"
+            className="w-32 h-32 object-cover rounded-full border-4 border-gray-200"
+          />
+        </motion.div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             {
-              label: translations.firstName,
+              label: "First Name",
               name: "firstName",
               type: "text",
               value: updatedTeacher.firstName,
               error: errors.firstName,
             },
             {
-              label: translations.familyName,
+              label: "Family Name",
               name: "familyName",
               type: "text",
               value: updatedTeacher.familyName,
               error: errors.familyName,
             },
             {
-              label: translations.dateOfBirth,
+              label: "Date of Birth",
               name: "dateOfBirth",
               type: "date",
               value: new Date(updatedTeacher.dateOfBirth).toISOString().split("T")[0],
               error: errors.dateOfBirth,
             },
             {
-              label: translations.phoneNumber,
+              label: "Phone Number",
               name: "phoneNumber",
-              type: "number",
+              type: "tel",
               value: updatedTeacher.phoneNumber,
               error: errors.phoneNumber,
             },
             {
-              label: translations.photo,
+              label: "Profile Photo",
               name: "picture",
               type: "file",
               onChange: handleFileChange,
             },
             {
-              label: translations.extraHours,
+              label: "Extra Hours",
               name: "extraHoursOutside",
-              type: "text",
+              type: "number",
               value: updatedTeacher.extraHoursOutside,
               error: errors.extraHoursOutside,
             },
             {
-              label: translations.status,
+              label: "Status",
               name: "isActive",
               type: "select",
               value: updatedTeacher.isActive,
               options: [
-                { label: translations.statusOptions.inactive, value: 0 },
-                { label: translations.statusOptions.active, value: 1 },
+                { label: "Not Active", value: 0 },
+                { label: "Active", value: 1 },
               ],
             },
             {
-              label: translations.email,
+              label: "Type",
+              name: "type",
+              type: "select",
+              value: updatedTeacher.type,
+              options: [
+                { label: "Permanent", value: "Permanent" },
+                { label: "Vacataire", value: "Vacataire" },
+              ],
+            },
+            {
+              label: "Account Number",
+              name: "accountNumber",
+              type: "text",
+              value: updatedTeacher.accountNumber,
+              error: errors.accountNumber,
+            },
+            {
+              label: "Email",
               name: "email",
               type: "email",
               value: updatedTeacher.email,
               error: errors.email,
             },
             {
-              label: translations.bio,
+              label: "Biography",
               name: "bio",
               type: "textarea",
               value: updatedTeacher.bio,
               error: errors.bio,
+              className: "md:col-span-2 lg:col-span-3"
             },
           ].map((field, idx) => (
-            <div key={idx} className="space-y-2">
-              <label className="block text-left text-[#141F75]">
+            <motion.div 
+              key={idx} 
+              className={`space-y-2 ${field.className || ""}`}
+              whileHover={{ y: -2 }}
+            >
+              <motion.label 
+                className="block text-left text-[#141F75] font-medium"
+                whileHover={{ x: 3 }}
+              >
                 {field.label}
-              </label>
+              </motion.label>
+              
               {field.type === "select" ? (
-                <select
+                <motion.select
                   name={field.name}
                   value={field.value}
                   onChange={handleChange}
                   className="w-full p-2 border rounded-md border-gray-200 hover:cursor-pointer"
+                  whileFocus={{ scale: 1.01 }}
                 >
                   {field.options.map((opt, i) => (
                     <option key={i} value={opt.value}>
                       {opt.label}
                     </option>
                   ))}
-                </select>
+                </motion.select>
               ) : field.type === "textarea" ? (
-                <textarea
+                <motion.textarea
                   name={field.name}
                   value={field.value}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-md border-gray-200"
+                  className="w-full p-2 border rounded-md border-gray-200 min-h-[100px]"
+                  whileFocus={{ scale: 1.01 }}
                 />
               ) : field.type === "file" ? (
-                <input
-                  type="file"
-                  name={field.name}
-                  onChange={field.onChange}
-                  className="w-full p-2 border rounded-md border-gray-200 hover:cursor-pointer"
-                />
+                <motion.div
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <input
+                    type="file"
+                    name={field.name}
+                    onChange={field.onChange}
+                    className="w-full p-2 border rounded-md border-gray-200 hover:cursor-pointer"
+                  />
+                </motion.div>
               ) : (
-                <input
+                <motion.input
                   type={field.type}
                   name={field.name}
                   value={field.value}
                   onChange={handleChange}
                   className="w-full p-2 border rounded-md border-gray-200"
+                  whileFocus={{ scale: 1.01 }}
                 />
               )}
-              {field.error && (
-                <p className="text-red-500 text-sm">{field.error}</p>
-              )}
-            </div>
+              
+              <AnimatePresence>
+                {field.error && (
+                  <motion.p 
+                    className="text-red-500 text-sm"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    {field.error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
 
-        <button
-          onClick={handleUpdate}
-          disabled={!isChanged}
-          className={`w-full mt-4 p-2 text-white rounded-md ${
-            isChanged
-              ? "bg-blue-500 hover:bg-blue-600 cursor-pointer"
-              : "bg-gray-300 cursor-not-allowed"
-          }`}
-        >
-          {translations.updateButton}
-        </button>
-      </div>
-    </div>
+        <motion.div className="flex gap-4 mt-8">
+          <motion.button
+            onClick={onClose}
+            className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Cancel
+          </motion.button>
+          
+          <motion.button
+            onClick={handleUpdate}
+            disabled={!isChanged}
+            className={`flex-1 p-3 text-white rounded-lg ${
+              isChanged
+                ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+            whileHover={isChanged ? { scale: 1.02 } : {}}
+            whileTap={isChanged ? { scale: 0.98 } : {}}
+          >
+            Update Profile
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

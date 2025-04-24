@@ -9,7 +9,7 @@ import AddSession from "@/components/AddSession";
 export default function Schedule() {
   const { sessions, getSessions, getTeachers } = useStore();
   const [filterTimeTable, setFilterTimeTable] = useState({
-    promo: "",
+    academicLevel: "",
     semester: "",
     academicYear: "",
   });
@@ -53,16 +53,16 @@ export default function Schedule() {
 
         <select
           onChange={(e) =>
-            setFilterTimeTable({ ...filterTimeTable, promo: e.target.value })
+            setFilterTimeTable({ ...filterTimeTable, academicLevel: e.target.value })
           }
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 hover:cursor-pointer"
         >
           <option value="">Select Academic Level</option>
-          <option value="1cp">1CP</option>
-          <option value="2cp">2CP</option>
-          <option value="1cs">1CS</option>
-          <option value="2cs">2CS</option>
-          <option value="3cs">3CS</option>
+          <option value="1">1CP</option>
+          <option value="2">2CP</option>
+          <option value="3">1CS</option>
+          <option value="4">2CS</option>
+          <option value="5">3CS</option>
         </select>
         <button onClick={() => { setIsOpenAddSession(true); getTeachers() }} className="w-full hover:cursor-pointer p-2 text-amber-50 bg-blue-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Add session</button>
       </div>
@@ -70,7 +70,7 @@ export default function Schedule() {
       <div className="bg-gray-100 p-4 rounded-md shadow-inner">
         <Shedule sessions={sessions} />
       </div>
-      {isOpenAddSession && <Modal isOpen={isOpenAddSession} onClose={() => setIsOpenAddSession(false)}> <AddSession onClose={() => setIsOpenAddSession(false)} /> </Modal>}
+      {isOpenAddSession && <Modal isOpen={isOpenAddSession} onClose={() => setIsOpenAddSession(false)}> <AddSession onClose={() => setIsOpenAddSession(false)} timetable={filterTimeTable}/> </Modal>}
     </div>
   );
 }

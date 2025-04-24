@@ -19,8 +19,6 @@ const formatDate = (dateString) => {
 
 export default function Holidays() {
   const { holidays, addHoliday, updateHoliday, deleteHoliday } = useStore();
-  const formRef = useRef(null);
-  const [formHeight, setFormHeight] = useState(0);
   
   const [formData, setFormData] = useState({ 
     description: '', 
@@ -31,15 +29,8 @@ export default function Holidays() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
   const [academicYears, setAcademicYears] = useState([]);
-  const [hoveredHoliday, setHoveredHoliday] = useState(null);
+  const [selectedHoliday, setSelectedHoliday] = useState(null);
 
-  useEffect(() => {
-    if (formRef.current) {
-      setFormHeight(formRef.current.clientHeight);
-    }
-  }, [editingId, formData]); 
-
- 
   useEffect(() => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -56,7 +47,6 @@ export default function Holidays() {
       ...prev,
       [name]: value
     }));
-    
     
     if (error) setError('');
   };
@@ -81,27 +71,20 @@ export default function Holidays() {
     if (!validateForm()) return;
 
     if (editingId !== null) {
-     
       updateHoliday(editingId, { 
         newDescription: formData.description,
         newFrom: formData.from,
         newTo: formData.to,
         newAcademicYear: formData.academicYear,
       });
-      setEditingId(null);
     } else {
-    
       addHoliday(formData);
     }
 
-  
-    setFormData({ 
-      description: '', 
-      from: '', 
-      to: '', 
-      academicYear: '' 
-    });
+    setFormData({ description: '', from: '', to: '', academicYear: '' });
+    setEditingId(null);
     setError('');
+    setSelectedHoliday(null);
   };
 
   const handleEdit = (holiday) => {
@@ -118,6 +101,7 @@ export default function Holidays() {
       academicYear: holiday.academic_year,
     });
     setEditingId(holiday.holiday_id);
+    setSelectedHoliday(holiday);
     setError('');
   };
 
@@ -128,184 +112,245 @@ export default function Holidays() {
   };
 
   return (
-    <div className="p-4 w-full mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Manage Holidays</h1>
-      
-    
-      <div className="flex flex-col md:flex-row gap-6">
-       
-        <div ref={formRef} className="bg-gray-50 p-4 rounded-lg flex-1">
-          <h2 className="text-xl font-semibold mb-4">
-            {editingId !== null ? 'Edit Holiday' : 'Add New Holiday'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="w-full p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-[#141F75] mb-6">Manage Holidays</h1>
+
+      {!editingId && (
+        <>
+          {/* Holidays Table */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Holiday Records</h2>
+            </div>
+            
+            {holidays?.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">
+                No holidays recorded yet
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Academic Year</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {holidays?.map((holiday) => (
+                      <tr key={holiday.holiday_id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {holiday.description}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(holiday.from)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(holiday.to)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {holiday.academic_year}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEdit(holiday)}
+                              className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(holiday.holiday_id)}
+                              className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Add Holiday Form */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Holiday</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                  <select
+                    name="academicYear"
+                    value={formData.academicYear}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    required
+                  >
+                    <option value="">Select Academic Year</option>
+                    {academicYears.map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                  <input
+                    type="date"
+                    name="from"
+                    value={formData.from}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                  <input
+                    type="date"
+                    name="to"
+                    value={formData.to}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                >
+                  Add Holiday
+                </button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {editingId && selectedHoliday && (
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex items-center mb-4">
+            <button
+              className="flex items-center text-[#141F75] hover:text-[#0e1757] mr-4"
+              onClick={() => {
+                setEditingId(null);
+                setSelectedHoliday(null);
+                setFormData({ description: '', from: '', to: '', academicYear: '' });
+                setError('');
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back
+            </button>
+            <h2 className="text-xl font-semibold text-gray-800">Edit Holiday</h2>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
                 {error}
               </div>
             )}
             
-            <div>
-              <label htmlFor="description" className="block mb-1 text-sm font-medium">Description</label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded text-sm"
-                required
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="from" className="block mb-1 text-sm font-medium">From</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <input
+                  type="text"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                <select
+                  name="academicYear"
+                  value={formData.academicYear}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                  required
+                >
+                  <option value="">Select Academic Year</option>
+                  {academicYears.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
                 <input
                   type="date"
-                  id="from"
                   name="from"
                   value={formData.from}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded text-sm"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
               </div>
-              
               <div>
-                <label htmlFor="to" className="block mb-1 text-sm font-medium">To</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
                 <input
                   type="date"
-                  id="to"
                   name="to"
                   value={formData.to}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded text-sm"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
               </div>
             </div>
-            
-            <div>
-              <label htmlFor="academicYear" className="block mb-1 text-sm font-medium">Academic Year</label>
-              <select
-                id="academicYear"
-                name="academicYear"
-                value={formData.academicYear}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded text-sm"
-                required
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingId(null);
+                  setSelectedHoliday(null);
+                  setFormData({ description: '', from: '', to: '', academicYear: '' });
+                  setError('');
+                }}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
               >
-                <option value="">Select Academic Year</option>
-                {academicYears.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="flex items-center space-x-2 pt-2">
+                Cancel
+              </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
               >
-                {editingId !== null ? 'Update' : 'Add Holiday'}
+                Update Holiday
               </button>
-              
-              {editingId !== null && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(null);
-                    setFormData({ 
-                      description: '', 
-                      from: '', 
-                      to: '', 
-                      academicYear: '' 
-                    });
-                    setError('');
-                  }}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-                >
-                  Cancel
-                </button>
-              )}
             </div>
           </form>
         </div>
-
-       
-        <div className="flex-1">
-          <h2 className="text-xl font-semibold mb-4">Holidays</h2>
-          
-       
-          <div className="grid grid-cols-12 gap-4 items-center p-3 border-b font-medium text-sm bg-gray-50">
-            <div className="col-span-5">Description</div>
-            <div className="col-span-3">From</div>
-            <div className="col-span-3">To</div>
-            <div className="col-span-1"></div>
-          </div>
-          
-          <div 
-            className="overflow-y-auto border rounded-lg" 
-            style={{ maxHeight: formHeight ? `${formHeight - 60}px` : 'auto' }}
-          >
-            {holidays.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm">
-                No holidays added yet.
-              </div>
-            ) : (
-              <div className="divide-y">
-                {holidays.map(holiday => (
-                  <div 
-                    key={holiday.holiday_id} 
-                    className="p-3 hover:bg-gray-50"
-                    onMouseEnter={() => setHoveredHoliday(holiday.holiday_id)}
-                    onMouseLeave={() => setHoveredHoliday(null)}
-                  >
-                    <div className="grid grid-cols-12 gap-4 items-center">
-                      <div className="col-span-5">
-                        <p className="font-medium truncate">{holiday.description}</p>
-                      </div>
-                      
-                      {hoveredHoliday !== holiday.holiday_id && (
-                        <>
-                          <div className="col-span-3">
-                            <p className="text-gray-600">{formatDate(holiday.from)}</p>
-                          </div>
-                          <div className="col-span-3">
-                            <p className="text-gray-600">{formatDate(holiday.to)}</p>
-                          </div>
-                        </>
-                      )}
-                      
-                      {hoveredHoliday === holiday.holiday_id && (
-                        <div className="col-span-7 flex justify-end">
-                          <div className="flex space-x-2">
-                            <button 
-                              onClick={() => handleEdit(holiday)}
-                              className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
-                              title="Edit"
-                            >
-                              Edit
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(holiday.holiday_id)}
-                              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs"
-                              title="Delete"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

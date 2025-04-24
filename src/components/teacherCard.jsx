@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useState, useEffect, useRef } from "react";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { FaRegEye } from "react-icons/fa";
-import { translations } from "@/app/admin/translate";
 
 const Absences = dynamic(() => import("./absencesList"), {
   ssr: false,
@@ -121,7 +120,7 @@ const TeacherCard = ({ teacherData }) => {
             className="text-sm bg-blue-900 text-white rounded-2xl flex items-center gap-1 px-2 py-1 hover:cursor-pointer"
             onClick={() => handleModal("profil", teacherData.teacher_id)}
           >
-            <FaRegEye /> {translations[0].teacherCard.view}
+            <FaRegEye /> View Profile
           </button>
         </div>
       </div>
@@ -143,27 +142,27 @@ const TeacherCard = ({ teacherData }) => {
               className="p-2 border-b cursor-pointer hover:bg-gray-100"
               onClick={() => handleModal("absences", teacherData.teacher_id)}
             >
-              {translations[0].teacherCard.handleAbsences}
+              Manage Absences
             </li>
             <li
               className="p-2 border-b cursor-pointer hover:bg-gray-100"
               onClick={() => handleModal("ranks", teacherData.teacher_id)}
             >
-              {translations[0].teacherCard.handleRanks}
+              Manage Ranks
             </li>
             <li
               className="p-2 cursor-pointer text-red-600 hover:bg-gray-100"
               onClick={() => handleModal("delete", teacherData.teacher_id)}
             >
-              {translations[0].teacherCard.handleDelete}
+              Delete Teacher
             </li>
           </ul>
         </div>
       )}
-{ModalContent &&
-      <Modal isOpen={isModalOpen[0]} onClose={() => setIsModalOpen([false, ""])}>
-        {ModalContent}
-      </Modal>}
+      {ModalContent &&
+        <Modal isOpen={isModalOpen[0]} onClose={() => setIsModalOpen([false, ""])}>
+          {ModalContent}
+        </Modal>}
     </div>
   );
 };

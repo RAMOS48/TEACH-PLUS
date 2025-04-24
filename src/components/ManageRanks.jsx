@@ -10,8 +10,7 @@ export default function ManageRanks() {
   });
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
-  const formRef = useRef(null);
-  const [formHeight, setFormHeight] = useState('auto');
+  const [selectedRank, setSelectedRank] = useState(null);
 
   useEffect(() => {
     const savedRanks = localStorage.getItem('ranks');
@@ -19,12 +18,6 @@ export default function ManageRanks() {
       setRanks(JSON.parse(savedRanks));
     }
   }, []);
-
-  useEffect(() => {
-    if (formRef.current) {
-      setFormHeight(`${formRef.current.offsetHeight}px`);
-    }
-  }, [formData, editingId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -65,7 +58,6 @@ export default function ManageRanks() {
       );
       setRanks(updatedRanks);
       localStorage.setItem('ranks', JSON.stringify(updatedRanks));
-      setEditingId(null);
     } else {
       const newRank = {
         ...formData,
@@ -76,11 +68,10 @@ export default function ManageRanks() {
       localStorage.setItem('ranks', JSON.stringify(updatedRanks));
     }
 
-    setFormData({
-      name: '',
-      price: ''
-    });
+    setFormData({ name: '', price: '' });
+    setEditingId(null);
     setError('');
+    setSelectedRank(null);
   };
 
   const handleEdit = (rank) => {
@@ -89,6 +80,7 @@ export default function ManageRanks() {
       price: rank.price
     });
     setEditingId(rank.id);
+    setSelectedRank(rank);
     setError('');
   };
 
@@ -101,121 +93,189 @@ export default function ManageRanks() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Manage Ranks</h1>
-      
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div 
-          ref={formRef}
-          className="bg-gray-50 p-4 rounded-lg flex-1"
-        >
-          <h2 className="text-xl font-semibold mb-4">
-            {editingId !== null ? 'Edit Rank' : 'Add New Rank'}
-          </h2>
+    <div className="w-full p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold text-[#141F75] mb-6">Manage Ranks</h1>
+
+      {!editingId && (
+        <>
+          {/* Ranks Table */}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">Rank Records</h2>
+            </div>
+            
+            {ranks.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">
+                No ranks added yet
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {ranks.map(rank => (
+                      <tr key={rank.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {rank.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {parseFloat(rank.price).toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEdit(rank)}
+                              className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(rank.id)}
+                              className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Add Rank Form */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Rank</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
+                  {error}
+                </div>
+              )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Rank Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                >
+                  Add Rank
+                </button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {editingId && selectedRank && (
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="flex items-center mb-4">
+            <button
+              className="flex items-center text-[#141F75] hover:text-[#0e1757] mr-4"
+              onClick={() => {
+                setEditingId(null);
+                setSelectedRank(null);
+                setFormData({ name: '', price: '' });
+                setError('');
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back
+            </button>
+            <h2 className="text-xl font-semibold text-gray-800">Edit Rank</h2>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-2 bg-red-100 text-red-700 rounded">
+              <div className="p-2 bg-red-100 text-red-700 rounded text-sm">
                 {error}
               </div>
             )}
             
             <div>
-              <label htmlFor="name" className="block mb-1 font-medium">Rank Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rank Name</label>
               <input
                 type="text"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                 required
               />
             </div>
             
             <div>
-              <label htmlFor="price" className="block mb-1 font-medium">Price</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
               <input
                 type="number"
-                id="price"
                 name="price"
                 value={formData.price}
                 onChange={handleInputChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                 min="0"
                 step="0.01"
                 required
               />
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingId(null);
+                  setSelectedRank(null);
+                  setFormData({ name: '', price: '' });
+                  setError('');
+                }}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
               >
-                {editingId !== null ? 'Update Rank' : 'Add Rank'}
+                Update Rank
               </button>
-              
-              {editingId !== null && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(null);
-                    setFormData({ name: '', price: '' });
-                    setError('');
-                  }}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-              )}
             </div>
           </form>
         </div>
-
-        <div className="flex-1" style={{ height: formHeight }}>
-          <h2 className="text-xl font-semibold mb-4">Current Ranks</h2>
-          {ranks.length === 0 ? (
-            <div className="flex items-center justify-center" style={{ height: `calc(${formHeight} - 40px)` }}>
-              <p className="text-gray-500">No ranks added yet.</p>
-            </div>
-          ) : (
-            <div 
-              className="space-y-3 overflow-y-auto pr-2"
-              style={{ 
-                height: `calc(${formHeight} - 40px)`,
-                scrollbarWidth: 'thin'
-              }}
-            >
-              {ranks.map(rank => (
-                <div key={rank.id} className="p-4 border rounded-lg">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">{rank.name}</h3>
-                      <div className="text-sm text-gray-600 mt-1">
-                        <p>Price: {parseFloat(rank.price).toFixed(2)}</p>
-                      </div>
-                    </div>
-                    <div className="space-x-2">
-                      <button 
-                        onClick={() => handleEdit(rank)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(rank.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
