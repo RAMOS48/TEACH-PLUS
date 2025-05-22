@@ -1,21 +1,13 @@
 "use client";
 import useStore from "@/store/useStore";
 import { useRef, useState, useEffect } from "react";
-import { translations } from "@/app/admin/translate";
 
 export default function AbsenceList() {
   const { absences, selectedTeacher, getAbsences, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
   const [updateForm, setUpdateForm] = useState(false);
   const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable);
   const [selectedAbsence, setSelectedAbsence] = useState(null);
-
-  // Accès aux traductions
-  const t = translations[0].manageAbsences;
-  const commonT = {
-    confirm: translations[0].modalAddTeacher.confirmButton,
-    back: translations[0].manageAbsences.buttonBack,
-    delete: translations[0].deleteTeacher.buttonDelete
-  };
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState(null);
 
   const date = useRef("");
   const selectedSession = useRef("");
@@ -26,6 +18,24 @@ export default function AbsenceList() {
   const newNotes = useRef("");
   const newReason = useRef("");
 
+  // Fonction pour générer les 10 dernières années académiques
+  const getAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    
+    for (let i = 0; i < 10; i++) {
+      const year = currentYear - i;
+      years.push({
+        label: `${year-1}/${year}`,
+        start: `${year-1}-09-01`,
+        end: `${year}-07-31`
+      });
+    }
+    
+    return years;
+  };
+
+  // Filtrer les sessions par date sélectionnée
   const filterSessionsByDate = (selectedDate) => {
     if (!selectedDate) {
       setFilteredSessions(teacherTimeTable);
@@ -38,6 +48,22 @@ export default function AbsenceList() {
     );
     setFilteredSessions(filtered);
   };
+
+  // Filtrer les absences par année académique
+  const filterAbsencesByAcademicYear = (absences, academicYear) => {
+    if (!academicYear) return absences;
+    
+    const startDate = new Date(academicYear.start);
+    const endDate = new Date(academicYear.end);
+    
+    return absences.filter(absence => {
+      const absenceDate = new Date(absence.date);
+      return absenceDate >= startDate && absenceDate <= endDate;
+    });
+  };
+
+  // Absences filtrées selon l'année académique sélectionnée
+  const filteredAbsences = filterAbsencesByAcademicYear(absences, selectedAcademicYear);
 
   useEffect(() => {
     setFilteredSessions(teacherTimeTable);
@@ -92,7 +118,32 @@ export default function AbsenceList() {
 
   return (
     <div className="w-full p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-[#141F75] mb-6">{t.title}</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-[#141F75]">Manage Absences</h1>
+        <div className="flex items-center space-x-4">
+          <div>
+            <label htmlFor="academicYear" className="block text-sm font-medium text-gray-700 mb-1">
+              Academic Year
+            </label>
+            <select
+              id="academicYear"
+              value={selectedAcademicYear ? selectedAcademicYear.label : ''}
+              onChange={(e) => {
+                const selected = getAcademicYears().find(year => year.label === e.target.value);
+                setSelectedAcademicYear(selected || null);
+              }}
+              className="p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+            >
+              <option value="">All Years</option>
+              {getAcademicYears().map((year) => (
+                <option key={year.label} value={year.label}>
+                  {year.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
       {!updateForm && (
         <>
@@ -102,24 +153,24 @@ export default function AbsenceList() {
               <h2 className="text-xl font-semibold text-gray-800">Absence Records</h2>
             </div>
             
-            {absences?.length === 0 ? (
+            {filteredAbsences?.length === 0 ? (
               <div className="p-6 text-center text-gray-500">
-                No absences recorded yet
+                {absences?.length === 0 ? 'No absences recorded yet' : 'No absences found for selected academic year'}
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.date}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.caughtUp}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.reason}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t.notes}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {absences?.map((absence) => (
+                    {filteredAbsences?.map((absence) => (
                       <tr key={absence.absence_id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {new Date(absence.date).toLocaleDateString("en-GB")}
@@ -147,7 +198,7 @@ export default function AbsenceList() {
                                   : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                               }`}
                             >
-                              {absence.caught_up ? 'Undo' : t.buttonCaughtUp}
+                              {absence.caught_up ? 'Undo' : 'Mark as Caught Up'}
                             </button>
                             <button
                               onClick={() => openUpdateForm(absence)}
@@ -159,7 +210,7 @@ export default function AbsenceList() {
                               onClick={() => deleteAbsence(absence.absence_id)}
                               className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
                             >
-                              {commonT.delete}
+                              Delete
                             </button>
                           </div>
                         </td>
@@ -174,11 +225,11 @@ export default function AbsenceList() {
           {/* Add Absence Form */}
           {teacherTimeTable.length !== 0 && (
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">{t.titleAdd}</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Record New Absence</h2>
               <form onSubmit={handleAdd} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.date}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                     <input
                       ref={date}
                       type="date"
@@ -203,7 +254,7 @@ export default function AbsenceList() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.reason}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
                     <input
                       type="text"
                       ref={reason}
@@ -212,7 +263,7 @@ export default function AbsenceList() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.notes}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <input
                       type="text"
                       ref={notes}
@@ -226,7 +277,7 @@ export default function AbsenceList() {
                     type="submit"
                     className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
                   >
-                    {t.buttonAdd}
+                    Add Absence
                   </button>
                 </div>
               </form>
@@ -255,15 +306,15 @@ export default function AbsenceList() {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
-              {commonT.back}
+              Back
             </button>
-            <h2 className="text-xl font-semibold text-gray-800">{t.titleUpdate}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Update Absence</h2>
           </div>
 
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t.date}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                 <input
                   ref={newDate}
                   type="date"
@@ -300,7 +351,7 @@ export default function AbsenceList() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t.reason}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
                 <input
                   type="text"
                   ref={newReason}
@@ -310,7 +361,7 @@ export default function AbsenceList() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t.notes}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                 <input
                   type="text"
                   ref={newNotes}
@@ -325,7 +376,7 @@ export default function AbsenceList() {
                 type="submit"
                 className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
               >
-                {commonT.confirm}
+                Update Absence
               </button>
             </div>
           </form>

@@ -8,7 +8,7 @@ import Modal from '@/components/Modal';
 import { motion } from 'framer-motion';
 
 export default function ExtraHours() {
-  const { getExtraHoursSheet, teachers, getSubPeriods } = useStore();
+  const { getExtraHoursSheet, teachers, getSubPeriods, getRanksList } = useStore();
   const router = useRouter();
   
   const [selectedTeacher, setSelectedTeacher] = useState(null);
@@ -26,6 +26,26 @@ export default function ExtraHours() {
     return `${year}/${year + 1}`;
   });
 
+  const getRankPrice = (rankName, fromDate) => {
+    const allRanks = getRanksList() ;
+    try {
+      const date = new Date(fromDate);
+      if (isNaN(date.getTime())) return 0; 
+      
+      const year = date.getFullYear();
+      
+      const matchingRanks = allRanks.filter(rank => 
+        rank.name === rankName && year === rank.year
+        
+      );
+      
+      
+      return matchingRanks[0]?.price || 0;
+    } catch {
+      return 0;
+    }
+  };
+
   const fetchSubPeriods = async () => {
     if (!selectedTeacher || !academicYear) return;
     setIsLoading(true);
@@ -39,17 +59,32 @@ export default function ExtraHours() {
   };
 
   const handleExtraHours = async () => {
+    if (selectedSubPeriod === '' || !subPeriods[selectedSubPeriod] || !subPeriods[selectedSubPeriod].rank) return ;
+
+    
     setIsLoading(true);
     try {
+      const period = subPeriods[selectedSubPeriod];
+      const rankPrice = await getRankPrice(period.rank, period.from)
+
+      console.log({
+        teacherId: selectedTeacher.teacher_id,
+        from: period.from,
+        to: period.to,
+        rank: period.rank,
+        academicYear: academicYear,
+        rankPrice:rankPrice
+      });
       const sheetData = await getExtraHoursSheet({
         teacherId: selectedTeacher.teacher_id,
-        from: subPeriods[selectedSubPeriod].from,
-        to: subPeriods[selectedSubPeriod].to,
-        rank: subPeriods[selectedSubPeriod].rank,
+        from: period.from,
+        to: period.to,
+        rank: period.rank,
         academicYear: academicYear,
-        rankPrice: 100
+        rankPrice:rankPrice
       });
       setSheet(sheetData.sheet);
+      
       setExtraDays(sheetData.extraDays);
       setIsModalOpen(true);
     } finally {
@@ -76,11 +111,10 @@ export default function ExtraHours() {
         Gestion des Heures Supplémentaires
       </motion.h1>
       
-      {/* Sélection de l'enseignant */}
       <div className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <h2 className="font-medium mb-2 text-[#141F75]">Sélectionnez un enseignant</h2>
         {teachers?.length > 0 ? (
-          <div className=" rounded-lg max-h-60 overflow-y-auto">
+          <div className="rounded-lg max-h-60 overflow-y-auto">
             {teachers.map(teacher => (
               <motion.div 
                 key={teacher.teacher_id}
@@ -115,7 +149,6 @@ export default function ExtraHours() {
         )}
       </div>
 
-      {/* Sélection de l'année académique */}
       <motion.div 
         className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200"
         transition={{ delay: 0.1 }}
@@ -134,7 +167,6 @@ export default function ExtraHours() {
         </select>
       </motion.div>
 
-      {/* Sélection de la sous-période */}
       {subPeriods?.length > 0 && (
         <motion.div 
           className="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200"
@@ -161,10 +193,9 @@ export default function ExtraHours() {
         </motion.div>
       )}
 
-      {/* Bouton Générer */}
       <div className="flex justify-end">
         <motion.button
-          className={`px-6 py-2 rounded-md text-white font-medium ${
+          className={`px-6 py-2 cursor-pointer rounded-md text-white font-medium ${
             !selectedSubPeriod ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2738BD] hover:bg-[#1e2e9e]'
           }`}
           disabled={!selectedSubPeriod || isLoading}
@@ -186,7 +217,6 @@ export default function ExtraHours() {
         </motion.button>
       </div>
 
-      {/* Modal pour afficher la fiche */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <motion.div
           initial={{ opacity: 0 }}
@@ -195,19 +225,20 @@ export default function ExtraHours() {
         >
           <ExtraHoursSheet 
             teacher={{
-              rank: sheet.rank,
+              rank: sheet.rank ,
               extraDays: extraDays,
               firstName: selectedTeacher?.first_name,
               familyName: selectedTeacher?.family_name,
               academicYear: academicYear,
               from: subPeriods[selectedSubPeriod]?.from,
-              to: subPeriods[selectedSubPeriod]?.to
+              to: subPeriods[selectedSubPeriod]?.to,
+              rankPrice: sheet.rankPrice
             }}
           />
           <div className="mt-4 flex justify-end">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 cursor-pointer py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
               Fermer
             </button>

@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 import useStore from "@/store/useStore.js";
 import { useState, useEffect, useRef } from 'react';
 
@@ -9,6 +8,40 @@ export default function Periods() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState(null);
+
+  const getAcademicYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    
+    for (let i = 0; i < 10; i++) {
+      const year = currentYear - i;
+      years.push({
+        label: `${year-1}/${year}`,
+        start: `${year-1}-09-01`,
+        end: `${year}-07-31`
+      });
+    }
+    
+    return years;
+  };
+
+  const filterPeriodsByAcademicYear = (periods, academicYear) => {
+    if (!academicYear) return periods;
+    
+    const startDate = new Date(academicYear.start);
+    const endDate = new Date(academicYear.end);
+    
+    return periods.filter(period => {
+      const periodStart = new Date(period.from);
+      const periodEnd = new Date(period.to);
+      return (periodStart >= startDate && periodStart <= endDate) || 
+             (periodEnd >= startDate && periodEnd <= endDate) ||
+             (periodStart <= startDate && periodEnd >= endDate);
+    });
+  };
+
+  const filteredPeriods = filterPeriodsByAcademicYear(periods, selectedAcademicYear);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +54,7 @@ export default function Periods() {
   };
 
   const validateDates = () => {
-    if (!formData.name) {
+    if (!formData.name.trim()) {
       setError('Please enter a name for the period');
       return false;
     }
@@ -31,8 +64,25 @@ export default function Periods() {
       return false;
     }
 
-    if (new Date(formData.to) <= new Date(formData.from)) {
+    const startDate = new Date(formData.from);
+    const endDate = new Date(formData.to);
+
+    if (endDate <= startDate) {
       setError('End date must be after start date');
+      return false;
+    }
+
+    const isOverlapping = periods.some(period => {
+      if (editingId && period.period_id === editingId) return false;
+      
+      const existingStart = new Date(period.from);
+      const existingEnd = new Date(period.to);
+      
+      return (startDate <= existingEnd && endDate >= existingStart);
+    });
+
+    if (isOverlapping) {
+      setError('This period overlaps with an existing period');
       return false;
     }
 
@@ -72,8 +122,13 @@ export default function Periods() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this period?')) {
+    if (window.confirm('Are you sure you want to delete this period? This action cannot be undone.')) {
       deletePeriod(id);
+      if (editingId === id) {
+        setEditingId(null);
+        setSelectedPeriod(null);
+        setFormData({ name: '', from: '', to: '' });
+      }
     }
   };
 
@@ -87,21 +142,52 @@ export default function Periods() {
     });
   };
 
+  const calculateDuration = (from, to) => {
+    const start = new Date(from);
+    const end = new Date(to);
+    const diffTime = Math.abs(end - start);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+  };
+
   return (
     <div className="w-full p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-[#141F75] mb-6">Manage Periods</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-[#141F75]">Manage Periods</h1>
+        <div className="flex items-center space-x-4">
+          <div>
+            <label htmlFor="academicYear" className="block text-sm font-medium text-gray-700 mb-1">
+              Academic Year
+            </label>
+            <select
+              id="academicYear"
+              value={selectedAcademicYear ? selectedAcademicYear.label : ''}
+              onChange={(e) => {
+                const selected = getAcademicYears().find(year => year.label === e.target.value);
+                setSelectedAcademicYear(selected || null);
+              }}
+              className="p-2 cursor-pointer border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+            >
+              <option value="">All Years</option>
+              {getAcademicYears().map((year) => (
+                <option key={year.label} value={year.label}>
+                  {year.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
       {!editingId && (
         <>
-          {/* Periods Table */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
             <div className="p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Period Records</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Periods</h2>
             </div>
             
-            {periods.length === 0 ? (
+            {filteredPeriods.length === 0 ? (
               <div className="p-6 text-center text-gray-500">
-                No periods added yet
+                {periods.length === 0 ? 'No periods added yet' : 'No periods found for selected academic year'}
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -111,11 +197,12 @@ export default function Periods() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration (days)</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {periods.map(period => (
+                    {filteredPeriods.map(period => (
                       <tr key={period.period_id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {period.name}
@@ -126,17 +213,20 @@ export default function Periods() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(period.to)}
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {calculateDuration(period.from, period.to)}
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <button
                               onClick={() => handleEdit(period)}
-                              className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
+                              className="px-3 cursor-pointer py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDelete(period.period_id)}
-                              className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
+                              className="px-3 cursor-pointer py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
                             >
                               Delete
                             </button>
@@ -150,7 +240,6 @@ export default function Periods() {
             )}
           </div>
 
-          {/* Add Period Form */}
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Period</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,7 +256,7 @@ export default function Periods() {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="e.g. Ramadan Session"
+                  placeholder="e.g. Ramadan Session, Winter Break"
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
@@ -201,7 +290,7 @@ export default function Periods() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                  className="px-4 cursor-pointer py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
                 >
                   Add Period
                 </button>
@@ -215,7 +304,7 @@ export default function Periods() {
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center mb-4">
             <button
-              className="flex items-center text-[#141F75] hover:text-[#0e1757] mr-4"
+              className="flex cursor-pointer items-center text-[#141F75] hover:text-[#0e1757] mr-4"
               onClick={() => {
                 setEditingId(null);
                 setSelectedPeriod(null);
@@ -284,13 +373,13 @@ export default function Periods() {
                   setFormData({ name: '', from: '', to: '' });
                   setError('');
                 }}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                className="px-4 cursor-pointer py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                className="px-4 cursor-pointer py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
               >
                 Update Period
               </button>

@@ -662,7 +662,7 @@ const useStore = create((set, get) => ({
     // work
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3000/api/holidays?academicYear=${data.getCurrentAcademicYear()}`);
+      const response = await axios.get(`http://localhost:3000/api/holidays`);
       set({ holidays: response.data.holidays });
 
     } catch (error) {
@@ -744,8 +744,9 @@ getExtraHoursSheet: async (infos) => {
 
   // work
   try {
-    const data = get();
+    
     const response = await axios.post(`http://localhost:3000/api/sheets` , infos);
+ 
     
      return response.data
   } catch (error) {
@@ -754,6 +755,70 @@ getExtraHoursSheet: async (infos) => {
     return {}
   }finally{set({ isLoading: false});}
 },
+
+
+
+// ranks management
+
+getRanksList: async () => {
+
+  set({ isLoading: true });
+
+  // work
+  try {
+    const data = get();
+    const response = await axios.get(`http://localhost:3000/api/manageRanks`);
+    return response.data.ranksList
+
+  } catch (error) {
+    return  [] 
+  } finally { set({ isLoading: false }); }
+},
+
+
+
+addRankInfos: async (addedRank) => {
+  set({ isLoading: true });
+  // work
+  try {
+
+    const data = get();
+    const response = await axios.post(`http://localhost:3000/api/manageRanks`, addedRank);
+    data.getRanksList()
+  } catch (error) {
+    console.log("Error inserting rank:", error);
+  } finally { set({ isLoading: false }); }
+},
+
+
+
+updateRankInfos: async (rankId, newRank) => {
+  set({ isLoading: true });
+  // work 
+  try {
+    const data = get();
+    const response = await axios.put(`http://localhost:3000/api/manageRanks/${rankId}`, newRank);
+    data.getRanksList()
+  } catch (error) {
+    console.log("Error updating rank", error);
+  } finally { set({ isLoading: false }); }
+},
+
+
+deleteRankInfos: async (rankId) => {
+  set({ isLoading: true });
+  // work
+  try {
+    const data = get();
+
+    const response = await axios.delete(`http://localhost:3000/api/manageRanks/${rankId}`);
+    data.getRanksList()
+  } catch (error) {
+    console.log("Error deleting rank :", error);
+  } finally { set({ isLoading: false }); }
+},
+
+
 
 
 }));

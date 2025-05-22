@@ -1,7 +1,7 @@
 "use client"
 
 import useStore from "@/store/useStore.js";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -17,6 +17,15 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
+const parseAcademicYear = (academicYear) => {
+  if (!academicYear) return null;
+  const [startYear, endYear] = academicYear.split('/').map(Number);
+  return {
+    start: new Date(`${startYear}-09-01`), // Academic year typically starts Sept 1
+    end: new Date(`${endYear}-08-31`)      // and ends Aug 31 the following year
+  };
+};
+
 export default function Holidays() {
   const { holidays, addHoliday, updateHoliday, deleteHoliday } = useStore();
   
@@ -30,13 +39,14 @@ export default function Holidays() {
   const [error, setError] = useState('');
   const [academicYears, setAcademicYears] = useState([]);
   const [selectedHoliday, setSelectedHoliday] = useState(null);
+  const [filterYear, setFilterYear] = useState('');
 
   useEffect(() => {
     const currentYear = new Date().getFullYear();
     const years = [];
     for (let i = 9; i >= 0; i--) {
       const year = currentYear - i;
-      years.push(`${year-1}/${year}`); 
+      years.push(`${year}/${year+1}`);
     }
     setAcademicYears(years);
   }, []);
@@ -60,6 +70,22 @@ export default function Holidays() {
     if (new Date(formData.to) <= new Date(formData.from)) {
       setError('End date must be after start date');
       return false;
+    }
+
+    const academicYearRange = parseAcademicYear(formData.academicYear);
+    if (academicYearRange) {
+      const fromDate = new Date(formData.from);
+      const toDate = new Date(formData.to);
+      
+      if (fromDate < academicYearRange.start || fromDate > academicYearRange.end) {
+        setError('Start date must be within the academic year');
+        return false;
+      }
+      
+      if (toDate < academicYearRange.start || toDate > academicYearRange.end) {
+        setError('End date must be within the academic year');
+        return false;
+      }
     }
 
     return true;
@@ -117,15 +143,27 @@ export default function Holidays() {
 
       {!editingId && (
         <>
-          {/* Holidays Table */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-            <div className="p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Holiday Records</h2>
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-800">Holidays</h2>
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Filter by Academic Year:</label>
+                <select
+                  value={filterYear}
+                  onChange={(e) => setFilterYear(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                >
+                  <option value="">All Years</option>
+                  {academicYears.map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             
             {holidays?.length === 0 ? (
               <div className="p-6 text-center text-gray-500">
-                No holidays recorded yet
+                No holidays 
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -140,45 +178,46 @@ export default function Holidays() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {holidays?.map((holiday) => (
-                      <tr key={holiday.holiday_id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {holiday.description}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(holiday.from)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(holiday.to)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {holiday.academic_year}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEdit(holiday)}
-                              className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(holiday.holiday_id)}
-                              className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {holidays
+                      ?.filter(holiday => !filterYear || holiday.academic_year === filterYear)
+                      ?.map((holiday) => (
+                        <tr key={holiday.holiday_id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {holiday.description}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(holiday.from)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {formatDate(holiday.to)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {holiday.academic_year}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleEdit(holiday)}
+                                className="px-3 cursor-pointer py-1 bg-indigo-100 text-indigo-700 rounded-md text-sm hover:bg-indigo-200"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(holiday.holiday_id)}
+                                className="px-3 cursor-pointer py-1 bg-red-100 text-red-700 rounded-md text-sm hover:bg-red-200"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
             )}
           </div>
 
-          {/* Add Holiday Form */}
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Add New Holiday</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -206,7 +245,7 @@ export default function Holidays() {
                     name="academicYear"
                     value={formData.academicYear}
                     onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    className="w-full cursor-pointer p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                     required
                   >
                     <option value="">Select Academic Year</option>
@@ -233,7 +272,7 @@ export default function Holidays() {
                     name="to"
                     value={formData.to}
                     onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
+                    className="w-full cursor-pointer p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                     required
                   />
                 </div>
@@ -241,7 +280,7 @@ export default function Holidays() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                  className="px-4 cursor-pointer py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
                 >
                   Add Holiday
                 </button>
@@ -255,7 +294,7 @@ export default function Holidays() {
         <div className="bg-white rounded-xl shadow-md p-6">
           <div className="flex items-center mb-4">
             <button
-              className="flex items-center text-[#141F75] hover:text-[#0e1757] mr-4"
+              className="flex cursor-pointer items-center text-[#141F75] hover:text-[#0e1757] mr-4"
               onClick={() => {
                 setEditingId(null);
                 setSelectedHoliday(null);
@@ -337,13 +376,13 @@ export default function Holidays() {
                   setFormData({ description: '', from: '', to: '', academicYear: '' });
                   setError('');
                 }}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                className="px-4 cursor-pointer py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
+                className="px-4 cursor-pointer py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors"
               >
                 Update Holiday
               </button>

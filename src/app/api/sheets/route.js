@@ -3,7 +3,8 @@ import { generateDatedSessions, getExtraSessions, groupSessionsByDate } from "@/
 export async function POST(req) {
     try {
         const { from, to, teacherId, academicYear, rankPrice, rank } = await req.json();
-        if (!from || !to || !teacherId || !academicYear || !rankPrice || !rank) {
+
+        if (!from || !to || !teacherId || !academicYear  || !rank) {
             return Response.json({ status: "FAILED", message: "A required data field is missing" }, { status: 400 })
         }
         

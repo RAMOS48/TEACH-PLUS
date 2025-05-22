@@ -28,12 +28,9 @@ export async function POST(req) {
 
 export async function GET(req) {
     try {
-        const { searchParams } = new URL(req.url)
-        const academicYear = searchParams.get("academicYear")
-        if (!academicYear) {
-            return Response.json({ status: "FAILED", message: "A required data field is missing !" }, { status: 400 })
-        }
-        const [holidays] = await database.execute("SELECT * FROM Holidays WHERE academic_year = ?", [academicYear])
+        
+      
+        const [holidays] = await database.execute("SELECT * FROM Holidays")
         if (!holidays.length) {
             return Response.json({ status: "FAILED", message: "No holidays found !" }, { status: 404 })
         }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
-import { LayoutDashboard, User, Calendar, Table, Clock, FileText } from "lucide-react";
+import { LayoutDashboard, User, Table, Clock, FileText , Settings } from "lucide-react";
 import useStore from "@/store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,7 +12,7 @@ const menuItems = [
   { name: "Teachers", icon: User, path: "/admin/teachers" },
   { name: "Timetables", icon: Table, path: "/admin/timetable" },
   { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
-  { name: "Settings", icon: FileText, path: "/admin/settings" },
+  { name: "Settings", icon: Settings, path: "/admin/settings" },
 ];
 
 const Sidebar = () => {
@@ -65,7 +65,6 @@ const Sidebar = () => {
       onMouseEnter={() => !isSmallScreen && setIsHovering(true)}
       onMouseLeave={() => !isSmallScreen && setIsHovering(false)}
     >
-      {/* Header with logo and toggle button */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200">
         <AnimatePresence>
           {isOpen && (
@@ -93,7 +92,6 @@ const Sidebar = () => {
         )}
       </div>
 
-      {/* Navigation items */}
       <nav className="mt-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
@@ -132,7 +130,6 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Logout button */}
       <motion.div
         onClick={handleLogout}
         className="absolute bottom-4 flex items-center p-3 cursor-pointer hover:bg-gray-200"

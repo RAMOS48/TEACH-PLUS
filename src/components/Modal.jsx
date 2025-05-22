@@ -35,7 +35,7 @@ const Modal = ({ isOpen, onClose, children }) => {
       {isOpen && (
         <motion.div
           id="modal-overlay"
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          className="fixed inset-0 flex items-center justify-center bg-inherit bg-opacity-50 z-50"
           initial="hidden"
           animate="visible"
           exit="hidden"

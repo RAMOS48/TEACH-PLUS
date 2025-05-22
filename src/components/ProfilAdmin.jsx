@@ -97,7 +97,6 @@ export default function Profiluser() {
             <h1 className="text-3xl font-bold text-[#141F75] mb-6">Update Profile</h1>
             
             <div className="bg-white rounded-xl shadow-md p-6 w-full mx-auto">
-                {/* Profile Picture Section */}
                 <div className="flex flex-col items-center mb-8">
                     <div className="relative">
                         {previewImage ? (
@@ -111,7 +110,7 @@ export default function Profiluser() {
                         )}
                         <button 
                             onClick={triggerFileInput}
-                            className="absolute bottom-0 right-0 bg-[#141F75] text-white p-2 rounded-full hover:bg-[#0e1757] transition duration-200 shadow-lg"
+                            className="absolute cursor-pointer bottom-0 right-0 bg-[#141F75] text-white p-2 rounded-full hover:bg-[#0e1757] transition duration-200 shadow-lg"
                         >
                             <FaCamera className="text-lg" />
                         </button>
@@ -127,7 +126,6 @@ export default function Profiluser() {
                 </div>
       
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* First + Last Name */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="relative">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -161,7 +159,6 @@ export default function Profiluser() {
                         </div>
                     </div>
         
-                    {/* Phone + Email */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -195,7 +192,6 @@ export default function Profiluser() {
                         </div>
                     </div>
         
-                    {/* Date of Birth + Department */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -222,14 +218,14 @@ export default function Profiluser() {
                                     type="text"
                                     name="department"
                                     value={formData.department}
-                                    disabled
-                                    className="w-full pl-10 p-2 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed"
+                                    onChange={handleChange}
+
+                                    className="w-full pl-10 p-2 bg-gray-100 border border-gray-300 rounded-md "
                                 />
                             </div>
                         </div>
                     </div>
         
-                    {/* Address */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Address
@@ -246,11 +242,10 @@ export default function Profiluser() {
                         </div>
                     </div>
         
-                    {/* Submit Button */}
                     <div className="pt-4 flex justify-center">
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors shadow-md"
+                            className="px-6 cursor-pointer py-2 bg-[#141F75] text-white rounded-md hover:bg-[#0e1757] transition-colors shadow-md"
                         >
                             Update Profile
                         </button>
