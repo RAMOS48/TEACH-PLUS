@@ -4,23 +4,23 @@ export async function POST(req) {
     try {
         const { from, to, teacherId, academicYear, rankPrice, rank } = await req.json();
 
-        if (!from || !to || !teacherId || !academicYear  || !rank) {
+        if (!from || !to || !teacherId || !academicYear || !rank) {
             return Response.json({ status: "FAILED", message: "A required data field is missing" }, { status: 400 })
         }
-        
+
         const [sheet] = await database.execute(
             "SELECT * FROM Extra_hours_sheet WHERE teacher_id = ? AND `from` = ? AND `to` = ?",
             [teacherId, from, to]
         );
-        
+
         if (sheet.length) {
-            const [ extraDays ]= await database.execute("SELECT * FROM Extra_days WHERE sheet_id =? " , [sheet[0].sheet_id])
-            return Response.json({ status: "EXISTS", message: "Sheet already exists", sheet: sheet[0] , extraDays:extraDays }, { status: 200 })
+            const [extraDays] = await database.execute("SELECT * FROM Extra_days WHERE sheet_id =? ", [sheet[0].sheet_id])
+            return Response.json({ status: "EXISTS", message: "Sheet already exists", sheet: sheet[0], extraDays: extraDays }, { status: 200 })
         }
         else {
             const toDate = new Date(to)
             let semester
-            if (toDate.getMonth() + 1 in [9, 10, 11, 12, 1]) {
+            if ([9, 10, 11, 12, 1].includes(toDate.getMonth() + 1)) {
                 semester = "S1"
             }
             else {

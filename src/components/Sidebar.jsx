@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
-import { LayoutDashboard, User, Table, Clock, FileText , Settings } from "lucide-react";
+import { LayoutDashboard, User, Table, Clock, FileText, Settings } from "lucide-react";
 import useStore from "@/store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,7 +11,7 @@ const menuItems = [
   { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
   { name: "Teachers", icon: User, path: "/admin/teachers" },
   { name: "Timetables", icon: Table, path: "/admin/timetable" },
-  { name: "Extrahours", icon: Clock, path: "/admin/extrahours" },
+  { name: "Extra Hours", icon: Clock, path: "/admin/extrahours" },
   { name: "Settings", icon: Settings, path: "/admin/settings" },
 ];
 
@@ -99,9 +99,8 @@ const Sidebar = () => {
             <motion.div
               key={item.name}
               onClick={() => router.push(item.path)}
-              className={`flex items-center p-3 cursor-pointer ${
-                isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-200"
-              }`}
+              className={`flex items-center p-3 cursor-pointer ${isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-200"
+                }`}
               whileHover={{ scale: isOpen ? 1.02 : 1 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -151,8 +150,8 @@ const Sidebar = () => {
         </AnimatePresence>
       </motion.div>
 
-     
-      
+
+
     </motion.div>
   );
 };

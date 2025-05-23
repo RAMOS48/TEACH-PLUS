@@ -12,7 +12,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
   );
 
   const [rankChanges] = await database.execute(
-    `SELECT starting_date FROM Ranks 
+    `SELECT starting_date FROM Ranks_of_teachers 
      WHERE teacher_id = ? AND starting_date BETWEEN ? AND ? AND NOT starting_date > CURDATE()
      ORDER BY starting_date`,
     [teacherId, academicYearStart, academicYearEnd]
@@ -27,7 +27,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
     );
     let periodsWithRanks = [];
     for (const period of availablePeriods) {
-      const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
+      const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
       if (rank.length) {
         periodsWithRanks.push({
           from: new Date(period.from).toISOString().split('T')[0],
@@ -56,7 +56,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
     });
     if (changesInPeriod.length === 0) {
       if (periodEnd.getTime() < new Date().getTime()) {
-        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
+        const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, period.from])
         if (rank.length) {
           result.push({
             from: new Date(period.from).toISOString().split('T')[0],
@@ -79,7 +79,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
         .sort((a, b) => a.getTime() - b.getTime());
 
       for (const changeDate of sortedChanges) {
-        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
+        const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
         if (rank.length) {
           result.push({
             from: currentStart.toISOString().split('T')[0],
@@ -97,7 +97,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
         currentStart = changeDate;
       }
       if (periodEnd.getTime() < new Date().getTime()) {
-        const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
+        const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
         if (rank.length) {
           result.push({
             from: currentStart.toISOString().split('T')[0],

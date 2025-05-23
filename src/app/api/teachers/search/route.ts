@@ -26,7 +26,7 @@ export async function GET(req) {
     const filteredResults = results.filter(teacher => teacher.admin_id == adminId);
     let teachersWithRanks = []
     for (const teacher of filteredResults) {
-      const [rank] = await database.execute("SELECT rank FROM Ranks WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks WHERE teacher_id = ?) LIMIT 1;", [teacher.teacher_id, teacher.teacher_id])
+      const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date >= ALL (SELECT starting_date FROM Ranks_of_teachers WHERE teacher_id = ?) LIMIT 1;", [teacher.teacher_id, teacher.teacher_id])
       if (rank.length) {
         teachersWithRanks.push(Object.assign({}, teacher, rank[0]))
       }
