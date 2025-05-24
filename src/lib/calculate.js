@@ -46,37 +46,89 @@ function isAbsent(session, sessionDate, absences) {
     return absences.some(a => a.session_id == session.session_id && a.date == sessionDate && !a.caught_up)
 }
 
-export function getExtraSessions(timetable) {
+export function getExtraSessions(timetable, teacherType, hoursOutside) {
     const typeCoeff = {
         "Cours": 3 / 2,
         "TD": 1,
         "TP": 3 / 4
     }
-    let weight = 0
-    let left = 9 - weight
-    let extraHours = 0
     let extraSessions = []
-    for (const session of sortSessionsByTypeDayTime(timetable)) {
-        const start = new Date(`1970-01-01T${session.start_time}`)
-        const end = new Date(`1970-01-01T${session.end_time}`)
-        const hours = (end - start) / (1000 * 60 * 60)
-        const weighted = hours * (typeCoeff[session.type] || 1)
-        left = 9 - weight
-        if (weight < 9) {
-            if (weighted <= left) {
-                weight += weighted
-            }
-            else {
-                weight += left
-                extraHours += hours - left / typeCoeff[session.type]
-                if (extraHours < 12) {
-                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours - left / typeCoeff[session.type] })
+    let extraHours
+    if (teacherType == "Permanent") {
+        if (hoursOutside < 9) {
+            let weight = hoursOutside
+            let left = 9 - weight
+            extraHours = 0
+            for (const session of sortSessionsByTypeDayTime(timetable)) {
+                const start = new Date(`1970-01-01T${session.start_time}`)
+                const end = new Date(`1970-01-01T${session.end_time}`)
+                const hours = (end - start) / (1000 * 60 * 60)
+                const weighted = hours * (typeCoeff[session.type] || 1)
+                left = 9 - weight
+                if (weight < 9) {
+                    if (weighted <= left) {
+                        weight += weighted
+                    }
+                    else {
+                        weight += left
+                        if (extraHours < 12) {
+                            if (extraHours + hours - left / typeCoeff[session.type] <= 12) {
+                                extraHours += hours - left / typeCoeff[session.type]
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours - left / typeCoeff[session.type] })
+                            } else {
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                                extraHours = 12
+                            }
+                        }
+                    }
+                } else {
+                    extraHours += hours
+                    if (extraHours) {
+                        if (extraHours < 12) {
+                            if (extraHours + hours <= 12) {
+                                extraHours += hours
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                            } else {
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                                extraHours = 12
+                            }
+                        }
+                    }
                 }
             }
         } else {
-            extraHours += hours
-            if (extraHours) {
-                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+            extraHours = hoursOutside - 9
+            for (const session of sortSessionsByTypeDayTime(timetable)) {
+                const start = new Date(`1970-01-01T${session.start_time}`)
+                const end = new Date(`1970-01-01T${session.end_time}`)
+                const hours = (end - start) / (1000 * 60 * 60)
+                if (extraHours < 12) {
+                    if (extraHours + hours <= 12) {
+                        extraHours += hours
+                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                    } else {
+                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                        extraHours = 12
+                    }
+
+                }
+            }
+        }
+    } else if (teacherType == "Temporary") {
+        extraHours = hoursOutside
+        for (const session of sortSessionsByTypeDayTime(timetable)) {
+            const start = new Date(`1970-01-01T${session.start_time}`)
+            const end = new Date(`1970-01-01T${session.end_time}`)
+            const hours = (end - start) / (1000 * 60 * 60)
+            if (extraHours < 12) {
+                if (extraHours + hours <= 12) {
+                    extraHours += hours
+                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                } else {
+                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                    extraHours = 12
+                }
+
             }
         }
     }

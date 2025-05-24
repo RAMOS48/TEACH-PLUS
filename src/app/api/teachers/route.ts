@@ -47,19 +47,23 @@ export async function POST(req: Request) {
   try {
     const authorizedAdminId = req.headers.get("x-admin-id")
     const body = await req.json();
-    let { firstName, familyName, email, picture, phoneNumber, dateOfBirth, extraHoursOutside, bio } = body;
-    if (!firstName || !familyName || !email) {
+    let { firstName, familyName, email, picture, phoneNumber, dateOfBirth, hoursOutside, bio, type, accountNumber } = body;
+    if (!firstName || !familyName || !email || !type) {
       return NextResponse.json({ status: "FAILED", message: "A required data filed is missing !" }, { status: 400 })
     }
     picture = picture || ""
     phoneNumber = phoneNumber || ""
     dateOfBirth = dateOfBirth || ""
-    extraHoursOutside = extraHoursOutside || 0
+    hoursOutside = hoursOutside || 0
     bio = bio || ""
+    accountNumber = accountNumber || ""
 
     const [teachersWithSameEmail]: any = await database.execute("SELECT * FROM Teachers WHERE email = ?", [email])
     const [teachersWithSamePhoneNumber]: any = await database.execute("SELECT * FROM Teachers WHERE phone_number = ?", [phoneNumber])
-
+    const [teachersWithSameAccountNumber]: any = await database.execute("SELECT * FROM Teachers WHERE account_number = ?", [accountNumber])
+    if (teachersWithSameAccountNumber.length) {
+      return NextResponse.json({ status: "FAILED", message: "Account number must be unique !" }, { status: 400 })
+    }
     if (teachersWithSameEmail.length) {
       return NextResponse.json({ status: "FAILED", message: "Email must be unique !" }, { status: 400 })
     }
@@ -69,8 +73,8 @@ export async function POST(req: Request) {
 
 
     const [result]: any = await database.query(
-      "INSERT INTO Teachers (first_name, family_name, email, picture, extra_hours_outside, phone_number, date_of_birth, admin_id, bio, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
-      [firstName, familyName, email, picture, extraHoursOutside, phoneNumber, dateOfBirth, authorizedAdminId, bio]
+      "INSERT INTO Teachers (first_name, family_name, email, picture, hours_outside, phone_number, date_of_birth, admin_id, bio, type, account_number, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+      [firstName, familyName, email, picture, hoursOutside, phoneNumber, dateOfBirth, authorizedAdminId, bio, type, accountNumber]
     );
 
     return NextResponse.json({ message: "Teacher added", id: result.insertId }, { status: 201 });

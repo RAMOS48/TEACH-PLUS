@@ -27,11 +27,14 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
       return Response.json({ status: "FAILED", message: "Unauthorized ! this teacher doesn't belong to this admin" }, { status: 401 })
     }
 
-    const { firstName, familyName, email, picture, phoneNumber, dateOfBirth, extraHoursOutside, bio, isActive } = await req.json();
+    const { firstName, familyName, email, picture, phoneNumber, dateOfBirth, hoursOutside, bio, isActive, type, accountNumber } = await req.json();
 
     const [teachersWithSameEmail]: any = await database.execute("SELECT * FROM Teachers WHERE email = ? AND teacher_id != ?", [email, id])
     const [teachersWithSamePhoneNumber]: any = await database.execute("SELECT * FROM Teachers WHERE phone_number = ? AND teacher_id != ?", [phoneNumber, id])
-
+    const [teachersWithSameAccountNumber]: any = await database.execute("SELECT * FROM Teachers WHERE account_number = ? AND teacher_id != ?", [accountNumber, id])
+    if (teachersWithSameAccountNumber.length) {
+      return Response.json({ status: "FAILED", message: "Account number must be unique !" }, { status: 400 })
+    }
     if (teachersWithSameEmail.length) {
       return Response.json({ status: "FAILED", message: "Email must be unique !" }, { status: 400 })
     }
@@ -40,8 +43,8 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
     }
 
     await database.query(
-      "UPDATE Teachers SET first_name = ?, family_name = ?, email = ?, picture = ?, extra_hours_outside = ?, phone_number = ?, date_of_birth = ?, bio = ?, is_active = ? WHERE teacher_id = ?",
-      [firstName, familyName, email, picture, extraHoursOutside, phoneNumber, dateOfBirth, bio, isActive, id]
+      "UPDATE Teachers SET first_name = ?, family_name = ?, email = ?, picture = ?, hours_outside = ?, phone_number = ?, date_of_birth = ?, bio = ?, is_active = ?, type = ?, account_number = ? WHERE teacher_id = ?",
+      [firstName, familyName, email, picture, hoursOutside, phoneNumber, dateOfBirth, bio, isActive, type, accountNumber, id]
     );
     return Response.json({ message: "Teacher updated successfully" }, { status: 200 });
   } catch (error: any) {

@@ -7,7 +7,10 @@ export async function POST(req) {
         if (!from || !to || !teacherId || !academicYear || !rank) {
             return Response.json({ status: "FAILED", message: "A required data field is missing" }, { status: 400 })
         }
-
+        const [teacher] = await database.execute("SELECT * FROM Teachers WHERE teacher_id = ?", [teacherId])
+        if (!teacher.length) {
+            return Response.json({ status: "FAILED", message: "Teacher not found" }, { status: 404 })
+        }
         const [sheet] = await database.execute(
             "SELECT * FROM Extra_hours_sheet WHERE teacher_id = ? AND `from` = ? AND `to` = ?",
             [teacherId, from, to]
@@ -29,7 +32,7 @@ export async function POST(req) {
             const [teacherTimetable] = await database.execute("SELECT * FROM Sessions WHERE teacher_id = ? AND academic_year = ? AND semester = ?", [teacherId, academicYear, semester])
             const [holidays] = await database.execute("SELECT * FROM Holidays WHERE academic_year = ?", [academicYear])
             const [absences] = await database.execute("SELECT * FROM Absences WHERE teacher_id = ?", [teacherId])
-            const extraSessions = getExtraSessions(teacherTimetable)
+            const extraSessions = getExtraSessions(teacherTimetable, teacher[0].type, teacher[0].hours_outside)
             const datedExtraSessions = generateDatedSessions(new Date(from), new Date(to), extraSessions, holidays, absences)
             let sheetTotalHours = 0
             let extraDays = []
@@ -46,7 +49,6 @@ export async function POST(req) {
             return Response.json({ status: "SUCCESS", message: "Successfully calculated extra hours !", sheet: { sheet_id: sheetResult.insertId, from: from, to: to, rank: rank, rank_price: rankPrice, extra_hours_number: sheetTotalHours, amount_of_money: sheetTotalHours * rankPrice, teacher_id: teacherId }, extraDays: extraDays.map((e) => Object.assign({}, e, { sheet_id: sheetResult.insertId })) }, { status: 200 })
         }
     } catch (err) {
-        console.error("Error in sheets route:", err)
         return Response.json({ status: "FAILED", message: err.message }, { status: 500 })
     }
 }
