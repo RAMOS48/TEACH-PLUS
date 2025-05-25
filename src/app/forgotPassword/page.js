@@ -15,7 +15,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-center items-center w-full lg:w-1/2 bg-gradient-to-b from-[#F6F9FC] to-white border-r border-gray-200 p-10">
         <div className="text-center max-w-md">
           <div className="text-4xl font-extrabold text-blue-950 mb-6">
@@ -31,7 +30,6 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* Right panel */}
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="max-w-md w-full space-y-6">
           <div>

@@ -1,14 +1,23 @@
 "use client";
 import useStore from "@/store/useStore";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 
 export default function Ranks() {
-    const { historyRank, addRank, updateRank, deleteRank, selectRank } = useStore();
+    const {
+        historyRank,
+        ranks,
+        addRank,
+        updateRank,
+        deleteRank,
+        selectRank,
+    } = useStore();
+
     const [updateForm, setUpdateForm] = useState(false);
     const [selectedRankId, setSelectedRankId] = useState(null);
 
     const startingDate = useRef("");
     const rank = useRef("");
+
     const newStartingDate = useRef("");
     const newRank = useRef("");
 
@@ -20,12 +29,43 @@ export default function Ranks() {
 
     const handleUpdate = (e) => {
         e.preventDefault();
+        const selected = ranks.find((r) => r.rank_name === newRank.current.value);
+        const year = new Date(newStartingDate.current.value).getFullYear();
+
+        if (selected && year !== parseInt(selected.fiscal_year)) {
+            alert(
+                `Fiscal year mismatch! Starting date year must match ${selected.fiscal_year}`
+            );
+            return;
+        }
+
         updateRank({
             newStartingDate: newStartingDate.current.value,
             newRank: newRank.current.value,
         });
+
         setUpdateForm(false);
         setSelectedRankId(null);
+    };
+
+    const handleAdd = () => {
+        const selected = ranks.find((r) => r.rank_name === rank.current.value);
+        const year = new Date(startingDate.current.value).getFullYear();
+
+        if (selected && year !== parseInt(selected.fiscal_year)) {
+            alert(
+                `Fiscal year mismatch! Starting date year must match ${selected.fiscal_year}`
+            );
+            return;
+        }
+
+        addRank({
+            startingDate: startingDate.current.value,
+            rank: rank.current.value,
+        });
+
+        startingDate.current.value = "";
+        rank.current.value = "";
     };
 
     return (
@@ -51,13 +91,13 @@ export default function Ranks() {
                         <tbody className="divide-y divide-gray-200">
                             {historyRank.map((rankItem) => (
                                 <tr key={rankItem.rank_id} className="hover:bg-gray-50">
-                                    <td 
+                                    <td
                                         className="py-3 px-4 cursor-pointer"
                                         onClick={() => openUpdateForm(rankItem.rank_id)}
                                     >
                                         {new Date(rankItem.starting_date).toLocaleDateString("en-GB")}
                                     </td>
-                                    <td 
+                                    <td
                                         className="py-3 px-4 font-semibold cursor-pointer"
                                         onClick={() => openUpdateForm(rankItem.rank_id)}
                                     >
@@ -81,7 +121,7 @@ export default function Ranks() {
             {updateForm && (
                 <div className="mt-6">
                     <div className="flex items-center mb-4">
-                        <button 
+                        <button
                             className="bg-[#141F75] text-white p-2 rounded-lg hover:bg-[#0e1757] transition-colors flex items-center"
                             onClick={() => {
                                 setUpdateForm(false);
@@ -99,29 +139,31 @@ export default function Ranks() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-gray-700 mb-2">Updated starting date:</label>
-                                <input 
-                                    ref={newStartingDate} 
-                                    type="date" 
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent" 
+                                <input
+                                    ref={newStartingDate}
+                                    type="date"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent"
                                     required
                                 />
                             </div>
                             <div>
                                 <label className="block text-gray-700 mb-2">Updated rank:</label>
-                                <select 
-                                    ref={newRank} 
+                                <select
+                                    ref={newRank}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent cursor-pointer"
                                     required
                                 >
                                     <option value="" disabled>Select rank</option>
-                                    {["MCA", "MCB", "MAA", "MAB", "PROFESSOR"].map((rank) => (
-                                        <option key={rank} value={rank}>{rank}</option>
+                                    {ranks.map((r) => (
+                                        <option key={r.rank_name} value={r.rank_name}>
+                                            {r.rank_name}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="mt-6 px-6 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors w-full md:w-auto"
                         >
                             Confirm Update
@@ -136,38 +178,31 @@ export default function Ranks() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-gray-700 mb-2">Starting date:</label>
-                            <input 
-                                ref={startingDate} 
-                                type="date" 
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent" 
+                            <input
+                                ref={startingDate}
+                                type="date"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent"
                                 required
                             />
                         </div>
                         <div>
                             <label className="block text-gray-700 mb-2">Rank:</label>
-                            <select 
-                                ref={rank} 
+                            <select
+                                ref={rank}
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#141F75] focus:border-transparent cursor-pointer"
                                 required
                             >
                                 <option value="" disabled>Select rank</option>
-                                {["MCA", "MCB", "MAA", "MAB", "PROFESSOR"].map((rank) => (
-                                    <option key={rank} value={rank}>{rank}</option>
+                                {ranks.map((r) => (
+                                    <option key={r.rank_name} value={r.rank_name}>
+                                        {r.rank_name}
+                                    </option>
                                 ))}
                             </select>
                         </div>
                     </div>
                     <button
-                        onClick={() => {
-                            if (startingDate.current.value && rank.current.value) {
-                                addRank({ 
-                                    startingDate: startingDate.current.value, 
-                                    rank: rank.current.value 
-                                });
-                                startingDate.current.value = "";
-                                rank.current.value = "";
-                            }
-                        }}
+                        onClick={handleAdd}
                         className="mt-6 px-6 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors w-full md:w-auto"
                     >
                         Add Rank

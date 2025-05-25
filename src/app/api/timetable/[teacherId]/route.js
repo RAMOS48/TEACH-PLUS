@@ -3,11 +3,14 @@ import { database } from "@/lib/mysql";
 
 export async function GET(req, { params }) { // 🔹 Utiliser { params }
     const { teacherId } = await params; // ✅ Correction ici
-
+    const {searchParams}=new URL(req.url);
+   
     if (!teacherId) {
         return NextResponse.json({ message: "teacherId est requis" }, { status: 400 });
     }
-    const { academicYear, semester } = await req.json()
+    const academicYear = searchParams.get("academicYear")
+    const semester = searchParams.get("semester")
+
     if (!academicYear || !semester) {
         return Response.json({ status: "FAILED", message: "A required data field is missing !" }, { status: 409 })
     }

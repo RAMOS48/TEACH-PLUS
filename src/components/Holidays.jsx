@@ -21,8 +21,8 @@ const parseAcademicYear = (academicYear) => {
   if (!academicYear) return null;
   const [startYear, endYear] = academicYear.split('/').map(Number);
   return {
-    start: new Date(`${startYear}-09-01`), // Academic year typically starts Sept 1
-    end: new Date(`${endYear}-08-31`)      // and ends Aug 31 the following year
+    start: new Date(`${startYear}-09-01`), 
+    end: new Date(`${endYear}-08-31`)     
   };
 };
 
@@ -67,7 +67,7 @@ export default function Holidays() {
       return false;
     }
 
-    if (new Date(formData.to) <= new Date(formData.from)) {
+    if (new Date(formData.to) < new Date(formData.from)) {
       setError('End date must be after start date');
       return false;
     }

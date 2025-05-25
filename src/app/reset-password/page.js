@@ -42,7 +42,6 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left panel */}
       <div className="hidden md:flex md:flex-col justify-between w-full md:w-1/2 bg-gradient-to-br from-blue-50 to-white px-10 py-12">
         <div>
           <h1 className="text-3xl font-bold text-blue-950 mb-4">TEACHPLUS</h1>
@@ -61,7 +60,6 @@ export default function ResetPassword() {
         </div>
       </div>
 
-      {/* Right panel - Reset Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center bg-white px-8 py-12">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold text-blue-950 mb-6">RESET PASSWORD</h2>

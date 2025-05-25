@@ -6,10 +6,12 @@ import useStore from "@/store/useStore.js";
 import Modal from "@/components/Modal";
 
 export default function Teachers() {
-  const { filteredTeachers, searchTeacher, empty, filterTeachers } = useStore();
+  const { filteredTeachers, ranks, searchTeacher, empty, filterTeachers } = useStore();
   const [query, setQuery] = useState("");
   const [openAdd, setOpenAdd] = useState(false);
   const [selectedFilter, setFilter] = useState("ALL");
+
+  const uniqueRanks = [...new Set(ranks.map((rank) => rank.rank_name))];
 
   useEffect(() => {
     filterTeachers(selectedFilter);
@@ -30,10 +32,10 @@ export default function Teachers() {
     <div className="w-full p-3">
       <h1 className="text-3xl font-bold text-[#141F75]">Teachers Management</h1>
       <p className="text-[#141F75] text-sm mb-4 font-mono">Manage all teachers in your institution</p>
-      <hr className="text-gray-400"></hr>
-      
-      <div className="flex flex-row items-center justify-between m-4 gap-4">
-        <div className="w-[70%]">
+      <hr className="text-gray-400 mb-4" />
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+        <div className="w-full sm:w-1/2">
           <input
             type="text"
             value={query}
@@ -43,30 +45,32 @@ export default function Teachers() {
           />
         </div>
 
-        <div className="relative inline-block w-[13%]">
+        <div className="w-full sm:w-1/4">
           <select
             onChange={(e) => setFilter(e.target.value)}
-            className="px-2 py-2 text-center bg-gray-200 rounded-md text-blue-900 w-full h-full hover:cursor-pointer"
+            className="w-full px-2 py-2 text-center bg-gray-200 rounded-md text-blue-900 hover:cursor-pointer"
           >
             <option value="ALL">ALL</option>
-            <option value="MCA">MCA</option>
-            <option value="MCB">MCB</option>
-            <option value="PROFESSOR">PROFESSOR</option>
+            {uniqueRanks.map((rankName) => (
+              <option key={rankName} value={rankName}>
+                {rankName}
+              </option>
+            ))}
           </select>
         </div>
-        
-        <div className="w-[17%]">     
-          <button 
-            className="p-2 text-white bg-[#2738BD] rounded-md hover:cursor-pointer" 
+
+        <div className="w-full sm:w-1/4">
+          <button
+            className="w-full p-2 cursor-pointer text-white bg-[#2738BD] rounded-md hover:bg-blue-700 transition duration-200"
             onClick={handleAddTeacher}
           >
             Add Teacher
           </button>
         </div>
       </div>
-      
+
       {filteredTeachers?.length > 0 ? (
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filteredTeachers.map((teacher) => (
             <TeacherCard key={teacher.teacher_id} teacherData={teacher} />
           ))}
@@ -80,13 +84,13 @@ export default function Teachers() {
           <p className="text-sm">Try adjusting your search or add new teachers</p>
         </div>
       ) : (
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="p-4 bg-gray-200 rounded-md animate-pulse h-48"></div>
           ))}
         </div>
       )}
-      
+
       {openAdd && (
         <Modal isOpen={openAdd} onClose={() => setOpenAdd(false)}>
           <AddTeacher onClose={() => setOpenAdd(false)} />

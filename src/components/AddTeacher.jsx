@@ -14,7 +14,7 @@ export default function AddTeacher({ onClose }) {
     email: "",
     dateOfBirth: "",
     isActive: "0",
-    extraOursOutside: "",
+    hoursOutside: "0",
     bio: "",
     type: "Permanent",
     accountNumber: ""
@@ -53,8 +53,8 @@ export default function AddTeacher({ onClose }) {
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
 
-    if (age < 23 || age > 80) {
-      newErrors.dateOfBirth = "Age must be between 23 and 80 years.";
+    if (age < 23 || age > 80 || !form.dateOfBirth) {
+      newErrors.dateOfBirth = "Age required and must be between 23 and 80 years.";
     }
 
     const phoneRegex = /^\d{10}$/;
@@ -67,8 +67,8 @@ export default function AddTeacher({ onClose }) {
       newErrors.email = "Email is not valid.";
     }
 
-    if (!/^\d+$/.test(form.extraOursOutside)) {
-      newErrors.extraOursOutside = "Extra hours must be a valid number.";
+    if (!/^\d+$/.test(form.hoursOutside)) {
+      newErrors.hoursOutside = "Extra hours must be a valid number.";
     }
 
     if (form.bio.length > 100) {
@@ -215,7 +215,7 @@ export default function AddTeacher({ onClose }) {
               whileHover={{ scale: 1.01 }}
             >
               <option value="Permanent">Permanent</option>
-              <option value="Vacataire">Vacataire</option>
+              <option value="Temporary">Temporary</option>
             </motion.select>
           </div>
 
@@ -268,17 +268,17 @@ export default function AddTeacher({ onClose }) {
               Extra Hours
             </motion.label>
             <motion.input
-              name="extraOursOutside"
-              value={form.extraOursOutside}
+              name="hoursOutside"
+              value={form.hoursOutside}
               onChange={handleChange}
               type="text"
-              placeholder="Enter extra hours"
+              placeholder="Enter hours"
               className="w-full p-2 border rounded-md border-gray-200"
               whileFocus={{ scale: 1.02 }}
             />
-            {errors.extraOursOutside && (
+            {errors.hoursOutside && (
               <motion.p className="text-red-500 text-sm">
-                {errors.extraOursOutside}
+                {errors.hoursOutside}
               </motion.p>
             )}
             

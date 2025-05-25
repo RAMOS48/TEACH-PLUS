@@ -1,6 +1,6 @@
 "use client";
 import useStore from "@/store/useStore.js";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Periods() {
   const { periods, addPeriod, updatePeriod, deletePeriod } = useStore();
@@ -10,6 +10,7 @@ export default function Periods() {
   const [selectedPeriod, setSelectedPeriod] = useState(null);
   const [selectedAcademicYear, setSelectedAcademicYear] = useState(null);
 
+  // Generate academic years (current year and previous 9 years)
   const getAcademicYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -26,6 +27,7 @@ export default function Periods() {
     return years;
   };
 
+  // Filter periods by selected academic year
   const filterPeriodsByAcademicYear = (periods, academicYear) => {
     if (!academicYear) return periods;
     
@@ -35,14 +37,32 @@ export default function Periods() {
     return periods.filter(period => {
       const periodStart = new Date(period.from);
       const periodEnd = new Date(period.to);
-      return (periodStart >= startDate && periodStart <= endDate) || 
-             (periodEnd >= startDate && periodEnd <= endDate) ||
-             (periodStart <= startDate && periodEnd >= endDate);
+      return periodStart >= startDate && periodEnd <= endDate;
     });
   };
 
   const filteredPeriods = filterPeriodsByAcademicYear(periods, selectedAcademicYear);
 
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Calculate duration in days
+  const calculateDuration = (from, to) => {
+    const start = new Date(from);
+    const end = new Date(to);
+    const diffTime = Math.abs(end - start);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+  };
+
+  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -53,6 +73,7 @@ export default function Periods() {
     if (error) setError('');
   };
 
+  // Validate dates against academic year constraints
   const validateDates = () => {
     if (!formData.name.trim()) {
       setError('Please enter a name for the period');
@@ -72,6 +93,22 @@ export default function Periods() {
       return false;
     }
 
+    // Determine academic year based on start date
+    const academicYear = getAcademicYearForDate(startDate);
+    
+    if (!academicYear) {
+      setError('Period must start between September 1st and July 31st of an academic year');
+      return false;
+    }
+
+    // Check if entire period is within academic year
+    const academicEnd = new Date(academicYear.end);
+    if (endDate > academicEnd) {
+      setError(`Period must end by ${formatDate(academicYear.end)} (end of academic year)`);
+      return false;
+    }
+
+    // Check for overlapping periods
     const isOverlapping = periods.some(period => {
       if (editingId && period.period_id === editingId) return false;
       
@@ -89,6 +126,30 @@ export default function Periods() {
     return true;
   };
 
+  // Get academic year for a given date
+  const getAcademicYearForDate = (date) => {
+    const dateObj = new Date(date);
+    const month = dateObj.getMonth() + 1; // 1-12
+    const year = dateObj.getFullYear();
+
+    // Academic year runs from September to July
+    if (month >= 9) { // Sept-Dec
+      return {
+        label: `${year}/${year+1}`,
+        start: `${year}-09-01`,
+        end: `${year+1}-07-31`
+      };
+    } else if (month <= 7) { // Jan-July
+      return {
+        label: `${year-1}/${year}`,
+        start: `${year-1}-09-01`,
+        end: `${year}-07-31`
+      };
+    }
+    return null; // August is between academic years
+  };
+
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -110,6 +171,7 @@ export default function Periods() {
     setSelectedPeriod(null);
   };
 
+  // Edit a period
   const handleEdit = (period) => {
     setFormData({
       name: period.name,
@@ -119,8 +181,13 @@ export default function Periods() {
     setEditingId(period.period_id);
     setSelectedPeriod(period);
     setError('');
+    
+    // Set academic year based on period dates
+    const academicYear = getAcademicYearForDate(period.from);
+    setSelectedAcademicYear(academicYear);
   };
 
+  // Delete a period
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this period? This action cannot be undone.')) {
       deletePeriod(id);
@@ -130,23 +197,6 @@ export default function Periods() {
         setFormData({ name: '', from: '', to: '' });
       }
     }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
-
-  const calculateDuration = (from, to) => {
-    const start = new Date(from);
-    const end = new Date(to);
-    const diffTime = Math.abs(end - start);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
   };
 
   return (
@@ -270,9 +320,14 @@ export default function Periods() {
                     name="from"
                     value={formData.from}
                     onChange={handleInputChange}
+                    min={selectedAcademicYear?.start}
+                    max={selectedAcademicYear?.end}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be between September 1 and July 31 of academic year
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
@@ -281,9 +336,14 @@ export default function Periods() {
                     name="to"
                     value={formData.to}
                     onChange={handleInputChange}
+                    min={formData.from || selectedAcademicYear?.start}
+                    max={selectedAcademicYear?.end}
                     className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be within same academic year as start date
+                  </p>
                 </div>
               </div>
               
@@ -310,6 +370,7 @@ export default function Periods() {
                 setSelectedPeriod(null);
                 setFormData({ name: '', from: '', to: '' });
                 setError('');
+                setSelectedAcademicYear(null);
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -347,9 +408,14 @@ export default function Periods() {
                   name="from"
                   value={formData.from}
                   onChange={handleInputChange}
+                  min={selectedAcademicYear?.start}
+                  max={selectedAcademicYear?.end}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Academic year: {selectedAcademicYear?.label}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
@@ -358,6 +424,8 @@ export default function Periods() {
                   name="to"
                   value={formData.to}
                   onChange={handleInputChange}
+                  min={formData.from || selectedAcademicYear?.start}
+                  max={selectedAcademicYear?.end}
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
@@ -372,6 +440,7 @@ export default function Periods() {
                   setSelectedPeriod(null);
                   setFormData({ name: '', from: '', to: '' });
                   setError('');
+                  setSelectedAcademicYear(null);
                 }}
                 className="px-4 cursor-pointer py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
               >

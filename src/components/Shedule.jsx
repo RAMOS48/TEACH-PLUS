@@ -16,7 +16,6 @@ const Timetable = ({ sessions }) => {
   const [isOpenUpdateSession, setIsOpenUpdateSession] = useState(false);
   const { selectSession, getTeachers } = useStore();
 
-  // Couleurs par type de session
   const sessionColors = {
     "CM": "bg-indigo-600 hover:bg-indigo-700",
     "TD": "bg-emerald-600 hover:bg-emerald-700",

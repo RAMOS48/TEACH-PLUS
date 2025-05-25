@@ -5,11 +5,8 @@ const useStore = create((set, get) => ({
 
   // handle Admins 
 
-  // here [esma] define admin APIs for
 
-  // handle Admins 
 
-  // here [esma] define admin APIs for
   user: null,
   token: Cookies.get("session") || null,
   isLoading: false,
@@ -27,7 +24,6 @@ const useStore = create((set, get) => ({
       const res = await axios.post("/api/auth/login", { email, password });
       const { token, userData } = res.data;
 
-      // Store token in cookies (expires in 7 days)
       Cookies.set("session", token, { expires: 7 });
 
       set({ user: userData, token: token });
@@ -42,11 +38,11 @@ const useStore = create((set, get) => ({
 
   logout: async () => {
     try {
-      await axios.delete("/api/auth/logout"); // Change to DELETE
+      await axios.delete("/api/auth/logout");
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
-      //  Remove token from cookies and reset state
+      
       Cookies.remove("session");
       set({ user: null, token: null });
 
@@ -72,7 +68,7 @@ const useStore = create((set, get) => ({
     }
   },
 
-  //  Refresh Token (After 7 Days)
+  //  Refresh Token 
   refreshToken: async () => {
     try {
       const res = await axios.post("/api/auth/login");
@@ -83,7 +79,7 @@ const useStore = create((set, get) => ({
       set({ user: userData, token });
     } catch (error) {
       console.error("Failed to refresh token:", error);
-      get().logout(); // Logout on token refresh failure
+      get().logout(); 
     }
   },
   //delete account 
@@ -96,7 +92,7 @@ const useStore = create((set, get) => ({
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // After deletion, clear state and remove token
+      
       Cookies.remove("session");
       set({ user: null, token: null });
     } catch (error) {
@@ -111,7 +107,7 @@ const useStore = create((set, get) => ({
       const data = get();
       await axios.put("/api/auth/update-profile", updatedData);
 
-      // Update state with new user data
+    
       data.getAdmin();
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -120,27 +116,13 @@ const useStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
-  // // Forgot Password
-  // forgotPassword: async (email) => {
-  //   set({ isLoading: true});
-  //   try {
-  //     const res = await axios.post('/api/auth/forgot-password', { email });
-  //     console.log(res.data.message);
-  //     alert(res.data.message); // Display success message
-  //   } catch (err) {
-  //     set({ error: err.response?.data?.message || 'Failed to send reset link' });
-  //     alert(err.response?.data?.message || 'Failed to send reset link');
-  //   } finally {
-  //     set({ isLoading: false });
-  //   }
-  // },
+  
   // Forgot Password
   forgotPassword: async (email) => {
     set({ isLoading: true, success: null, error: null });
     try {
       const res = await axios.post('/api/auth/forgot-password', { email });
 
-      // Message de succès depuis le backend
       set({ success: res.data.message || "Lien envoyé avec succès" });
 
     } catch (err) {
@@ -151,37 +133,22 @@ const useStore = create((set, get) => ({
     }
   },
 
-  // // Reset Password
-  // resetPassword: async (token, newPassword) => {
-  //   set({ isLoading: true});
-  //   try {
-  //     const res = await axios.post('/api/auth/reset-password', { token, newPassword });
-  //     console.log(res.data.message);
-  //     alert(res.data.message); // Display success message
-  //   } catch (err) {
-  //     set({ error: err.response?.data?.message || 'Failed to reset password' });
-  //     alert(err.response?.data?.message || 'Failed to reset password');
-  //   } finally {
-  //     set({ isLoading: false });
-  //   }
-  // },
+ 
 
   resetPassword: async (token, newPassword) => {
     set({ isLoading: true, success: null, error: null });
     try {
       const res = await axios.post('/api/auth/reset-password', { token, newPassword });
 
-      // Message de succès ou échec depuis le backend
       if (res.data.status === "SUCCESS") {
         set({ success: res.data.message });
-        alert(res.data.message); // Afficher le message de succès
+        alert(res.data.message); 
       } else {
         set({ error: res.data.message });
-        alert(res.data.message); // Afficher le message d'erreur
+        alert(res.data.message); 
       }
 
     } catch (err) {
-      // Gérer les erreurs dans le cas où l'API renvoie une erreur
       set({ error: err.response?.data?.message || 'Échec de la réinitialisation du mot de passe' });
       alert(err.response?.data?.message || 'Échec de la réinitialisation du mot de passe');
     } finally {
@@ -282,7 +249,7 @@ const useStore = create((set, get) => ({
     try {
       const data = get();
 
-      const response = await axios.post(`http://localhost:3000/api/teachers`, addedTeacher);
+      await axios.post(`http://localhost:3000/api/teachers`, addedTeacher);
       data.getTeachers();
 
     } catch (error) {
@@ -317,7 +284,7 @@ const useStore = create((set, get) => ({
     // work
     try {
       const data = get();
-      const response = await axios.put(`http://localhost:3000/api/teachers/${data.selectedTeacher}`, updatedTeacher);
+       await axios.put(`http://localhost:3000/api/teachers/${data.selectedTeacher}`, updatedTeacher);
       data.getTeachers();
     } catch (error) {
       console.log("Error updating teacher :", error);
@@ -329,7 +296,7 @@ const useStore = create((set, get) => ({
     // work
     try {
       const data = get()
-      const response = await axios.delete(`http://localhost:3000/api/teachers/${data.selectedTeacher}`);
+       await axios.delete(`http://localhost:3000/api/teachers/${data.selectedTeacher}`);
       data.getTeachers();
     } catch (error) {
       console.log("Error deleting teacher:", error);
@@ -337,10 +304,10 @@ const useStore = create((set, get) => ({
   },
 
 
-  getTeacherTimeTable: async () => {
+  getTeacherTimeTable: async (academicYear , semester) => {
     try {
       const data = get();
-      const response = await axios.get(`http://localhost:3000/api/timetable/${data.selectedTeacher}`);
+      const response = await axios.get(`http://localhost:3000/api/timetable/${data.selectedTeacher}?semester=${semester}&academicYear=${academicYear}`);
       set({ teacherTimeTable: response.data.timeTable });
 
     } catch (error) {
@@ -348,7 +315,17 @@ const useStore = create((set, get) => ({
     }
   },
 
+  timeTableOfTeacher: async (teacher , period) => {
+    try {
+      
+      const data = get();
+      const response = await axios.get(`http://localhost:3000/api/timetable/${teacher}?semester=${period.semester}&academicYear=${period.academicYear}`);
+      return response.data.timeTable
 
+    } catch (error) {
+      console.log("Error fetching timeTable:", error);
+    }
+  },
 
 
 
@@ -554,22 +531,7 @@ const useStore = create((set, get) => ({
 
 
 
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  //  SPRINT 02
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////
-
+  
 
   // handle Periods .........................................................................
 
@@ -756,9 +718,48 @@ getExtraHoursSheet: async (infos) => {
   }finally{set({ isLoading: false});}
 },
 
+recalculateSheet :  async (infos) => {
+    
+  set({ isLoading: true});
+
+  // work
+  try {
+    
+    const response = await axios.put(`http://localhost:3000/api/sheets/${infos.sheetId}` , infos);
+ 
+    console.log(response.data);
+    
+     return response.data
+  } catch (error) {
+    console.log(error);
+    
+    return {}
+  }finally{set({ isLoading: false});}
+},
 
 
-// ranks management
+getTotalExtraHours: async (type , category , from , to) => {
+    
+  set({ isLoading: true});
+
+  // work
+  try {
+    
+    const response = await axios.get(`http://localhost:3000/api/sheets/total?type=${type}&category=${category}&from=${from}&to=${to}` );
+ 
+    
+     return response.data.data
+  } catch (error) {
+    console.log(error);
+    
+    return {}
+  }finally{set({ isLoading: false});}
+},
+
+
+// ranks management ............................................................
+
+ranks : [],
 
 getRanksList: async () => {
 
@@ -767,11 +768,11 @@ getRanksList: async () => {
   // work
   try {
     const data = get();
-    const response = await axios.get(`http://localhost:3000/api/manageRanks`);
-    return response.data.ranksList
+    const response = await axios.get(`http://localhost:3000/api/manage-ranks`);
+    set({ranks : response.data.ranks})
 
   } catch (error) {
-    return  [] 
+    set({ranks : []})
   } finally { set({ isLoading: false }); }
 },
 
@@ -783,7 +784,9 @@ addRankInfos: async (addedRank) => {
   try {
 
     const data = get();
-    const response = await axios.post(`http://localhost:3000/api/manageRanks`, addedRank);
+    console.log(addedRank);
+    
+    await axios.post(`http://localhost:3000/api/manage-ranks`, addedRank);
     data.getRanksList()
   } catch (error) {
     console.log("Error inserting rank:", error);
@@ -797,7 +800,7 @@ updateRankInfos: async (rankId, newRank) => {
   // work 
   try {
     const data = get();
-    const response = await axios.put(`http://localhost:3000/api/manageRanks/${rankId}`, newRank);
+    const response = await axios.put(`http://localhost:3000/api/manage-ranks/${rankId}`, newRank);
     data.getRanksList()
   } catch (error) {
     console.log("Error updating rank", error);
@@ -811,14 +814,27 @@ deleteRankInfos: async (rankId) => {
   try {
     const data = get();
 
-    const response = await axios.delete(`http://localhost:3000/api/manageRanks/${rankId}`);
+    await axios.delete(`http://localhost:3000/api/manage-ranks/${rankId}`);
     data.getRanksList()
   } catch (error) {
     console.log("Error deleting rank :", error);
   } finally { set({ isLoading: false }); }
 },
 
+getStatistics: async (from , to) => {
 
+  set({ isLoading: true });
+
+  // work
+  try {
+    const response = await axios.get(`http://localhost:3000/api/statistics?from=${from}&to=${to}`);
+    return response.data.data
+ 
+ 
+  } catch (error) {
+return {} 
+ } finally { set({ isLoading: false }); }
+},
 
 
 }));

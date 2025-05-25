@@ -47,7 +47,6 @@ const LoginPage = () => {
 
   return (
     <div className="w-full h-screen font-poppins flex flex-wrap">
-      {/* Left side */}
       <div className="p-6 flex flex-col justify-center bg-gray-50 w-full md:w-1/3">
         <div className="mb-52 text-center">
           <p className="text-blue-950 text-3xl md:text-4xl">
@@ -67,7 +66,6 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Right side */}
       <div className="flex justify-center items-center w-full md:w-2/3">
         <form onSubmit={handleSubmit} className="text-black flex flex-col w-full max-w-md px-4">
           <p className="text-3xl text-blue-950 font-extrabold mb-4">Welcome!</p>
@@ -75,7 +73,6 @@ const LoginPage = () => {
             Log in with your corporate email address and the password assigned by the school.
           </p>
 
-          {/* Email Field */}
           <div className="mb-4 text-sm">
             <label className="block mb-2 font-medium text-gray-700">Email</label>
             <div className="relative">
@@ -93,7 +90,6 @@ const LoginPage = () => {
             {emailError && <p className="mt-1 text-red-500">{emailError}</p>}
           </div>
 
-          {/* Password Field */}
           <div className="mb-6 text-sm">
             <label className="block mb-2 font-medium text-gray-700">Password</label>
             <div className="relative">
@@ -117,7 +113,6 @@ const LoginPage = () => {
             {passwordError && <p className="mt-1 text-red-500">{passwordError}</p>}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-blue-950 text-white py-3 rounded-lg hover:bg-indigo-800 cursor-pointer transition duration-200 flex items-center justify-center gap-2"
@@ -127,7 +122,6 @@ const LoginPage = () => {
             <span>→</span>
           </button>
 
-          {/* Forgot Password */}
           <p
             className="mt-4 text-right text-sm text-gray-500 cursor-pointer"
             onClick={handleForgotPassword}
@@ -135,7 +129,6 @@ const LoginPage = () => {
             Having Issues with your Password?
           </p>
 
-          {/* Error Message */}
           {error && <p className="mt-2 text-center text-red-500">{error}</p>}
         </form>
       </div>

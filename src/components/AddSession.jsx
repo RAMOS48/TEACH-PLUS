@@ -230,7 +230,7 @@ export default function AddSession({ onClose ,timetable }) {
         <div className="col-span-1 md:col-span-3 flex justify-center mt-4">
           <button
             type="submit"
-            className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 cursor-pointer transition"
+            className="bg-[#141F75] text-white px-6 py-2 rounded hover:bg-blue-600 cursor-pointer transition"
           >
             Confirm
           </button>

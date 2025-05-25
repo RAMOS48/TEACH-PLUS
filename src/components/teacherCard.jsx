@@ -41,13 +41,51 @@ const TeacherCard = ({ teacherData }) => {
     getAbsences,
   } = useStore();
 
+  // Get current academic year in format "yyyy/yyyy"
+  const getCurrentAcademicYear = () => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // 1-12
+    
+    // Academic year runs from September (9) to July (7)
+    if (currentMonth >= 9) { // September-December
+      return `${currentYear}/${currentYear + 1}`;
+    } else { // January-August
+      return `${currentYear - 1}/${currentYear}`;
+    }
+  };
+
+  // Get current semester ("S1" or "S2")
+  const getCurrentSemester = () => {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1; // 1-12
+    const currentDay = today.getDate();
+    
+    // S1: September 1 - January 31
+    if ((currentMonth === 9 && currentDay >= 1) || // September
+        (currentMonth >= 10 && currentMonth <= 12) || // October-December
+        (currentMonth === 1 && currentDay <= 31)) { // January
+      return "S1";
+    } 
+    // S2: February 1 - July 31
+    else if ((currentMonth === 2 && currentDay >= 1) || // February
+             (currentMonth >= 3 && currentMonth <= 7)) { // March-July
+      return "S2";
+    }
+    // August is between academic years, default to S1
+    return "S1";
+  };
+
+  const academicYear = getCurrentAcademicYear();
+  const semester = getCurrentSemester();
+
   function handleModal(option, teacherId) {
     setIsModalOpen([true, option]);
     selectTeacher(teacherId);
     switch (option) {
       case "absences":
         getAbsences();
-        getTeacherTimeTable();
+        getTeacherTimeTable(academicYear, semester);
         break;
       case "profil":
         getTeacher();

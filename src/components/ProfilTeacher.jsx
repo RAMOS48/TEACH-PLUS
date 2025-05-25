@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useStore from "@/store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProfileTeacher({ teacher, onClose }) {
   const [isChanged, setIsChanged] = useState(false);
   const [errors, setErrors] = useState({});
-  const { updateTeacher, uploidImage } = useStore();
+  const { updateTeacher, uploidImage, timeTableOfTeacher } = useStore();
+  const [timetable, setTimetable] = useState([]);
+  const [period, setPeriod] = useState({
+    semester: "S1",
+    academicYear: `${new Date().getFullYear() - 1}/${new Date().getFullYear()}`
+  });
+  const [isLoadingTimetable, setIsLoadingTimetable] = useState(false);
 
   const initialTeacher = {
     teacherId: teacher.teacher_id,
     email: teacher.email,
     phoneNumber: teacher.phone_number,
-    dateOfBirth: teacher.date_of_birth,
+    dateOfBirth: teacher.date_of_birth ,
     familyName: teacher.family_name,
     firstName: teacher.first_name,
-    extraHoursOutside: teacher.extra_hours_outside,
+    hoursOutside: teacher.hours_outside || "0",
     isActive: teacher.is_active,
     bio: teacher.bio,
     picture: teacher.picture,
@@ -25,6 +31,23 @@ export default function ProfileTeacher({ teacher, onClose }) {
   };
 
   const [updatedTeacher, setUpdatedTeacher] = useState(initialTeacher);
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      setIsLoadingTimetable(true);
+      try {
+        const result = await timeTableOfTeacher(teacher.teacher_id, period);
+        setTimetable(result || []);
+      } catch (error) {
+        console.error("Error fetching timetable:", error);
+        setTimetable([]);
+      } finally {
+        setIsLoadingTimetable(false);
+      }
+    };
+    
+    fetchTimetable();
+  }, [period, teacher.teacher_id, timeTableOfTeacher]);
 
   const validateInputs = () => {
     const newErrors = {};
@@ -41,8 +64,8 @@ export default function ProfileTeacher({ teacher, onClose }) {
       newErrors.familyName = "Family name must be in PascalCase (e.g., Smith)";
     }
 
-    if (age < 20 || age > 80) {
-      newErrors.dateOfBirth = "Teacher age must be between 20 and 80 years";
+    if (age < 23 || age > 80 ) {
+      newErrors.dateOfBirth = "Teacher age must be between 23 and 80 years";
     }
 
     if (!phoneRegex.test(updatedTeacher.phoneNumber)) {
@@ -53,8 +76,8 @@ export default function ProfileTeacher({ teacher, onClose }) {
       newErrors.email = "Invalid email format";
     }
 
-    if (!/^\d+$/.test(updatedTeacher.extraHoursOutside)) {
-      newErrors.extraHoursOutside = "Extra hours must be an integer";
+    if (!/^\d+$/.test(updatedTeacher.hoursOutside)) {
+      newErrors.hoursOutside = "Extra hours must be an integer";
     }
 
     if (updatedTeacher.bio.length > 100) {
@@ -75,6 +98,14 @@ export default function ProfileTeacher({ teacher, onClose }) {
     setUpdatedTeacher((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handlePeriodChange = (e) => {
+    const { name, value } = e.target;
+    setPeriod(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
@@ -99,6 +130,13 @@ export default function ProfileTeacher({ teacher, onClose }) {
     setIsChanged(false);
     onClose();
   };
+
+  const currentYear = new Date().getFullYear();
+  const academicYearOptions = Array.from({ length: 10 }, (_, i) => 
+    `${currentYear - i - 1}/${currentYear - i}`
+  ).reverse();
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
     <motion.div 
@@ -151,7 +189,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               label: "Date of Birth",
               name: "dateOfBirth",
               type: "date",
-              value: new Date(updatedTeacher.dateOfBirth).toISOString().split("T")[0],
+              value: new Date(updatedTeacher.dateOfBirth).toISOString().split("T")[0] || "0000-00-00",
               error: errors.dateOfBirth,
             },
             {
@@ -169,10 +207,10 @@ export default function ProfileTeacher({ teacher, onClose }) {
             },
             {
               label: "Extra Hours",
-              name: "extraHoursOutside",
+              name: "hoursOutside",
               type: "number",
-              value: updatedTeacher.extraHoursOutside,
-              error: errors.extraHoursOutside,
+              value: updatedTeacher.hoursOutside,
+              error: errors.hoursOutside,
             },
             {
               label: "Status",
@@ -191,7 +229,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               value: updatedTeacher.type,
               options: [
                 { label: "Permanent", value: "Permanent" },
-                { label: "Vacataire", value: "Vacataire" },
+                { label: "Temporary", value: "Temporary" },
               ],
             },
             {
@@ -288,6 +326,110 @@ export default function ProfileTeacher({ teacher, onClose }) {
             </motion.div>
           ))}
         </div>
+
+        <motion.div 
+          className="mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <motion.h2 
+            className="text-xl font-semibold text-[#141F75] mb-4"
+            whileHover={{ x: 5 }}
+          >
+            Teacher Timetable
+          </motion.h2>
+          
+          <div className="flex gap-4 mb-6">
+            <motion.div className="flex-1 space-y-2">
+              <label className="block text-left text-[#141F75] font-medium">Semester</label>
+              <motion.select
+                name="semester"
+                value={period.semester}
+                onChange={handlePeriodChange}
+                className="w-full p-2 border rounded-md border-gray-200 hover:cursor-pointer"
+                whileFocus={{ scale: 1.01 }}
+              >
+                <option value="S1">Semester 1 (S1)</option>
+                <option value="S2">Semester 2 (S2)</option>
+              </motion.select>
+            </motion.div>
+            
+            <motion.div className="flex-1 space-y-2">
+              <label className="block text-left text-[#141F75] font-medium">Academic Year</label>
+              <motion.select
+                name="academicYear"
+                value={period.academicYear}
+                onChange={handlePeriodChange}
+                className="w-full p-2 border rounded-md border-gray-200 hover:cursor-pointer"
+                whileFocus={{ scale: 1.01 }}
+              >
+                {academicYearOptions.map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </motion.select>
+            </motion.div>
+          </div>
+
+          {isLoadingTimetable ? (
+            <motion.div 
+              className="flex justify-center items-center h-32"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            >
+              <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+            </motion.div>
+          ) : timetable.length > 0 ? (
+            <motion.div 
+              className="overflow-x-auto"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+            >
+              <table className="min-w-full bg-white border border-gray-200">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="py-2 px-4 border-b">Day</th>
+                    <th className="py-2 px-4 border-b">Start Time</th>
+                    <th className="py-2 px-4 border-b">End Time</th>
+                    <th className="py-2 px-4 border-b">Type</th>
+                    <th className="py-2 px-4 border-b">Module</th>
+                    <th className="py-2 px-4 border-b">Level</th>
+                    <th className="py-2 px-4 border-b">Classroom</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {timetable
+                    .sort((a, b) => daysOfWeek.indexOf(a.day_of_week) - daysOfWeek.indexOf(b.day_of_week))
+                    .map((session, index) => (
+                      <motion.tr 
+                        key={index}
+                        className="hover:bg-gray-50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <td className="py-2 px-4 border-b text-center">{session.day_of_week}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.start_time}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.end_time}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.type}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.module}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.academic_level}</td>
+                        <td className="py-2 px-4 border-b text-center">{session.classroom}</td>
+                      </motion.tr>
+                    ))}
+                </tbody>
+              </table>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="text-center py-8 text-gray-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              No timetable available for the selected period.
+            </motion.div>
+          )}
+        </motion.div>
 
         <motion.div className="flex gap-4 mt-8">
           <motion.button

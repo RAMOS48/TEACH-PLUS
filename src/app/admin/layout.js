@@ -6,24 +6,23 @@ import { motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'; 
 
 export default function AdminLayout({ children }) {
-  const pathname = usePathname(); // Use usePathname instead of useRouter for path detection
+  const pathname = usePathname();
 
-  const { getAdmin, getTeachers, isLoading, getPeriods, getHolidays } = useStore();
+  const { getAdmin, getTeachers, getRanksList , isLoading, getPeriods, getHolidays } = useStore();
 
   const setAdmin = async () => {
     await getAdmin();
+    await getRanksList();
+    await getPeriods();
+    await getHolidays();
+    await getTeachers();
+
     
-    if (pathname === "/admin/settings") {
-      await getPeriods();
-      await getHolidays();
-    } else if (pathname === "/admin/teachers" || pathname === "/admin/extrahours") {
-      await getTeachers();
-    }
   };
 
   useEffect(() => {
     setAdmin();
-  }, [pathname]); // Add pathname as dependency
+  }, [pathname]); 
 
   return (
     <div>
@@ -41,7 +40,6 @@ export default function AdminLayout({ children }) {
           </div>
           {isLoading && (
             <div className="absolute inset-0 z-50 bg-transparent cursor-wait" style={{ pointerEvents: "all" }}>
-              {/* Loading indicator */}
             </div>
           )}
         </div>

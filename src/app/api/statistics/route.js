@@ -7,6 +7,8 @@ export async function GET(req) {
         let to = searchParams.get("to");
         from = new Date(from);
         to = new Date(to);
+        from.setDate(from.getDate() - 1);
+        to.setDate(to.getDate() + 1);
         const authorizedAdminId = req.headers.get("x-admin-id")
         if (!authorizedAdminId) {
             return Response.json({ status: "FAILED", message: "Unauthorized access" }, { status: 401 });
@@ -41,7 +43,7 @@ export async function GET(req) {
             teachers_count DESC;
         `
         const [teachersCountDistributionByRank] = await database.execute(teachersCountDistributionByRankQuery)
-
+    
         const absencesCountDistributionByMonthQuery = `
         SELECT 
             MONTH(date) AS month,

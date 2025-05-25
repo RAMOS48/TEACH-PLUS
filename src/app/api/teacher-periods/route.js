@@ -4,7 +4,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
   const [startYear, endYear] = academicYear.split('/');
   if (!startYear || !endYear) throw new Error("Invalid Year Format");
 
-  const academicYearStart = new Date(`${startYear}-09-01`);
+  const academicYearStart = new Date(`${startYear}-08-31`);
   const academicYearEnd = new Date(`${endYear}-07-31`);
   const [periods] = await database.execute(
     `SELECT * FROM Periods WHERE \`from\` >= ? AND \`to\` <= ? AND NOT \`from\` > CURDATE()`,

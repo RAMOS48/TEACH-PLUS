@@ -22,6 +22,9 @@ export default function UpdateSession({ session, onClose }) {
   const [updatedSession, setUpdatedSession] = useState(withCamelcase);
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [action, setAction] = useState("0");
+  const originalTeacherId = session.teacher_id;
 
   const { teachers, updateSession, deleteSession } = useStore();
   const currentYear = new Date().getFullYear();
@@ -91,7 +94,20 @@ export default function UpdateSession({ session, onClose }) {
     e.preventDefault();
     if (!validate()) return;
 
-    updateSession(updatedSession);
+    if (updatedSession.teacherId !== originalTeacherId) {
+      setShowConfirmation(true);
+      return;
+    }
+
+    updateSession({ ...updatedSession, action: "0" });
+    setIsModified(false);
+    onClose();
+  };
+
+  const handleConfirmUpdate = (selectedAction) => {
+    setAction(selectedAction);
+    updateSession({ ...updatedSession, action: selectedAction });
+    setShowConfirmation(false);
     setIsModified(false);
     onClose();
   };
@@ -105,6 +121,36 @@ export default function UpdateSession({ session, onClose }) {
   return (
     <div className="w-full mx-auto bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-xl font-semibold text-blue-900 mb-4">Update Session</h2>
+
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Confirm Teacher Change</h3>
+            <p className="mb-6">You have changed the teacher for this session. Please choose how to handle it's absences :</p>
+            
+            <div className="flex justify-between">
+              <button
+                onClick={() => handleConfirmUpdate("1")}
+                className="px-4 py-2 bg-[#141F75] text-white rounded hover:bg-green-600"
+              >
+                Delete absences
+              </button>
+              <button
+                onClick={() => handleConfirmUpdate("2")}
+                className="px-4 py-2 bg-[#141F75] text-white rounded hover:bg-blue-600"
+              >
+                Assign them to the new teacher
+              </button>
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>

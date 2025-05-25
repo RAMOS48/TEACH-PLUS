@@ -3,7 +3,7 @@ import useStore from "@/store/useStore";
 import { useRef, useState, useEffect } from "react";
 
 export default function AbsenceList() {
-  const { absences, selectedTeacher, getAbsences, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
+  const { absences, selectedTeacher, teacherTimeTable, markAbsence, updateAbsence, selectAbsence, catchUpAbsence, deleteAbsence } = useStore();
   const [updateForm, setUpdateForm] = useState(false);
   const [filteredSessions, setFilteredSessions] = useState(teacherTimeTable);
   const [selectedAbsence, setSelectedAbsence] = useState(null);
@@ -18,7 +18,6 @@ export default function AbsenceList() {
   const newNotes = useRef("");
   const newReason = useRef("");
 
-  // Fonction pour générer les 10 dernières années académiques
   const getAcademicYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -35,7 +34,6 @@ export default function AbsenceList() {
     return years;
   };
 
-  // Filtrer les sessions par date sélectionnée
   const filterSessionsByDate = (selectedDate) => {
     if (!selectedDate) {
       setFilteredSessions(teacherTimeTable);
@@ -49,7 +47,6 @@ export default function AbsenceList() {
     setFilteredSessions(filtered);
   };
 
-  // Filtrer les absences par année académique
   const filterAbsencesByAcademicYear = (absences, academicYear) => {
     if (!academicYear) return absences;
     
@@ -62,7 +59,6 @@ export default function AbsenceList() {
     });
   };
 
-  // Absences filtrées selon l'année académique sélectionnée
   const filteredAbsences = filterAbsencesByAcademicYear(absences, selectedAcademicYear);
 
   useEffect(() => {
@@ -147,7 +143,6 @@ export default function AbsenceList() {
 
       {!updateForm && (
         <>
-          {/* Absences Table */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
             <div className="p-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">Absence Records</h2>
@@ -222,7 +217,6 @@ export default function AbsenceList() {
             )}
           </div>
 
-          {/* Add Absence Form */}
           {teacherTimeTable.length !== 0 && (
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Record New Absence</h2>

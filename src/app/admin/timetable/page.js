@@ -64,7 +64,7 @@ export default function Schedule() {
           <option value="4">2CS</option>
           <option value="5">3CS</option>
         </select>
-        <button onClick={() => { setIsOpenAddSession(true); getTeachers() }} className="w-full hover:cursor-pointer p-2 text-amber-50 bg-blue-500 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Add session</button>
+        <button onClick={() => { setIsOpenAddSession(true); getTeachers() }} className="w-full hover:cursor-pointer p-2 text-amber-50 bg-[#141F75] border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">Add session</button>
       </div>
 
       <div className="bg-gray-100 p-4 rounded-md shadow-inner">
