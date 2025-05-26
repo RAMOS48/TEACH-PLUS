@@ -84,14 +84,7 @@ export default function ExtraHoursSheet({ teacher }) {
 
   return (
     <div className="p-6">
-      <div className="mb-4 text-right">
-        <button
-          onClick={handleDownloadPDF}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Download as PDF
-        </button>
-      </div>
+      
 
       <div ref={printRef} className="bg-white p-6">
         <h1 className="text-center text-lg font-bold mb-4">
@@ -167,7 +160,7 @@ export default function ExtraHoursSheet({ teacher }) {
               </React.Fragment>
             ))}
             <tr>
-              <td className="border border-black p-1 font-bold" colSpan={2}>Grand Total</td>
+              <td className="border border-black p-1 font-bold" colSpan={2}> Total Hours</td>
               <td className="border border-black p-1 font-bold">{totalExtraHours}h</td>
               <td className="border border-black p-1" />
             </tr>
@@ -191,6 +184,14 @@ export default function ExtraHoursSheet({ teacher }) {
             <p>_________________</p>
           </div>
         </div>
+      </div>
+      <div className="mb-4 text-right">
+        <button
+          onClick={handleDownloadPDF}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Download as PDF
+        </button>
       </div>
     </div>
   );

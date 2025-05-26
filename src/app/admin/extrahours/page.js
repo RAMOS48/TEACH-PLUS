@@ -94,6 +94,7 @@ export default function ExtraHours() {
       });
 
       setSheet(sheetData.sheet);
+      
       setExtraDays(sheetData.extraDays);
       setIsModalOpen(true);
     } finally {
@@ -225,7 +226,7 @@ export default function ExtraHours() {
         <select
           value={academicYear}
           onChange={(e) => setAcademicYear(e.target.value)}
-          className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          className="w-full cursor-pointer p-2 border rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           disabled={!selectedTeacher || isLoading}
         >
           <option value="">Select a year</option>
@@ -241,13 +242,13 @@ export default function ExtraHours() {
           <select
             value={selectedSubPeriod}
             onChange={(e) => setSelectedSubPeriod(e.target.value)}
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+            className="w-full p-2 cursor-pointer border rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
             disabled={isLoading}
           >
             <option value="">Select a sub-period</option>
             {subPeriods.map((period, index) => (
               <option key={`${period.from}-${period.to}`} value={index}>
-                From {new Date(period.from).toLocaleDateString()} to {new Date(period.to).toLocaleDateString()} - Rank: {period.rank}
+                From {new Date(period.from).toLocaleDateString()} to {new Date(period.to).toLocaleDateString()} - Rank: {period.rank ||"Unknown"}
               </option>
             ))}
           </select>
@@ -256,14 +257,14 @@ export default function ExtraHours() {
 
       <div className="flex justify-end gap-4">
         <motion.button
-          className={`px-6 py-2 rounded-md text-white font-medium ${!selectedSubPeriod ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2738BD] hover:bg-[#1e2e9e]'}`}
+          className={`px-6 py-2 cursor-pointer rounded-md text-white font-medium ${!selectedSubPeriod ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2738BD] hover:bg-[#1e2e9e]'}`}
           disabled={!selectedSubPeriod || isLoading}
           onClick={handleExtraHours}
           whileHover={selectedSubPeriod ? { scale: 1.05 } : {}}
           whileTap={selectedSubPeriod ? { scale: 0.95 } : {}}
         >
           {isLoading ? (
-            <span className="flex items-center justify-center">
+            <span className="flex cursor-pointer items-center justify-center">
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -276,12 +277,12 @@ export default function ExtraHours() {
         </motion.button>
 
         <motion.button
-          className="px-6 py-2 rounded-md bg-green-600 text-white hover:bg-green-700"
+          className="px-6 py-2 cursor-pointer rounded-md bg-green-600 text-white hover:bg-green-700"
           onClick={() => setIsFormModalOpen(true)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          Open Form
+          Generate Total Hours
         </motion.button>
       </div>
 
@@ -302,13 +303,13 @@ export default function ExtraHours() {
           <div className="mt-4 flex justify-end gap-2">
             <button 
               onClick={handleRecalculate} 
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="px-4 cursor-pointer py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
             >
               Recalculate
             </button>
             <button 
               onClick={() => setIsModalOpen(false)} 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 cursor-pointer py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
               Close
             </button>
@@ -325,7 +326,7 @@ export default function ExtraHours() {
             <select 
               value={type} 
               onChange={(e) => setType(e.target.value)} 
-              className="w-full p-2 border rounded-md"
+              className="w-full cursor-pointer p-2 border rounded-md"
               disabled={isLoading}
             >
               <option value="">Select Type</option>
@@ -339,7 +340,7 @@ export default function ExtraHours() {
             <select 
               value={category} 
               onChange={(e) => setCategory(e.target.value)} 
-              className="w-full p-2 border rounded-md"
+              className="w-full cursor-pointer p-2 border rounded-md"
               disabled={isLoading}
             >
               <option value="">Select Method</option>
@@ -353,7 +354,7 @@ export default function ExtraHours() {
             <select 
               value={selectedPeriod} 
               onChange={(e) => setSelectedPeriod(e.target.value)} 
-              className="w-full p-2 border rounded-md"
+              className="w-full cursor-pointer p-2 border rounded-md"
               disabled={isLoading}
             >
               <option value="">Select Period</option>
@@ -368,14 +369,14 @@ export default function ExtraHours() {
           <div className="flex justify-end gap-2 pt-4">
             <button 
               onClick={() => setIsFormModalOpen(false)} 
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 cursor-pointer py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
               disabled={isLoading}
             >
               Cancel
             </button>
             <button 
               onClick={handleExcelPage} 
-              className={`px-4 py-2 rounded-md text-white font-medium ${
+              className={`px-4 py-2 cursor-pointer rounded-md text-white font-medium ${
                 !type || !category || !selectedPeriod || isLoading 
                   ? 'bg-gray-400 cursor-not-allowed' 
                   : 'bg-blue-600 hover:bg-blue-700'
@@ -383,7 +384,7 @@ export default function ExtraHours() {
               disabled={!type || !category || !selectedPeriod || isLoading}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center">
+                <span className="flex cursor-pointer items-center justify-center">
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

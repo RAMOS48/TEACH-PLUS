@@ -106,7 +106,7 @@ export default function Ranks() {
                                     <td className="py-3 px-4 text-right">
                                         <button
                                             onClick={() => deleteRank(rankItem.rank_id)}
-                                            className="px-3 py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+                                            className="px-3 cursor-pointer py-1 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
                                         >
                                             Delete
                                         </button>
@@ -122,7 +122,7 @@ export default function Ranks() {
                 <div className="mt-6">
                     <div className="flex items-center mb-4">
                         <button
-                            className="bg-[#141F75] text-white p-2 rounded-lg hover:bg-[#0e1757] transition-colors flex items-center"
+                            className="bg-[#141F75] cursor-pointer text-white p-2 rounded-lg hover:bg-[#0e1757] transition-colors flex items-center"
                             onClick={() => {
                                 setUpdateForm(false);
                                 setSelectedRankId(null);
@@ -164,7 +164,7 @@ export default function Ranks() {
                         </div>
                         <button
                             type="submit"
-                            className="mt-6 px-6 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors w-full md:w-auto"
+                            className="mt-6 px-6 py-2 cursor-pointer text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors w-full md:w-auto"
                         >
                             Confirm Update
                         </button>
@@ -194,8 +194,8 @@ export default function Ranks() {
                             >
                                 <option value="" disabled>Select rank</option>
                                 {ranks.map((r) => (
-                                    <option key={r.rank_name} value={r.rank_name}>
-                                        {r.rank_name}
+                                    <option key={r.rank_id} value={r.rank_name}>
+                                        {r.rank_name}{" of year "}{r.fiscal_year}
                                     </option>
                                 ))}
                             </select>
@@ -203,7 +203,7 @@ export default function Ranks() {
                     </div>
                     <button
                         onClick={handleAdd}
-                        className="mt-6 px-6 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors w-full md:w-auto"
+                        className="mt-6 px-6 py-2 cursor-pointer text-white bg-[#141F75] rounded-lg hover:bg-[#141F75] transition-colors w-full md:w-auto"
                     >
                         Add Rank
                     </button>

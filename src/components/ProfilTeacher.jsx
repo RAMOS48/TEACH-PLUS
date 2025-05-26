@@ -76,9 +76,14 @@ export default function ProfileTeacher({ teacher, onClose }) {
       newErrors.email = "Invalid email format";
     }
 
-    if (!/^\d+$/.test(updatedTeacher.hoursOutside)) {
-      newErrors.hoursOutside = "Extra hours must be an integer";
+    if (
+      !/^\d+$/.test(updatedTeacher.hoursOutside) || 
+      Number(updatedTeacher.hoursOutside) < 0 || 
+      Number(updatedTeacher.hoursOutside) > 21
+    ) {
+      newErrors.hoursOutside = "Extra hours must be between 0 and 21";
     }
+    
 
     if (updatedTeacher.bio.length > 100) {
       newErrors.bio = "Bio must be under 100 characters";
@@ -434,7 +439,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
         <motion.div className="flex gap-4 mt-8">
           <motion.button
             onClick={onClose}
-            className="flex-1 p-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            className="flex-1 p-3 cursor-pointer bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -446,8 +451,8 @@ export default function ProfileTeacher({ teacher, onClose }) {
             disabled={!isChanged}
             className={`flex-1 p-3 text-white rounded-lg ${
               isChanged
-                ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-                : "bg-gray-400 cursor-not-allowed"
+                ? "bg-blue-600  hover:bg-blue-700 cursor-pointer"
+                : "bg-gray-400  cursor-not-allowed"
             }`}
             whileHover={isChanged ? { scale: 1.02 } : {}}
             whileTap={isChanged ? { scale: 0.98 } : {}}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FiMail, FiLock } from "react-icons/fi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import useStore from "@/store/useStore";
+import logo from "@/images/logo.jpg"
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,10 +13,10 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [error, setError] = useState("");
+  const [errorr, setErrorr] = useState("");
 
   const router = useRouter();
-  const { login, isLoading } = useStore();
+  const { login, isLoading ,error} = useStore();
 
   const handleForgotPassword = () => {
     router.push("/forgotPassword");
@@ -26,12 +27,19 @@ const LoginPage = () => {
 
     setEmailError("");
     setPasswordError("");
-    setError("");
+    setErrorr("");
 
-    if (!email) {
-      setEmailError("Email is required");
-      return;
-    }
+   if (!email) {
+  setEmailError("Email is required");
+  return;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (!emailRegex.test(email)) {
+  setEmailError("Invalid email format");
+  return;
+}
     if (!password) {
       setPasswordError("Password is required");
       return;
@@ -41,7 +49,7 @@ const LoginPage = () => {
       await login(email, password);
       router.push("/admin/dashboard");
     } catch (err) {
-      setError(err.message);
+      setErrorr(err.message);
     }
   };
 
@@ -49,12 +57,10 @@ const LoginPage = () => {
     <div className="w-full h-screen font-poppins flex flex-wrap">
       <div className="p-6 flex flex-col justify-center bg-gray-50 w-full md:w-1/3">
         <div className="mb-52 text-center">
-          <p className="text-blue-950 text-3xl md:text-4xl">
+        <p className="text-blue-950 text-3xl md:text-4xl">
             <span className="font-extrabold">Teach</span>Plus
            
-          </p>
-        
-        </div>
+          </p>        </div>
         <div className="mt-16 text-center">
           <p className="text-2xl md:text-3xl font-bold text-blue-950">
             Simplify teaching schedules & payments
@@ -78,7 +84,7 @@ const LoginPage = () => {
             <div className="relative">
               <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                type="email"
+                type="text"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -89,7 +95,6 @@ const LoginPage = () => {
             </div>
             {emailError && <p className="mt-1 text-red-500">{emailError}</p>}
           </div>
-
           <div className="mb-6 text-sm">
             <label className="block mb-2 font-medium text-gray-700">Password</label>
             <div className="relative">

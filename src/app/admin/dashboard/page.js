@@ -16,7 +16,7 @@ export default function TeacherDashboard() {
   const [stats, setStats] = useState({
     totalTeachersCount: 0,
     activeTeachersCount: 0,
-    incativeTeachersCount: 0,
+    inactiveTeachersCount: 0,
     teachersCountDistributionByRank: [],
     absencesCountDistributionByMonth: [],
     nextHoliday: null,
@@ -31,6 +31,8 @@ export default function TeacherDashboard() {
         const to = dateRange[1]?.toISOString().split('T')[0] || '';
         const data = await getStatistics(from, to);
         setStats(data);
+        console.log(data);
+        
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch data');
@@ -114,7 +116,7 @@ export default function TeacherDashboard() {
           <div className="text-3xl font-bold text-gray-900">{stats.totalTeachersCount}</div>
           <div className="flex justify-between mt-4">
             <span className="text-green-600 font-medium">Active: {stats.activeTeachersCount ||"0"}</span>
-            <span className="text-red-600 font-medium">Inactive: {stats.incativeTeachersCount>0?stats.incativeTeachersCount:"0"}</span>
+            <span className="text-red-600 font-medium">Inactive: {stats.inactiveTeachersCount ||"0"}</span>
           </div>
         </div>
 

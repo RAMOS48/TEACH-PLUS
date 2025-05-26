@@ -18,7 +18,7 @@ export async function POST(req) {
     const hashedPassword = admin[0].password_hash
     const passwordMatch = await bcrypt.compare(password, hashedPassword)
     if (!passwordMatch) {
-      return Response.json({status : "FAILED", message : "Worng password !"}, {status : 401})
+      return Response.json({status : "FAILED", message : "Wrong password !"}, {status : 401})
     }
 
     const secretKey = process.env.SESSION_SECRET;

@@ -123,32 +123,32 @@ export default function UpdateSession({ session, onClose }) {
       <h2 className="text-xl font-semibold text-blue-900 mb-4">Update Session</h2>
 
       {showConfirmation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-4">Confirm Teacher Change</h3>
-            <p className="mb-6">You have changed the teacher for this session. Please choose how to handle it's absences :</p>
-            
-            <div className="flex justify-between">
-              <button
-                onClick={() => handleConfirmUpdate("1")}
-                className="px-4 py-2 bg-[#141F75] text-white rounded hover:bg-green-600"
-              >
-                Delete absences
-              </button>
-              <button
-                onClick={() => handleConfirmUpdate("2")}
-                className="px-4 py-2 bg-[#141F75] text-white rounded hover:bg-blue-600"
-              >
-                Assign them to the new teacher
-              </button>
-              <button
-                onClick={() => setShowConfirmation(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+        <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+          <div className="bg-inherit p-4 sm:p-6 rounded-lg shadow-lg max-w-md w-full mx-4 sm:mx-auto">
+  <h3 className="text-lg font-semibold mb-4 text-center sm:text-left">Confirm Teacher Change</h3>
+  <p className="mb-6 text-sm sm:text-base text-center sm:text-left">You have changed the teacher for this session. Please choose how to handle its absences:</p>
+  
+  <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
+    <button
+      onClick={() => handleConfirmUpdate("1")}
+      className="px-4 py-2 cursor-pointer bg-[#141F75] text-white rounded hover:bg-green-600 text-sm sm:text-base"
+    >
+      Delete absences
+    </button>
+    <button
+      onClick={() => handleConfirmUpdate("2")}
+      className="px-4 py-2 cursor-pointer bg-[#141F75] text-white rounded hover:bg-blue-600 text-sm sm:text-base"
+    >
+      Assign to new teacher
+    </button>
+    <button
+      onClick={() => setShowConfirmation(false)}
+      className="px-4 py-2 cursor-pointer bg-gray-500 text-white rounded hover:bg-gray-600 text-sm sm:text-base"
+    >
+      Cancel
+    </button>
+  </div>
+</div>
         </div>
       )}
 
@@ -250,7 +250,7 @@ export default function UpdateSession({ session, onClose }) {
             className={`w-full p-2 border rounded ${errors.classroom ? "border-red-500" : "border-gray-300"} hover:cursor-pointer`}
           >
             <option value="">Select classroom</option>
-            {["salle A1", "salle A2", "Amphi C", "salle TP1"].map((sl) => (
+            {["salle A1", "salle A2","salle A3" ,  "Amphi C","Amphi D", "Amphi E" , "salle TP1","salle TP2",""].map((sl) => (
               <option key={sl} value={sl}>{sl}</option>
             ))}
           </select>

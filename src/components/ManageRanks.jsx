@@ -23,7 +23,7 @@ export default function Ranks() {
 
   const filterRanksByFiscalYear = (ranks, fiscalYear) => {
     if (!fiscalYear) return ranks;
-    return ranks.filter(rank => rank.fiscal_year === fiscalYear);
+    return ranks.filter(rank => rank.fiscal_year == fiscalYear);
   };
 
   const filteredRanks = filterRanksByFiscalYear(ranks, selectedFiscalYear);
@@ -115,12 +115,7 @@ export default function Ranks() {
     }
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'DA'
-    }).format(price);
-  };
+ 
 
   return (
     <div className="w-full p-6 bg-gray-50 min-h-screen">
@@ -222,7 +217,7 @@ export default function Ranks() {
                   name="rankName"
                   value={formData.rankName}
                   onChange={handleInputChange}
-                  placeholder="e.g. Bronze, Silver, Gold"
+                  placeholder="e.g. MCA , MCB ..."
                   className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#141F75] focus:border-[#141F75]"
                   required
                 />
@@ -230,7 +225,7 @@ export default function Ranks() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (MAD)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (DA)</label>
                   <input
                     type="number"
                     name="rankPrice"
@@ -315,7 +310,7 @@ export default function Ranks() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Price (MAD)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Price (DA)</label>
                 <input
                   type="number"
                   name="rankPrice"

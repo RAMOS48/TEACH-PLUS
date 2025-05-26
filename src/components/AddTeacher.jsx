@@ -67,8 +67,8 @@ export default function AddTeacher({ onClose }) {
       newErrors.email = "Email is not valid.";
     }
 
-    if (!/^\d+$/.test(form.hoursOutside)) {
-      newErrors.hoursOutside = "Extra hours must be a valid number.";
+    if (!/^\d+$/.test(form.hoursOutside) || parseInt(form.hoursOutside) < 0 || parseInt(form.hoursOutside) > 21) {
+      newErrors.hoursOutside = "Extra hours must be a number between 0 and 21.";
     }
 
     if (form.bio.length > 100) {
@@ -359,7 +359,7 @@ export default function AddTeacher({ onClose }) {
 
         <motion.button
           onClick={handleAdd}
-          className="w-full mt-4 p-3 text-white bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-lg shadow-md transition"
+          className="w-full mt-4 p-3 text-white bg-[#141F75] hover:bg-[#141F75] cursor-pointer rounded-lg shadow-md transition"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
