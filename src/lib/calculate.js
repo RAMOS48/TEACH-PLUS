@@ -7,6 +7,19 @@ const dayOrder = {
     'Friday': 5,
     'Saturday': 6
 };
+function customRound(num) {
+    const intPart = Math.floor(num);
+    const decimalPart = num - intPart;
+
+    if (decimalPart === 0) {
+        return num;
+    } else if (decimalPart <= 0.5) {
+        return intPart + 0.5;
+    } else {
+        return intPart + 1;
+    }
+}
+
 
 function sortSessionsByTypeDayTime(sessions) {
     const typeOrder = {
@@ -74,9 +87,9 @@ export function getExtraSessions(timetable, teacherType, hoursOutside) {
                         if (extraHours < 12) {
                             if (extraHours + hours - left / typeCoeff[session.type] <= 12) {
                                 extraHours += hours - left / typeCoeff[session.type]
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours - left / typeCoeff[session.type] })
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours - left / typeCoeff[session.type]) })
                             } else {
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
                                 extraHours = 12
                             }
                         }
@@ -87,9 +100,9 @@ export function getExtraSessions(timetable, teacherType, hoursOutside) {
                         if (extraHours < 12) {
                             if (extraHours + hours <= 12) {
                                 extraHours += hours
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours) })
                             } else {
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
                                 extraHours = 12
                             }
                         }
@@ -105,9 +118,9 @@ export function getExtraSessions(timetable, teacherType, hoursOutside) {
                 if (extraHours < 12) {
                     if (extraHours + hours <= 12) {
                         extraHours += hours
-                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours) })
                     } else {
-                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                        extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
                         extraHours = 12
                     }
 
@@ -123,9 +136,9 @@ export function getExtraSessions(timetable, teacherType, hoursOutside) {
             if (extraHours < 12) {
                 if (extraHours + hours <= 12) {
                     extraHours += hours
-                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: hours })
+                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours) })
                 } else {
-                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: 12 - extraHours })
+                    extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
                     extraHours = 12
                 }
 

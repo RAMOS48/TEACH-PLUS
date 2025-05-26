@@ -10,7 +10,6 @@ async function getTeacherPeriods(teacherId, academicYear) {
     `SELECT * FROM Periods WHERE \`from\` >= ? AND \`to\` <= ? AND NOT \`from\` > CURDATE()`,
     [academicYearStart, academicYearEnd]
   );
-
   const [rankChanges] = await database.execute(
     `SELECT starting_date FROM Ranks_of_teachers 
      WHERE teacher_id = ? AND starting_date BETWEEN ? AND ? AND NOT starting_date > CURDATE()
@@ -18,7 +17,7 @@ async function getTeacherPeriods(teacherId, academicYear) {
     [teacherId, academicYearStart, academicYearEnd]
   );
   if (rankChanges.length === 0) {
-    const availablePeriods = periods.filter(async p => {
+    const availablePeriods = periods.filter(p => {
       const periodStart = new Date(p.from);
       const periodEnd = new Date(p.to);
       const now = new Date();
