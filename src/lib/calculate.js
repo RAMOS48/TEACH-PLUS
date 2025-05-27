@@ -95,16 +95,13 @@ export function getExtraSessions(timetable, teacherType, hoursOutside) {
                         }
                     }
                 } else {
-                    extraHours += hours
-                    if (extraHours) {
-                        if (extraHours < 12) {
-                            if (extraHours + hours <= 12) {
-                                extraHours += hours
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours) })
-                            } else {
-                                extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
-                                extraHours = 12
-                            }
+                    if (extraHours < 12) {
+                        if (extraHours + hours <= 12) {
+                            extraHours += hours
+                            extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(hours) })
+                        } else {
+                            extraSessions.push({ session_id: session.session_id, day_of_week: session.day_of_week, duration: customRound(12 - extraHours) })
+                            extraHours = 12
                         }
                     }
                 }

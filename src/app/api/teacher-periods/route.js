@@ -76,7 +76,6 @@ async function getTeacherPeriods(teacherId, academicYear) {
       const sortedChanges = changesInPeriod
         .map(c => new Date(c.starting_date))
         .sort((a, b) => a.getTime() - b.getTime());
-
       for (const changeDate of sortedChanges) {
         const [rank] = await database.execute("SELECT rank FROM Ranks_of_teachers WHERE teacher_id = ? AND starting_date <= ? ORDER BY starting_date DESC LIMIT 1", [teacherId, currentStart.toISOString().split('T')[0]])
         if (rank.length) {

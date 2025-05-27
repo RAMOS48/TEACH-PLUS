@@ -1,5 +1,6 @@
 "use client";
 import useStore from "@/store/useStore";
+import { parse } from "path";
 import { useRef, useState } from "react";
 
 export default function Ranks() {
@@ -29,10 +30,10 @@ export default function Ranks() {
 
     const handleUpdate = (e) => {
         e.preventDefault();
-        const selected = ranks.find((r) => r.rank_name === newRank.current.value);
+        const selected = ranks.find((r) => r.rank_id == newRank.current.value);
         const year = new Date(newStartingDate.current.value).getFullYear();
 
-        if (selected && year !== parseInt(selected.fiscal_year)) {
+        if (selected && year != parseInt(selected.fiscal_year)) {
             alert(
                 `Fiscal year mismatch! Starting date year must match ${selected.fiscal_year}`
             );
@@ -41,7 +42,7 @@ export default function Ranks() {
 
         updateRank({
             newStartingDate: newStartingDate.current.value,
-            newRank: newRank.current.value,
+            newRank: selected.rank_name,
         });
 
         setUpdateForm(false);
@@ -49,10 +50,11 @@ export default function Ranks() {
     };
 
     const handleAdd = () => {
-        const selected = ranks.find((r) => r.rank_name === rank.current.value);
+        const selected = ranks.find((r) => r.rank_id == rank.current.value);
         const year = new Date(startingDate.current.value).getFullYear();
-
-        if (selected && year !== parseInt(selected.fiscal_year)) {
+        console.log(year)
+        console.log(parseInt(selected.fiscal_year))
+        if (selected && year != parseInt(selected.fiscal_year)) {
             alert(
                 `Fiscal year mismatch! Starting date year must match ${selected.fiscal_year}`
             );
@@ -61,7 +63,7 @@ export default function Ranks() {
 
         addRank({
             startingDate: startingDate.current.value,
-            rank: rank.current.value,
+            rank: selected.rank_name,
         });
 
         startingDate.current.value = "";
@@ -155,7 +157,7 @@ export default function Ranks() {
                                 >
                                     <option value="" disabled>Select rank</option>
                                     {ranks.map((r) => (
-                                        <option key={r.rank_name} value={r.rank_name}>
+                                        <option key={r.rank_id} value={r.rank_id}>
                                             {r.rank_name}
                                         </option>
                                     ))}
@@ -194,7 +196,7 @@ export default function Ranks() {
                             >
                                 <option value="" disabled>Select rank</option>
                                 {ranks.map((r) => (
-                                    <option key={r.rank_id} value={r.rank_name}>
+                                    <option key={r.rank_id} value={r.rank_id}>
                                         {r.rank_name}{" of year "}{r.fiscal_year}
                                     </option>
                                 ))}
