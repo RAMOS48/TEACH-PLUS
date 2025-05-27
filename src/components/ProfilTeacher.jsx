@@ -19,7 +19,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
     teacherId: teacher.teacher_id,
     email: teacher.email,
     phoneNumber: teacher.phone_number,
-    dateOfBirth: teacher.date_of_birth ,
+    dateOfBirth: teacher.date_of_birth,
     familyName: teacher.family_name,
     firstName: teacher.first_name,
     hoursOutside: teacher.hours_outside || "0",
@@ -45,7 +45,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
         setIsLoadingTimetable(false);
       }
     };
-    
+
     fetchTimetable();
   }, [period, teacher.teacher_id, timeTableOfTeacher]);
 
@@ -64,7 +64,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
       newErrors.familyName = "Family name must be in PascalCase (e.g., Smith)";
     }
 
-    if (age < 23 || age > 80 ) {
+    if (age < 23 || age > 80) {
       newErrors.dateOfBirth = "Teacher age must be between 23 and 80 years";
     }
 
@@ -77,13 +77,13 @@ export default function ProfileTeacher({ teacher, onClose }) {
     }
 
     if (
-      !/^\d+$/.test(updatedTeacher.hoursOutside) || 
-      Number(updatedTeacher.hoursOutside) < 0 || 
+      !/^\d+$/.test(updatedTeacher.hoursOutside) ||
+      Number(updatedTeacher.hoursOutside) < 0 ||
       Number(updatedTeacher.hoursOutside) > 21
     ) {
-      newErrors.hoursOutside = "Extra hours must be between 0 and 21";
+      newErrors.hoursOutside = "Hours Outside must be between 0 and 21";
     }
-    
+
 
     if (updatedTeacher.bio.length > 100) {
       newErrors.bio = "Bio must be under 100 characters";
@@ -137,33 +137,33 @@ export default function ProfileTeacher({ teacher, onClose }) {
   };
 
   const currentYear = new Date().getFullYear();
-  const academicYearOptions = Array.from({ length: 10 }, (_, i) => 
+  const academicYearOptions = Array.from({ length: 10 }, (_, i) =>
     `${currentYear - i - 1}/${currentYear - i}`
   ).reverse();
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <motion.h1 
+      <motion.h1
         className="text-left p-3 text-[#141F75] text-3xl"
         initial={{ x: -20 }}
         animate={{ x: 0 }}
       >
         Update Teacher Profile
       </motion.h1>
-      
-      <motion.div 
+
+      <motion.div
         className="w-full mx-auto p-6 bg-white shadow-md rounded-lg flex flex-col"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
       >
-        <motion.div 
+        <motion.div
           className="flex justify-center mb-6"
           whileHover={{ scale: 1.02 }}
         >
@@ -211,7 +211,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               onChange: handleFileChange,
             },
             {
-              label: "Extra Hours",
+              label: "Hours Outside",
               name: "hoursOutside",
               type: "number",
               value: updatedTeacher.hoursOutside,
@@ -260,18 +260,18 @@ export default function ProfileTeacher({ teacher, onClose }) {
               className: "md:col-span-2 lg:col-span-3"
             },
           ].map((field, idx) => (
-            <motion.div 
-              key={idx} 
+            <motion.div
+              key={idx}
               className={`space-y-2 ${field.className || ""}`}
               whileHover={{ y: -2 }}
             >
-              <motion.label 
+              <motion.label
                 className="block text-left text-[#141F75] font-medium"
                 whileHover={{ x: 3 }}
               >
                 {field.label}
               </motion.label>
-              
+
               {field.type === "select" ? (
                 <motion.select
                   name={field.name}
@@ -315,10 +315,10 @@ export default function ProfileTeacher({ teacher, onClose }) {
                   whileFocus={{ scale: 1.01 }}
                 />
               )}
-              
+
               <AnimatePresence>
                 {field.error && (
-                  <motion.p 
+                  <motion.p
                     className="text-red-500 text-sm"
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -332,19 +332,19 @@ export default function ProfileTeacher({ teacher, onClose }) {
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           className="mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <motion.h2 
+          <motion.h2
             className="text-xl font-semibold text-[#141F75] mb-4"
             whileHover={{ x: 5 }}
           >
             Teacher Timetable
           </motion.h2>
-          
+
           <div className="flex gap-4 mb-6">
             <motion.div className="flex-1 space-y-2">
               <label className="block text-left text-[#141F75] font-medium">Semester</label>
@@ -359,7 +359,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
                 <option value="S2">Semester 2 (S2)</option>
               </motion.select>
             </motion.div>
-            
+
             <motion.div className="flex-1 space-y-2">
               <label className="block text-left text-[#141F75] font-medium">Academic Year</label>
               <motion.select
@@ -377,7 +377,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
           </div>
 
           {isLoadingTimetable ? (
-            <motion.div 
+            <motion.div
               className="flex justify-center items-center h-32"
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -385,7 +385,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
             </motion.div>
           ) : timetable.length > 0 ? (
-            <motion.div 
+            <motion.div
               className="overflow-x-auto"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -406,7 +406,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
                   {timetable
                     .sort((a, b) => daysOfWeek.indexOf(a.day_of_week) - daysOfWeek.indexOf(b.day_of_week))
                     .map((session, index) => (
-                      <motion.tr 
+                      <motion.tr
                         key={index}
                         className="hover:bg-gray-50"
                         initial={{ opacity: 0 }}
@@ -426,7 +426,7 @@ export default function ProfileTeacher({ teacher, onClose }) {
               </table>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               className="text-center py-8 text-gray-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -445,15 +445,14 @@ export default function ProfileTeacher({ teacher, onClose }) {
           >
             Cancel
           </motion.button>
-          
+
           <motion.button
             onClick={handleUpdate}
             disabled={!isChanged}
-            className={`flex-1 p-3 text-white rounded-lg ${
-              isChanged
+            className={`flex-1 p-3 text-white rounded-lg ${isChanged
                 ? "bg-blue-600  hover:bg-blue-700 cursor-pointer"
                 : "bg-gray-400  cursor-not-allowed"
-            }`}
+              }`}
             whileHover={isChanged ? { scale: 1.02 } : {}}
             whileTap={isChanged ? { scale: 0.98 } : {}}
           >

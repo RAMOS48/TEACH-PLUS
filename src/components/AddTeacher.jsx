@@ -68,7 +68,7 @@ export default function AddTeacher({ onClose }) {
     }
 
     if (!/^\d+$/.test(form.hoursOutside) || parseInt(form.hoursOutside) < 0 || parseInt(form.hoursOutside) > 21) {
-      newErrors.hoursOutside = "Extra hours must be a number between 0 and 21.";
+      newErrors.hoursOutside = "Hours Outside must be a number between 0 and 21.";
     }
 
     if (form.bio.length > 100) {
@@ -99,26 +99,26 @@ export default function AddTeacher({ onClose }) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <motion.h1 
+      <motion.h1
         className="text-left p-3 text-[#141F75] text-3xl"
         initial={{ x: -20 }}
         animate={{ x: 0 }}
       >
         Add New Teacher
       </motion.h1>
-      
-      <motion.div 
+
+      <motion.div
         className="w-full mx-auto p-6 bg-gray-100 rounded-xl flex flex-col h-full"
         initial={{ y: 20 }}
         animate={{ y: 0 }}
       >
-        <motion.div 
+        <motion.div
           className="flex flex-col items-center mb-6"
           whileHover={{ scale: 1.02 }}
         >
@@ -134,7 +134,7 @@ export default function AddTeacher({ onClose }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-grow">
           <div className="space-y-4">
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -150,7 +150,7 @@ export default function AddTeacher({ onClose }) {
               whileFocus={{ scale: 1.02 }}
             />
             {errors.firstName && (
-              <motion.p 
+              <motion.p
                 className="text-red-500 text-sm"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -159,7 +159,7 @@ export default function AddTeacher({ onClose }) {
               </motion.p>
             )}
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -180,7 +180,7 @@ export default function AddTeacher({ onClose }) {
               </motion.p>
             )}
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -200,8 +200,8 @@ export default function AddTeacher({ onClose }) {
                 {errors.email}
               </motion.p>
             )}
-            
-            <motion.label 
+
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -220,7 +220,7 @@ export default function AddTeacher({ onClose }) {
           </div>
 
           <div className="space-y-4">
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -240,7 +240,7 @@ export default function AddTeacher({ onClose }) {
               </motion.p>
             )}
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -261,11 +261,11 @@ export default function AddTeacher({ onClose }) {
               </motion.p>
             )}
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
-              Extra Hours
+              Hours Outside
             </motion.label>
             <motion.input
               name="hoursOutside"
@@ -281,8 +281,8 @@ export default function AddTeacher({ onClose }) {
                 {errors.hoursOutside}
               </motion.p>
             )}
-            
-            <motion.label 
+
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -305,7 +305,7 @@ export default function AddTeacher({ onClose }) {
           </div>
 
           <div className="space-y-4">
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -318,7 +318,7 @@ export default function AddTeacher({ onClose }) {
               whileHover={{ scale: 1.01 }}
             />
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
@@ -335,7 +335,7 @@ export default function AddTeacher({ onClose }) {
               <option value="1">Active</option>
             </motion.select>
 
-            <motion.label 
+            <motion.label
               className="block text-left text-[#141F75]"
               whileHover={{ x: 5 }}
             >
